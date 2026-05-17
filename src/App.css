@@ -8422,3 +8422,118 @@ body .app-shell .signal-focus-layout .signal-board .task-card-wrap.focused .task
 .progress-board .task-card.signal-WAIT::after { background: var(--purple); }
 .progress-board .task-card.signal-CHECK::after { background: var(--cyber-blue); }
 .progress-board .task-card.signal-REVIEW::after { background: var(--teal); }
+
+/* v10.4: 公開版UX補強。上部バーをカード操作・スクロール中も残す */
+.topbar {
+  position: sticky;
+  top: 10px;
+  z-index: 40;
+  overflow: visible;
+}
+
+.topbar::after {
+  border-radius: 24px;
+}
+
+.topbar-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.project-complete-banner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 14px;
+  padding: 18px 20px;
+  border-radius: 26px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 20%, rgba(45, 187, 115, 0.18), transparent 26%),
+    linear-gradient(135deg, rgba(232, 251, 241, 0.95), rgba(255, 255, 255, 0.86));
+  border-color: rgba(45, 187, 115, 0.26);
+}
+
+.project-complete-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 78% 28%, rgba(78, 225, 207, 0.2), transparent 18%),
+    linear-gradient(90deg, rgba(45, 187, 115, 0.12), transparent 45%);
+  pointer-events: none;
+}
+
+.project-complete-banner > * {
+  position: relative;
+  z-index: 1;
+}
+
+.complete-badge {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #2dbb73, #63d99a);
+  color: #fff;
+  font-size: 28px;
+  font-weight: 900;
+  box-shadow:
+    0 16px 32px rgba(45, 187, 115, 0.2),
+    0 0 0 8px rgba(45, 187, 115, 0.1);
+}
+
+.complete-copy h2 {
+  margin: 0 0 6px;
+  color: #173b2a;
+  font-size: 24px;
+  letter-spacing: -0.05em;
+}
+
+.complete-copy p:last-child {
+  margin: 0;
+  color: #4c735f;
+  font-size: 13px;
+  font-weight: 850;
+  line-height: 1.6;
+}
+
+.complete-score {
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+  min-width: 94px;
+  padding: 10px 13px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(45, 187, 115, 0.18);
+}
+
+.complete-score strong {
+  color: #1f8f57;
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.complete-score span {
+  color: #5b7d69;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+@media (max-width: 1320px) {
+  .project-complete-banner {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .complete-score {
+    grid-column: 1 / -1;
+    justify-items: start;
+    width: fit-content;
+  }
+}

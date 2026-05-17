@@ -5,8 +5,8 @@ const STORAGE_KEY = "stuck-map-v8";
 const INTRO_STORAGE_KEY = "stuck-map-intro-v8";
 
 const initialプロジェクト = {
-  name: "小規模Web改修 公開準備",
-  memo: "告知ページの改修から公開前確認までを、詰まりが見える形で進める",
+  name: "Weekend Build",
+  memo: "週末で、プロジェクトボードとして使えるところまで行く",
 };
 
 const initialメンバー = [
@@ -33,9 +33,9 @@ const initialメンバー = [
   },
   {
     id: "m4",
-    name: "整理担当",
+    name: "R",
     role: "PMO補佐 / 整理担当",
-    avatar: "整理",
+    avatar: "R",
     memo: "状況を整理して、次に見る場所を見つける人",
   },
 ];
@@ -43,193 +43,183 @@ const initialメンバー = [
 const initialTasks = [
   {
     id: "t1",
-    title: "公開ページの掲載原稿を確認する",
+    title: "メンバーカードに着手中バッジを出す",
     ownerId: "m4",
-    needId: "m1",
+    needId: "m3",
     status: "DOING",
-    category: "COPY",
-    reason: "作業中",
+    category: "UI",
+    reason: "表示確認",
     description:
-      "支給された原稿をそのまま載せるだけでなく、ページとして読みやすい順番・見出し・余白になっているか整理する。",
+      "左のメンバーカードに、今触っているタスク名と小さなバッジを表示する。",
   },
   {
     id: "t2",
-    title: "長い見出しの折り返しを一緒に見る",
+    title: "HELPの文言を重すぎない表現に整える",
     ownerId: "m3",
     needId: "m2",
     status: "HELP",
-    category: "UI",
-    reason: "少し手を借りたい",
+    category: "COPY",
+    reason: "表現確認",
     description:
-      "PCでは問題ないが、スマホ幅だと見出しが窮屈に見える。CSS調整の方向を一緒に確認したい。",
+      "『助けてください』ではなく、『少し手を借りたい』くらいの軽さに寄せる。",
   },
   {
     id: "t3",
-    title: "公開前チェックの責任範囲を合わせる",
+    title: "方向を見る置き場を右側に集約する",
     ownerId: "m4",
     needId: "m1",
     status: "WAIT",
     category: "FLOW",
     reason: "方向相談",
     description:
-      "文言確認、表示確認、リンク確認のどこまでを誰が見るかを決めて、確認待ちが一点に集まらないようにする。",
+      "どこを見れば前に進むかを、進捗会議前に見えるようにする。",
   },
   {
     id: "t4",
-    title: "公開前チェックリストをレビューする",
+    title: "レビュー待ちカードの見え方を整える",
     ownerId: "m2",
-    needId: "m1",
+    needId: "m2",
     status: "REVIEW",
-    category: "RELEASE",
+    category: "REVIEW",
     reason: "レビュー待ち",
     description:
-      "公開直前に見る項目が足りているか、リンク・画像・SP表示・文言の観点でレビューする。",
+      "レビュー依頼が埋もれないように、色とラベルを調整する。",
   },
   {
     id: "t5",
-    title: "サムネイル候補の見え方を確認する",
+    title: "ダミーアイコン案をカードに置く",
     ownerId: "m3",
-    needId: "m2",
+    needId: "m1",
     status: "CHECK",
     category: "ICON",
-    reason: "軽く確認",
+    reason: "軽く見てほしい",
     description:
-      "一覧画面で埋もれないか、画像のトリミングとテキストの見え方だけ軽く確認したい。",
+      "本番アイコンの前に、絵文字や簡易記号でイメージを固める。方向性だけ軽く確認したい。",
   },
   {
     id: "t6",
-    title: "公開後の共有文を用意する",
+    title: "GitHub Pages に載せる前の最終整理",
     ownerId: "m4",
     needId: "m1",
     status: "TODO",
-    category: "DOC",
-    reason: "これから",
+    category: "RELEASE",
+    reason: "公開準備",
     description:
-      "公開URL、確認してほしいポイント、問い合わせ先を短くまとめる。",
+      "README・表示確認・不要ファイル整理をして公開できる状態にする。",
   },
   {
     id: "t7",
-    title: "テスト環境でリンク切れを確認する",
-    ownerId: "m1",
-    needId: "m2",
-    status: "DONE",
-    category: "RELEASE",
-    reason: "完了",
-    description:
-      "主要リンクと画像パスを確認し、公開前に大きな抜けがない状態にした。",
-  },
-  {
-    id: "t8",
-    title: "修正内容をチームに共有する",
+    title: "README を Stuck Map 用に差し替える",
     ownerId: "m1",
     needId: "m1",
     status: "DONE",
     category: "DOC",
     reason: "完了",
     description:
-      "何を直したか、どこを確認してほしいかを簡単に共有済み。",
+      "Vite 初期文から、Stuck Map の背景と目的が伝わる説明に更新する。",
+  },
+  {
+    id: "t8",
+    title: "状態フィルターを上部に置く",
+    ownerId: "m1",
+    needId: "m1",
+    status: "DONE",
+    category: "UI",
+    reason: "完了",
+    description:
+      "すべて / 進行中 / HELP などで今見たい状態だけに絞れるようにする。",
   },
 ];
 
 
 const sampleProjectTemplates = {
   personal: {
-    label: "Web改修 公開準備",
+    label: "週末個人開発",
     project: {
-      name: "小規模Web改修 公開準備",
-      memo: "告知ページの改修から公開前確認までを、詰まりが見える形で進める",
+      name: "週末個人開発プロジェクト",
+      memo: "週末で、プロジェクトボードとして使えるところまで行く",
     },
     tasks: initialTasks,
   },
   business: {
     label: "業務システム導入",
     project: {
-      name: "勤怠システム導入 検証フェーズ",
-      memo: "設定・データ移行・現場確認を、確認待ちで止めないための導入ボード",
+      name: "業務システム導入プロジェクト",
+      memo: "業務確認・設定・レビュー・公開前確認を、止まる前に拾う",
     },
     tasks: [
       {
         id: "biz-1",
-        title: "承認ルートの例外パターンを整理する",
+        title: "部門別の確認フローを整理する",
         ownerId: "m4",
         needId: "m1",
         status: "WAIT",
         category: "FLOW",
         reason: "方向相談",
-        description: "通常申請、代理承認、差し戻し時の流れを分け、どこまで今回の検証範囲に入れるかを合わせる。",
+        description: "誰に、どの順番で、何を確認するか。判断待ちが一点に溜まらないように流れを見る。",
       },
       {
         id: "biz-2",
-        title: "部門マスタの設定値を軽く確認する",
+        title: "マスタ設定の不明点を軽く確認する",
         ownerId: "m3",
         needId: "m2",
         status: "CHECK",
         category: "OPS",
         reason: "軽く確認",
-        description: "部署名・コード・有効開始日の扱いが現場運用と合っているか、投入前に確認する。",
+        description: "設定値の意味が現場運用と合っているか、公開前に小さく確認する。",
       },
       {
         id: "biz-3",
-        title: "移行CSVの文字化けと改行混入を一緒に見る",
+        title: "移行データの例外パターンを拾う",
         ownerId: "m4",
         needId: "m3",
         status: "HELP",
         category: "OPS",
         reason: "少し手を借りたい",
-        description: "一部の備考欄に改行が入り、CSVの列ずれが起きそう。変換ルールを一緒に確認したい。",
+        description: "CSVの例外パターンを一人で抱えず、早めに一緒に見る。",
       },
       {
         id: "biz-4",
-        title: "利用者向け手順メモをレビューする",
+        title: "利用者向け説明文をレビューする",
         ownerId: "m2",
         needId: "m1",
         status: "REVIEW",
         category: "DOC",
         reason: "レビュー待ち",
-        description: "初回ログイン、打刻修正、申請の出し方が現場に伝わる文になっているか確認する。",
+        description: "操作説明が現場に伝わる文になっているか、リリース前に確認する。",
       },
       {
         id: "biz-5",
-        title: "本番反映前チェックリストを作成する",
+        title: "本番反映前のチェックリストを作る",
         ownerId: "m1",
         needId: "m1",
         status: "DOING",
         category: "RELEASE",
         reason: "作業中",
-        description: "反映前に見る項目を、担当者の記憶ではなくチェックリストに移す。",
+        description: "公開前に見る項目を、担当者の記憶ではなくチェックリストに移す。",
       },
       {
         id: "biz-6",
-        title: "初回説明会の案内文を用意する",
+        title: "初回説明会の資料を用意する",
         ownerId: "m2",
         needId: "m2",
         status: "TODO",
         category: "DOC",
         reason: "これから",
-        description: "対象者、日時、事前準備、問い合わせ先をまとめて案内できるようにする。",
-      },
-      {
-        id: "biz-7",
-        title: "検証環境へのログイン確認を完了する",
-        ownerId: "m3",
-        needId: "m2",
-        status: "DONE",
-        category: "OPS",
-        reason: "完了",
-        description: "検証用アカウントでログインできることを確認済み。",
+        description: "導入後に迷わないよう、操作の入り口だけ先に整理する。",
       },
     ],
   },
   web: {
-    label: "採用ページ更新",
+    label: "Webサイト改修",
     project: {
-      name: "採用ページ更新 公開前確認",
-      memo: "原稿・画像・リンク・スマホ表示を、公開直前に慌てない形で確認する",
+      name: "Webサイト改修プロジェクト",
+      memo: "文言・表示・公開確認を、レビュー待ちで止めないための改修ボード",
     },
     tasks: [
       {
         id: "web-1",
-        title: "募集要項の長文セクションを整える",
+        title: "長い掲載文の表示崩れを確認する",
         ownerId: "m3",
         needId: "m2",
         status: "CHECK",
@@ -239,66 +229,56 @@ const sampleProjectTemplates = {
       },
       {
         id: "web-2",
-        title: "応募導線の文言トーンを合わせる",
+        title: "公開前の文言トーンを合わせる",
         ownerId: "m4",
         needId: "m1",
         status: "WAIT",
         category: "COPY",
         reason: "方向相談",
-        description: "応募ボタン周りの文言を、硬すぎず軽すぎない表現に寄せる方針を合わせる。",
+        description: "原稿の意図を壊さず、ページとして読みやすい表現に寄せる方針を合わせる。",
       },
       {
         id: "web-3",
-        title: "社員インタビュー画像を差し替える",
+        title: "サムネイル候補を出す",
         ownerId: "m2",
         needId: "m1",
         status: "TODO",
         category: "ICON",
         reason: "これから",
-        description: "一覧で埋もれないよう、画像サイズとトリミングを確認して差し替える。",
+        description: "一覧で埋もれないよう、カードに合う見え方を検討する。",
       },
       {
         id: "web-4",
-        title: "公開URL共有前の最終レビューを行う",
+        title: "公開URLを共有する前に最終確認する",
         ownerId: "m1",
         needId: "m2",
         status: "REVIEW",
         category: "RELEASE",
         reason: "レビュー待ち",
-        description: "リンク・表示・文言・画像の最終確認を置いておく。",
+        description: "公開後に慌てないよう、リンク・表示・文言の最終確認を置いておく。",
       },
       {
         id: "web-5",
-        title: "HTMLタグが文字列表示される箇所を一緒に見る",
+        title: "エスケープ処理まわりを一緒に見る",
         ownerId: "m3",
         needId: "m4",
         status: "HELP",
         category: "OPS",
         reason: "少し手を借りたい",
-        description: "改行タグがそのまま表示される箇所があり、エスケープ処理まわりを確認したい。",
-      },
-      {
-        id: "web-6",
-        title: "公開前のリンク確認を完了する",
-        ownerId: "m2",
-        needId: "m2",
-        status: "DONE",
-        category: "RELEASE",
-        reason: "完了",
-        description: "応募フォーム、会社情報、問い合わせ導線のリンク確認が完了。",
+        description: "タグが文字列として出る原因を、ソース側から確認する。",
       },
     ],
   },
   onboarding: {
     label: "新人オンボーディング",
     project: {
-      name: "新人オンボーディング 初週サポート",
+      name: "新人オンボーディングプロジェクト",
       memo: "質問しにくい小さな詰まりを早めに見つけ、安心して立ち上がるためのボード",
     },
     tasks: [
       {
         id: "on-1",
-        title: "開発環境の初期設定エラーを一緒に見る",
+        title: "開発環境の初期設定で詰まりそう",
         ownerId: "m3",
         needId: "m2",
         status: "HELP",
@@ -308,17 +288,17 @@ const sampleProjectTemplates = {
       },
       {
         id: "on-2",
-        title: "最初のレビュー依頼の粒度を確認する",
+        title: "最初のレビュー依頼の出し方を確認する",
         ownerId: "m4",
         needId: "m1",
         status: "CHECK",
         category: "FLOW",
         reason: "軽く確認",
-        description: "どの段階でレビュー依頼を出すとよいか、最初に合わせておく。",
+        description: "どの粒度で依頼すればよいか、最初に合わせておく。",
       },
       {
         id: "on-3",
-        title: "よくある質問を初週メモにまとめる",
+        title: "よくある質問をメモにする",
         ownerId: "m2",
         needId: "m2",
         status: "DOING",
@@ -338,23 +318,13 @@ const sampleProjectTemplates = {
       },
       {
         id: "on-5",
-        title: "初回タスクの完了条件をレビューする",
+        title: "初回タスクの完了条件を確認する",
         ownerId: "m1",
         needId: "m2",
         status: "REVIEW",
         category: "REVIEW",
         reason: "レビュー待ち",
         description: "できた／まだ見る、の基準を曖昧にしない。",
-      },
-      {
-        id: "on-6",
-        title: "アカウント発行状況を確認済みにする",
-        ownerId: "m2",
-        needId: "m2",
-        status: "DONE",
-        category: "OPS",
-        reason: "完了",
-        description: "必要なアカウントと権限が揃っていることを確認済み。",
       },
     ],
   },
@@ -609,9 +579,9 @@ const defaultTaskForm = {
   title: "",
   ownerId: "m1",
   needId: "m1",
-  status: "HELP",
+  status: "TODO",
   category: "FLOW",
-  reason: "少し手を借りたい",
+  reason: "これから",
   description: "",
 };
 
@@ -913,6 +883,9 @@ function App() {
 
   const nextSupportTask = supportQueue[0] || null;
   const completedCount = tasks.filter((task) => getTaskFlowStatus(task) === "DONE").length;
+  const totalTaskCount = tasks.length;
+  const isProjectComplete = totalTaskCount > 0 && completedCount === totalTaskCount;
+  const progressPercent = totalTaskCount > 0 ? Math.round((completedCount / totalTaskCount) * 100) : 0;
 
   const active拾うサイン = {
     HELP: tasks.filter((task) => getTaskSignalStatus(task) === "HELP").length,
@@ -1150,6 +1123,47 @@ function App() {
     localStorage.removeItem(STORAGE_KEY);
   };
 
+  const createBlankProject = () => {
+    const ok = window.confirm(
+      "現在のボードを新しいプロジェクトに切り替えます。必要なら先にスクリーンショットやメモを残してください。"
+    );
+
+    if (!ok) {
+      return;
+    }
+
+    const blankTask = normalizeTask({
+      id: createTaskId(),
+      title: "最初のカードをここから編集する",
+      ownerId: fallbackMemberId,
+      needId: fallbackMemberId,
+      status: "TODO",
+      flowStatus: "TODO",
+      signalStatus: null,
+      category: fallbackCategoryId,
+      reason: "これから",
+      description: "カードをクリックして、タイトル・担当・内容を編集します。",
+    });
+
+    setActiveSampleId("custom");
+    setプロジェクト({
+      name: "新しいプロジェクト",
+      memo: "プロジェクト名をクリックして、目的やメモを編集できます。",
+    });
+    setTasks([blankTask]);
+    setActiveFilter("ALL");
+    setActiveBoardTab("progress");
+    setIsProgressTimelineOpen(false);
+    setSelectedTaskId(null);
+    setFocusedTaskId(blankTask.id);
+    setSelectedMemberId(null);
+    setIsプロジェクトEditing(true);
+
+    window.setTimeout(() => {
+      scrollToTask(blankTask.id);
+    }, 120);
+  };
+
   const scrollToTask = (taskId) => {
     const targetTask = tasks.find((task) => task.id === taskId);
     setActiveFilter("ALL");
@@ -1233,7 +1247,7 @@ function App() {
   };
 
   const openCreateModal = () => {
-    const initialStatus = "HELP";
+    const initialStatus = "TODO";
     setTaskForm({
       ...defaultTaskForm,
       status: initialStatus,
@@ -1874,8 +1888,8 @@ function App() {
         >
           <div className="modal-top">
             <div className="modal-title-block">
-              <p className="eyebrow">サイン選択</p>
-              <h2 id="create-modal-title">サインを置く</h2>
+              <p className="eyebrow">カード作成</p>
+              <h2 id="create-modal-title">カードを追加</h2>
             </div>
 
             <button
@@ -1889,7 +1903,8 @@ function App() {
           </div>
 
           <p className="modal-description">
-            まずサインを選ぶ。細かい整理はあとでOK。
+            通常タスクも、手助け・確認・レビューなどのサイン付きタスクも追加できます。
+            まずは軽く置いて、あとから詳細を整えます。
           </p>
 
           {renderCreateCommandPicker()}
@@ -1914,7 +1929,7 @@ function App() {
             </button>
 
             <button type="button" className="primary-action" onClick={createTask}>
-              サインを置く
+              カードを追加
             </button>
           </div>
         </section>
@@ -2401,7 +2416,11 @@ function App() {
             </div>
 
             <button type="button" className="primary-action" onClick={openCreateModal}>
-              + サインを置く
+              + カードを追加
+            </button>
+
+            <button type="button" className="secondary-action" onClick={createBlankProject}>
+              新規
             </button>
 
             <button
@@ -2472,9 +2491,14 @@ function App() {
               <label htmlFor="sample-project-select">用途別サンプルデータ</label>
               <select
                 id="sample-project-select"
-                value={activeSampleId}
-                onChange={(event) => applySampleProject(event.target.value)}
+                value={sampleProjectTemplates[activeSampleId] ? activeSampleId : "custom"}
+                onChange={(event) => {
+                  if (event.target.value !== "custom") {
+                    applySampleProject(event.target.value);
+                  }
+                }}
               >
+                <option value="custom">編集中のプロジェクト</option>
                 {Object.entries(sampleProjectTemplates).map(([sampleId, sample]) => (
                   <option key={sampleId} value={sampleId}>
                     {sample.label}
@@ -2491,12 +2515,28 @@ function App() {
             <span>全カード <strong>{tasks.length}</strong></span>
             <span>拾うサイン <strong>{signalTasks.length}</strong></span>
             <span>完了 <strong>{completedCount}</strong></span>
+            <span>進捗 <strong>{progressPercent}%</strong></span>
           </div>
           <div className={`compact-save-pill ${saveNotice === "保存しました" ? "saved-pop" : ""}`}>
             <i />
             {saveNotice}
           </div>
         </section>
+
+        {isProjectComplete && (
+          <section className="project-complete-banner surface" aria-live="polite">
+            <div className="complete-badge">✓</div>
+            <div className="complete-copy">
+              <p className="eyebrow">PROJECT COMPLETE</p>
+              <h2>プロジェクト完遂！</h2>
+              <p>すべてのカードが完了しました。流れを止めずに、最後まで運び切れています。</p>
+            </div>
+            <div className="complete-score">
+              <strong>{completedCount}</strong>
+              <span>/ {totalTaskCount} 完了</span>
+            </div>
+          </section>
+        )}
 
         <section className={`board-layout ${activeBoardTab === "progress" ? "flow-focus-layout" : "signal-focus-layout"}`} data-ui-version="v9.6-flow-sign-tabs">
           {false && activeBoardTab === "signals" && (
@@ -2661,6 +2701,15 @@ function App() {
                   <strong>サイン</strong>
                 </button>
               </div>
+            </div>
+
+            <div className="ui-board-note route-note">
+              <strong>{activeBoardTab === "progress" ? "見る順番：フロー → サイン" : "見る順番：右パネル → カード"}</strong>
+              <span>
+                {activeBoardTab === "progress"
+                  ? "まず流れを広く見て、気になる停滞はサイン側で拾います。"
+                  : "サインカードを見て、必要なものだけ右側で拾います。"}
+              </span>
             </div>
 
             {false && activeBoardTab === "signals" && (
