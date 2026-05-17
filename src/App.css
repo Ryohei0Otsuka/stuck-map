@@ -7825,3 +7825,118 @@ body {
     box-shadow: 0 24px 42px rgba(24, 183, 159, 0.34), 0 0 0 8px rgba(24, 183, 159, 0.12);
   }
 }
+
+/* =========================================================
+   STUCK_MAP_MARGIN_PYOKO_SIGNAL_V97
+   目的: top / transform の !important と競合しないよう、margin-top / margin-left で吹き出しを常時ぴょこぴょこ動かす
+   ========================================================= */
+
+.signal-focus-layout .signal-board .task-card-wrap.status-HELP .task-speech-bubble,
+.signal-focus-layout .signal-board .task-card-wrap.status-WAIT .task-speech-bubble,
+.signal-focus-layout .signal-board .task-card-wrap.status-CHECK .task-speech-bubble,
+.signal-focus-layout .signal-board .task-card-wrap.status-REVIEW .task-speech-bubble {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  top: 14px !important;
+  left: 22px !important;
+  margin-top: 0;
+  margin-left: 0;
+  transform: none !important;
+  will-change: margin-top, margin-left, box-shadow, filter, opacity !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap.status-HELP .task-speech-bubble {
+  animation: marginPyokoHelpV97 0.72s ease-in-out infinite !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap.status-WAIT .task-speech-bubble {
+  animation: marginPyokoWaitV97 0.86s ease-in-out infinite !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap.status-CHECK .task-speech-bubble {
+  animation: marginPyokoCheckV97 0.68s ease-in-out infinite !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap.status-REVIEW .task-speech-bubble {
+  animation: marginPyokoReviewV97 0.95s ease-in-out infinite !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap:hover .task-speech-bubble,
+.signal-focus-layout .signal-board .task-card-wrap.focused .task-speech-bubble {
+  animation-play-state: running !important;
+}
+
+@keyframes marginPyokoHelpV97 {
+  0%, 100% {
+    margin-top: 0;
+    margin-left: 0;
+    filter: brightness(1);
+    opacity: 1;
+  }
+  28% {
+    margin-top: -14px;
+    margin-left: 0;
+    filter: brightness(1.1);
+    opacity: 1;
+  }
+  55% {
+    margin-top: 0;
+    margin-left: 0;
+  }
+  78% {
+    margin-top: -6px;
+    margin-left: 0;
+  }
+}
+
+@keyframes marginPyokoWaitV97 {
+  0%, 100% {
+    margin-top: 0;
+    margin-left: 0;
+    filter: brightness(1);
+  }
+  32% {
+    margin-top: -10px;
+    margin-left: 8px;
+    filter: brightness(1.08);
+  }
+  66% {
+    margin-top: -3px;
+    margin-left: -6px;
+  }
+}
+
+@keyframes marginPyokoCheckV97 {
+  0%, 100% {
+    margin-top: 0;
+    opacity: 0.9;
+    filter: brightness(1);
+  }
+  50% {
+    margin-top: -13px;
+    opacity: 1;
+    filter: brightness(1.12);
+  }
+}
+
+@keyframes marginPyokoReviewV97 {
+  0%, 100% {
+    margin-top: 0;
+    filter: brightness(1);
+  }
+  50% {
+    margin-top: -10px;
+    filter: brightness(1.08);
+  }
+}
+
+/* フロー画面は非表示を維持 */
+.flow-focus-layout .task-speech-bubble,
+.progress-board .task-speech-bubble,
+.task-card-wrap.status-TODO .task-speech-bubble,
+.task-card-wrap.status-DOING .task-speech-bubble,
+.task-card-wrap.status-DONE .task-speech-bubble {
+  display: none !important;
+  animation: none !important;
+}
