@@ -1481,3 +1481,96 @@ h1 {
     grid-template-columns: repeat(2, minmax(250px, 1fr));
   }
 }
+
+
+.status-pill.todo {
+  background: rgba(246, 250, 255, 0.96);
+  color: #667d9d;
+  border-color: rgba(105, 132, 178, 0.2);
+}
+
+.status-pill.signal-mini {
+  margin-left: -4px;
+  box-shadow: 0 8px 18px rgba(38, 58, 92, 0.08);
+}
+
+.flow-card .task-speech-bubble {
+  display: none;
+}
+
+
+/* v10.2: フロータブのメンバー表示はサイン演出を出さない */
+.member-card.flow-member .member-bubble {
+  display: none;
+}
+
+.member-flow-summary,
+.member-signal-summary {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0 9px;
+}
+
+.member-flow-summary {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.member-flow-summary span {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  padding: 8px 6px;
+  border: 1px solid rgba(17, 151, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(248, 252, 255, 0.86);
+}
+
+.member-flow-summary b {
+  color: #203654;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.member-flow-summary small {
+  margin: 0;
+  color: #6d83a2;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.member-signal-summary {
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 138, 61, 0.16);
+  border-radius: 16px;
+  background: rgba(255, 250, 246, 0.8);
+}
+
+.member-signal-count {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255, 138, 61, 0.92), rgba(140, 91, 255, 0.86));
+  color: #fff;
+  font-size: 14px;
+  font-weight: 950;
+  box-shadow: 0 10px 20px rgba(140, 91, 255, 0.12);
+}
+
+.member-signal-summary b {
+  display: block;
+  color: #29405f;
+  font-size: 12px;
+}
+
+.member-signal-summary em {
+  display: block;
+  color: #7187a5;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 900;
+}

@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 
-const STORAGE_KEY = "stuck-map-v10";
-const INTRO_KEY = "stuck-map-intro-v10";
+const STORAGE_KEY = "stuck-map-v10-2-flow-signal";
+const INTRO_KEY = "stuck-map-intro-v10-2-flow-signal";
 
-const STATUSES = ["TODO", "DOING", "HELP", "WAIT", "CHECK", "REVIEW", "DONE"];
 const FLOW_STATUSES = ["TODO", "DOING", "DONE"];
 const SIGNAL_STATUSES = ["HELP", "WAIT", "CHECK", "REVIEW"];
+const SIGNAL_NONE = "NONE";
+const FILTER_STATUSES = ["ALL", ...FLOW_STATUSES, ...SIGNAL_STATUSES];
 
 const STATUS_META = {
   TODO: {
@@ -24,7 +25,7 @@ const STATUS_META = {
     icon: "▶",
     tone: "doing",
     short: "進行中",
-    description: "いま手を動かしている作業。詰まりそうならサインへ移す。",
+    description: "いま手を動かしている作業。詰まりそうならサインを重ねる。",
     empty: "いま動いているカードはありません。",
   },
   HELP: {
@@ -217,14 +218,41 @@ const EMPTY_TASK_FORM = {
   title: "",
   ownerId: "m4",
   needId: "m1",
-  status: "HELP",
+  flowStatus: "DOING",
+  signalStatus: "HELP",
   category: "FLOW",
   reason: "少し手を借りたい",
   description: "",
 };
 
+function splitLegacyStatus(status) {
+  if (FLOW_STATUSES.includes(status)) {
+    return { flowStatus: status, signalStatus: SIGNAL_NONE };
+  }
+
+  if (SIGNAL_STATUSES.includes(status)) {
+    return { flowStatus: "DOING", signalStatus: status };
+  }
+
+  return { flowStatus: "TODO", signalStatus: SIGNAL_NONE };
+}
+
 function task(id, title, ownerId, needId, status, category, reason, description) {
-  return { id, title, ownerId, needId, status, category, reason, description };
+  const split = splitLegacyStatus(status);
+  return { id, title, ownerId, needId, ...split, category, reason, description };
+}
+
+function normalizeTask(item) {
+  const legacy = splitLegacyStatus(item.status);
+  const flowStatus = FLOW_STATUSES.includes(item.flowStatus) ? item.flowStatus : legacy.flowStatus;
+  const signalStatus = SIGNAL_STATUSES.includes(item.signalStatus) ? item.signalStatus : legacy.signalStatus;
+
+  return {
+    ...item,
+    flowStatus,
+    signalStatus,
+    status: undefined,
+  };
 }
 
 function createId(prefix) {
@@ -252,7 +280,7 @@ function createInitialState(sampleId = "personal") {
     project: { ...template.project },
     members: MEMBER_SEED.map((member) => ({ ...member, avatar: avatarFromName(member.name) })),
     categories: CATEGORY_SEED.map((category) => ({ ...category })),
-    tasks: cloneTasks(template.tasks),
+    tasks: cloneTasks(template.tasks).map(normalizeTask),
     sampleId,
   };
 }
@@ -267,7 +295,7 @@ function safeLoad() {
       project: parsed.project || createInitialState().project,
       members: Array.isArray(parsed.members) && parsed.members.length ? parsed.members : createInitialState().members,
       categories: Array.isArray(parsed.categories) && parsed.categories.length ? parsed.categories : createInitialState().categories,
-      tasks: parsed.tasks,
+      tasks: parsed.tasks.map(normalizeTask),
       sampleId: parsed.sampleId || "personal",
     };
   } catch {
@@ -276,8 +304,16 @@ function safeLoad() {
 }
 
 function sortTasks(a, b) {
-  const priority = { HELP: 1, WAIT: 2, CHECK: 3, REVIEW: 4, DOING: 5, TODO: 6, DONE: 7 };
-  return (priority[a.status] || 99) - (priority[b.status] || 99) || a.title.localeCompare(b.title, "ja");
+  const signalPriority = { HELP: 1, WAIT: 2, CHECK: 3, REVIEW: 4, NONE: 9 };
+  const flowPriority = { DOING: 1, TODO: 2, DONE: 3 };
+  const aSignal = a.signalStatus || SIGNAL_NONE;
+  const bSignal = b.signalStatus || SIGNAL_NONE;
+
+  return (
+    (signalPriority[aSignal] || 99) - (signalPriority[bSignal] || 99) ||
+    (flowPriority[a.flowStatus] || 99) - (flowPriority[b.flowStatus] || 99) ||
+    a.title.localeCompare(b.title, "ja")
+  );
 }
 
 export default function App() {
@@ -309,9 +345,9 @@ export default function App() {
   const categoryMap = useMemo(() => Object.fromEntries(categories.map((category) => [category.id, category])), [categories]);
 
   const summary = useMemo(() => {
-    const signalTasks = tasks.filter((item) => SIGNAL_STATUSES.includes(item.status));
-    const doingTasks = tasks.filter((item) => item.status === "DOING");
-    const doneTasks = tasks.filter((item) => item.status === "DONE");
+    const signalTasks = tasks.filter((item) => SIGNAL_STATUSES.includes(item.signalStatus));
+    const doingTasks = tasks.filter((item) => item.flowStatus === "DOING");
+    const doneTasks = tasks.filter((item) => item.flowStatus === "DONE");
     const busyNeedMap = signalTasks.reduce((acc, item) => {
       acc[item.needId] = (acc[item.needId] || 0) + 1;
       return acc;
@@ -331,7 +367,7 @@ export default function App() {
   const filteredTasks = useMemo(() => {
     const query = searchText.trim().toLowerCase();
     return tasks
-      .filter((item) => (statusFilter === "ALL" ? true : item.status === statusFilter))
+      .filter((item) => statusFilter === "ALL" ? true : FLOW_STATUSES.includes(statusFilter) ? item.flowStatus === statusFilter : item.signalStatus === statusFilter)
       .filter((item) => (categoryFilter === "ALL" ? true : item.category === categoryFilter))
       .filter((item) => (ownerFilter === "ALL" ? true : item.ownerId === ownerFilter || item.needId === ownerFilter))
       .filter((item) => {
@@ -344,7 +380,7 @@ export default function App() {
       .sort(sortTasks);
   }, [tasks, statusFilter, categoryFilter, ownerFilter, searchText, memberMap, categoryMap]);
 
-  const nextSignals = useMemo(() => tasks.filter((item) => SIGNAL_STATUSES.includes(item.status)).sort(sortTasks), [tasks]);
+  const nextSignals = useMemo(() => tasks.filter((item) => SIGNAL_STATUSES.includes(item.signalStatus)).sort(sortTasks), [tasks]);
 
   const currentStatuses = activeTab === "flow" ? FLOW_STATUSES : SIGNAL_STATUSES;
 
@@ -364,12 +400,17 @@ export default function App() {
   }
 
   function openCreateTask(status = activeTab === "signal" ? "HELP" : "TODO") {
+    const isSignal = SIGNAL_STATUSES.includes(status);
+    const flowStatus = isSignal ? "DOING" : status;
+    const signalStatus = isSignal ? status : SIGNAL_NONE;
+
     setTaskForm({
       ...EMPTY_TASK_FORM,
       id: "",
-      status,
-      reason: STATUS_META[status]?.defaultReason || STATUS_META[status]?.short || "",
-      category: status === "TODO" || status === "DOING" ? "FLOW" : "OPS",
+      flowStatus,
+      signalStatus,
+      reason: isSignal ? STATUS_META[status]?.defaultReason || STATUS_META[status]?.short || "" : STATUS_META[flowStatus]?.short || "",
+      category: isSignal ? "OPS" : "FLOW",
       ownerId: members[0]?.id || "m1",
       needId: members[0]?.id || "m1",
     });
@@ -377,7 +418,7 @@ export default function App() {
   }
 
   function openEditTask(item) {
-    setTaskForm({ ...EMPTY_TASK_FORM, ...item });
+    setTaskForm({ ...EMPTY_TASK_FORM, ...normalizeTask(item) });
     setTaskModalMode("edit");
   }
 
@@ -390,7 +431,7 @@ export default function App() {
       ...taskForm,
       id: taskForm.id || createId("t"),
       title: cleanTitle,
-      reason: taskForm.reason.trim() || STATUS_META[taskForm.status]?.short || "",
+      reason: taskForm.reason.trim() || STATUS_META[taskForm.signalStatus]?.short || STATUS_META[taskForm.flowStatus]?.short || "",
       description: taskForm.description.trim(),
       category: taskForm.category || categories[0]?.id || "FLOW",
       ownerId: taskForm.ownerId || members[0]?.id || "m1",
@@ -413,10 +454,9 @@ export default function App() {
   }
 
   function markSignalDone(item) {
-    const nextStatus = item.status === "REVIEW" ? "DONE" : "DOING";
     updateTask(item.id, {
-      status: nextStatus,
-      reason: nextStatus === "DONE" ? "完了" : "また進める",
+      signalStatus: SIGNAL_NONE,
+      reason: item.flowStatus === "DONE" ? "完了" : "また進める",
     });
   }
 
@@ -436,7 +476,16 @@ export default function App() {
 
   function handleDrop(status) {
     if (!draggingId) return;
-    updateTask(draggingId, { status, reason: STATUS_META[status]?.defaultReason || STATUS_META[status]?.short || "" });
+
+    if (activeTab === "flow") {
+      updateTask(draggingId, { flowStatus: status });
+    } else {
+      updateTask(draggingId, {
+        signalStatus: status,
+        reason: STATUS_META[status]?.defaultReason || STATUS_META[status]?.short || "",
+      });
+    }
+
     setDraggingId(null);
     setDragOverStatus(null);
   }
@@ -541,7 +590,7 @@ export default function App() {
               <strong>{nextSignals[0] ? nextSignals[0].title : "いま拾うサインはありません"}</strong>
               <span>
                 {nextSignals[0]
-                  ? `${STATUS_META[nextSignals[0].status].label}：${nextSignals[0].reason || STATUS_META[nextSignals[0].status].short}`
+                  ? `${STATUS_META[nextSignals[0].signalStatus].label}：${nextSignals[0].reason || STATUS_META[nextSignals[0].signalStatus].short}`
                   : "落ち着いて、フロー側の作業を進められます。"}
               </span>
             </div>
@@ -589,17 +638,22 @@ export default function App() {
             <div className="member-list">
               {members.map((member) => {
                 const relatedTasks = tasks.filter((item) => item.ownerId === member.id || item.needId === member.id);
-                const signalCount = relatedTasks.filter((item) => SIGNAL_STATUSES.includes(item.status)).length;
-                const doing = relatedTasks.find((item) => item.ownerId === member.id && item.status === "DOING");
+                const ownedTasks = tasks.filter((item) => item.ownerId === member.id);
+                const signalCount = relatedTasks.filter((item) => SIGNAL_STATUSES.includes(item.signalStatus)).length;
+                const doing = ownedTasks.find((item) => item.flowStatus === "DOING");
+                const todoCount = ownedTasks.filter((item) => item.flowStatus === "TODO").length;
+                const doingCount = ownedTasks.filter((item) => item.flowStatus === "DOING").length;
+                const doneCount = ownedTasks.filter((item) => item.flowStatus === "DONE").length;
+                const showSignalBadge = activeTab === "signal" && signalCount > 0;
                 return (
                   <button
                     key={member.id}
-                    className={`member-card ${ownerFilter === member.id ? "active" : ""}`}
+                    className={`member-card ${ownerFilter === member.id ? "active" : ""} ${activeTab === "flow" ? "flow-member" : "signal-member"}`}
                     onClick={() => setOwnerFilter(ownerFilter === member.id ? "ALL" : member.id)}
                   >
                     <div className="avatar-wrap">
                       <div className="avatar">{member.avatar || avatarFromName(member.name)}</div>
-                      {signalCount > 0 && <span className="speech-bubble member-bubble">{signalCount}</span>}
+                      {showSignalBadge && <span className="speech-bubble member-bubble">{signalCount}</span>}
                     </div>
                     <div className="member-body">
                       <div className="member-name-row">
@@ -607,11 +661,28 @@ export default function App() {
                         <span className="member-role-pill">{member.role}</span>
                       </div>
                       <small>{member.memo || "メモなし"}</small>
+
+                      {activeTab === "flow" ? (
+                        <div className="member-flow-summary" aria-label="担当カードのフロー内訳">
+                          <span><b>{todoCount}</b><small>これから</small></span>
+                          <span><b>{doingCount}</b><small>作業中</small></span>
+                          <span><b>{doneCount}</b><small>完了</small></span>
+                        </div>
+                      ) : (
+                        <div className="member-signal-summary" aria-label="拾うサイン数">
+                          <span className="member-signal-count">{signalCount}</span>
+                          <span>
+                            <b>{signalCount > 0 ? "拾うサインあり" : "サインなし"}</b>
+                            <em>{relatedTasks.length} 件関連</em>
+                          </span>
+                        </div>
+                      )}
+
                       <div className="member-task-chip">
                         <span className={`member-task-icon ${doing ? "DOING" : "FLOW"}`}>{doing ? "▶" : "○"}</span>
                         <span className="member-task-text">
                           <b>{doing ? doing.title : "着手中カードなし"}</b>
-                          <em>{relatedTasks.length} 件関連</em>
+                          <em>{activeTab === "flow" ? "フロー上の現在地" : "担当・確認先の関連カード"}</em>
                         </span>
                       </div>
                     </div>
@@ -659,7 +730,7 @@ export default function App() {
               />
               <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
                 <option value="ALL">状態すべて</option>
-                {STATUSES.map((status) => <option key={status} value={status}>{STATUS_META[status].label}</option>)}
+                {FILTER_STATUSES.filter((status) => status !== "ALL").map((status) => <option key={status} value={status}>{STATUS_META[status].label}</option>)}
               </select>
               <select value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)}>
                 <option value="ALL">カテゴリすべて</option>
@@ -682,7 +753,7 @@ export default function App() {
 
             <div className={`cluster-board ${activeTab === "flow" ? "flow-board" : "signal-board"}`}>
               {currentStatuses.map((status) => {
-                const laneTasks = filteredTasks.filter((item) => item.status === status);
+                const laneTasks = filteredTasks.filter((item) => activeTab === "flow" ? item.flowStatus === status : item.signalStatus === status);
                 return (
                   <section
                     key={status}
@@ -740,11 +811,11 @@ export default function App() {
                 <div className="empty-next">今すぐ拾うサインはありません。</div>
               ) : (
                 nextSignals.slice(0, 6).map((item, index) => (
-                  <button key={item.id} className={`next-signal-card ${STATUS_META[item.status].tone}`} onClick={() => { setActiveTab("signal"); setStatusFilter(item.status); }}>
+                  <button key={item.id} className={`next-signal-card ${STATUS_META[item.signalStatus].tone}`} onClick={() => { setActiveTab("signal"); setStatusFilter(item.signalStatus); }}>
                     <span className="rank">{index + 1}</span>
                     <div>
                       <b>{item.title}</b>
-                      <small>{STATUS_META[item.status].label} / {memberMap[item.needId]?.name || "未設定"}に見てほしい</small>
+                      <small>{STATUS_META[item.signalStatus].label} / {memberMap[item.needId]?.name || "未設定"}に見てほしい</small>
                     </div>
                   </button>
                 ))
@@ -808,20 +879,24 @@ function SummaryCard({ label, value, text, highlight = false, compact = false })
 }
 
 function TaskCard({ task, members, category, signalMode, onEdit, onDelete, onSignalDone, onDragStart, onDragEnd }) {
-  const meta = STATUS_META[task.status];
+  const flowMeta = STATUS_META[task.flowStatus] || STATUS_META.TODO;
+  const signalMeta = SIGNAL_STATUSES.includes(task.signalStatus) ? STATUS_META[task.signalStatus] : null;
+  const mainMeta = signalMode && signalMeta ? signalMeta : flowMeta;
+
   return (
     <article
-      className={`task-card card-${meta.tone} ${signalMode ? "signal-card" : "flow-card"}`}
+      className={`task-card card-${mainMeta.tone} ${signalMode ? "signal-card" : "flow-card"}`}
       draggable
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
     >
-      {signalMode && SIGNAL_STATUSES.includes(task.status) && (
-        <div className={`task-speech-bubble ${meta.tone}`}>{meta.bubble}</div>
+      {signalMode && signalMeta && (
+        <div className={`task-speech-bubble ${signalMeta.tone}`}>{signalMeta.bubble}</div>
       )}
 
       <div className="task-topline">
-        <span className={`status-pill ${meta.tone}`}><b>{meta.label}</b><em>{meta.code}</em></span>
+        <span className={`status-pill ${flowMeta.tone}`}><b>{flowMeta.label}</b><em>{flowMeta.code}</em></span>
+        {signalMeta && <span className={`status-pill ${signalMeta.tone} signal-mini`}><b>{signalMeta.label}</b><em>{signalMeta.code}</em></span>}
         <span className="category-pill">{category?.icon || "◇"} {category?.label || task.category}</span>
       </div>
 
@@ -833,10 +908,10 @@ function TaskCard({ task, members, category, signalMode, onEdit, onDelete, onSig
         <span><small>見てほしい</small><b>{members[task.needId]?.name || "未設定"}</b></span>
       </div>
 
-      <div className="task-reason">{task.reason || meta.short}</div>
+      <div className="task-reason">{task.reason || signalMeta?.short || flowMeta.short}</div>
 
       <div className="task-actions">
-        {signalMode && SIGNAL_STATUSES.includes(task.status) && <button onClick={onSignalDone}>拾った</button>}
+        {signalMode && signalMeta && <button onClick={onSignalDone}>拾った</button>}
         <button onClick={onEdit}>編集</button>
         <button className="danger-link" onClick={onDelete}>削除</button>
       </div>
@@ -845,14 +920,14 @@ function TaskCard({ task, members, category, signalMode, onEdit, onDelete, onSig
 }
 
 function TaskModal({ mode, form, members, categories, onChange, onClose, onSubmit }) {
-  const isSignal = SIGNAL_STATUSES.includes(form.status);
+  const hasSignal = SIGNAL_STATUSES.includes(form.signalStatus);
   return (
     <div className="modal-backdrop" role="presentation">
       <div className="modal-card surface" role="dialog" aria-modal="true" aria-label="カード編集">
         <div className="modal-heading">
           <div>
-            <p className="eyebrow">{mode === "edit" ? "Edit card" : isSignal ? "Quick signal" : "New card"}</p>
-            <h2>{mode === "edit" ? "カードを編集" : isSignal ? "軽くサインを置く" : "カードを追加"}</h2>
+            <p className="eyebrow">{mode === "edit" ? "Edit card" : hasSignal ? "Quick signal" : "New card"}</p>
+            <h2>{mode === "edit" ? "カードを編集" : hasSignal ? "軽くサインを置く" : "カードを追加"}</h2>
           </div>
           <button className="icon-button" onClick={onClose}>×</button>
         </div>
@@ -865,39 +940,54 @@ function TaskModal({ mode, form, members, categories, onChange, onClose, onSubmi
 
           <div className="form-grid two">
             <label>
-              <span>状態</span>
+              <span>フロー</span>
               <select
-                value={form.status}
-                onChange={(event) => {
-                  const nextStatus = event.target.value;
-                  onChange({ ...form, status: nextStatus, reason: STATUS_META[nextStatus]?.defaultReason || STATUS_META[nextStatus]?.short || form.reason });
-                }}
+                value={form.flowStatus}
+                onChange={(event) => onChange({ ...form, flowStatus: event.target.value })}
               >
-                {STATUSES.map((status) => <option key={status} value={status}>{STATUS_META[status].label}</option>)}
+                {FLOW_STATUSES.map((status) => <option key={status} value={status}>{STATUS_META[status].label}</option>)}
               </select>
             </label>
             <label>
-              <span>カテゴリ</span>
-              <select value={form.category} onChange={(event) => onChange({ ...form, category: event.target.value })}>
-                {categories.map((category) => <option key={category.id} value={category.id}>{category.label}</option>)}
+              <span>サイン</span>
+              <select
+                value={form.signalStatus}
+                onChange={(event) => {
+                  const nextSignal = event.target.value;
+                  onChange({
+                    ...form,
+                    signalStatus: nextSignal,
+                    reason: nextSignal === SIGNAL_NONE ? form.reason : STATUS_META[nextSignal]?.defaultReason || STATUS_META[nextSignal]?.short || form.reason,
+                  });
+                }}
+              >
+                <option value={SIGNAL_NONE}>なし</option>
+                {SIGNAL_STATUSES.map((status) => <option key={status} value={status}>{STATUS_META[status].label}</option>)}
               </select>
             </label>
           </div>
 
           <div className="form-grid two">
             <label>
+              <span>カテゴリ</span>
+              <select value={form.category} onChange={(event) => onChange({ ...form, category: event.target.value })}>
+                {categories.map((category) => <option key={category.id} value={category.id}>{category.label}</option>)}
+              </select>
+            </label>
+            <label>
               <span>担当</span>
               <select value={form.ownerId} onChange={(event) => onChange({ ...form, ownerId: event.target.value })}>
                 {members.map((member) => <option key={member.id} value={member.id}>{member.name}</option>)}
               </select>
             </label>
-            <label>
-              <span>見てほしい相手</span>
-              <select value={form.needId} onChange={(event) => onChange({ ...form, needId: event.target.value })}>
-                {members.map((member) => <option key={member.id} value={member.id}>{member.name}</option>)}
-              </select>
-            </label>
           </div>
+
+          <label>
+            <span>見てほしい相手</span>
+            <select value={form.needId} onChange={(event) => onChange({ ...form, needId: event.target.value })}>
+              {members.map((member) => <option key={member.id} value={member.id}>{member.name}</option>)}
+            </select>
+          </label>
 
           <label>
             <span>理由 / サイン</span>
