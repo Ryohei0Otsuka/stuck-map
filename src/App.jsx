@@ -1576,60 +1576,50 @@ function App() {
 
 
   const renderProgressCrewBadges = () => {
-    const activeMembers = members
-      .map((member) => {
-        const currentTask = getCurrentTaskForMember(member.id);
-        const memberStatuses = getMemberStatusList(member.id);
+    const memberSummaries = members.map((member) => {
+      const currentTask = getCurrentTaskForMember(member.id);
+      const mainStatus = currentTask?.status || "DONE";
+      const hasSignal = currentTask && signalStatuses.includes(currentTask.status);
 
-        return {
-          member,
-          currentTask,
-          memberStatuses,
-        };
-      })
-      .filter(({ currentTask }) => currentTask);
+      return {
+        member,
+        currentTask,
+        mainStatus,
+        hasSignal,
+      };
+    });
 
     return (
-      <div className="progress-crew-strip" aria-label="着手中メンバー">
-        <div className="progress-crew-heading">
+      <div className="member-status-strip" aria-label="メンバー状況">
+        <div className="member-status-label">
           <span>メンバー</span>
-          <strong>着手中</strong>
         </div>
 
-        <div className="progress-crew-list">
-          {activeMembers.length > 0 ? (
-            activeMembers.map(({ member, currentTask, memberStatuses }) => {
-              const mainStatus = currentTask?.status || "DONE";
-
-              return (
-                <button
-                  key={`crew-${member.id}`}
-                  type="button"
-                  className={`crew-badge status-${mainStatus}`}
-                  onClick={() => handleMemberClick(member.id)}
-                  title={currentTask?.title || "今は大きなサインなし"}
-                >
-                  <span className="crew-avatar">{member.avatar}</span>
-                  <span className="crew-text">
-                    <strong>{member.name}</strong>
-                    <small>{currentTask?.title || "今は大きなサインなし"}</small>
-                  </span>
-                  <span className={`crew-status-dot ${mainStatus}`}>
-                    {statusMeta[mainStatus]?.icon || "✓"}
-                  </span>
-                  <span className="crew-mini-signals">
-                    {memberStatuses.slice(0, 3).map((status) => (
-                      <i key={`${member.id}-crew-${status}`} className={status}>
-                        {statusMeta[status].icon}
-                      </i>
-                    ))}
-                  </span>
-                </button>
-              );
-            })
-          ) : (
-            <span className="crew-empty">着手中のカードはありません</span>
-          )}
+        <div className="member-status-list">
+          {memberSummaries.map(({ member, currentTask, mainStatus, hasSignal }) => (
+            <button
+              key={`member-status-${member.id}`}
+              type="button"
+              className={`member-status-chip status-${mainStatus} ${hasSignal ? "has-signal" : ""}`}
+              onClick={() => handleMemberClick(member.id)}
+              title={currentTask?.title || "今は大きなサインなし"}
+            >
+              <span className="member-status-avatar">{member.avatar}</span>
+              <span className="member-status-body">
+                <strong>{member.name}</strong>
+                <small>
+                  {currentTask
+                    ? hasSignal
+                      ? statusMeta[mainStatus].signal || getStatusLabel(mainStatus)
+                      : getStatusLabel(mainStatus)
+                    : "待機"}
+                </small>
+              </span>
+              <span className={`member-status-mark ${mainStatus}`}>
+                {statusMeta[mainStatus]?.icon || "✓"}
+              </span>
+            </button>
+          ))}
         </div>
       </div>
     );
@@ -2346,7 +2336,7 @@ function App() {
           </div>
         </section>
 
-        <section className={`board-layout ${activeBoardTab === "progress" ? "flow-focus-layout" : "signal-focus-layout"}`} data-ui-version="v9.2-signal-clean">
+        <section className={`board-layout ${activeBoardTab === "progress" ? "flow-focus-layout" : "signal-focus-layout"}`} data-ui-version="v9.3-readable-members">
           {false && activeBoardTab === "signals" && (
           <aside className="panel members-panel surface">
             <div className="panel-heading panel-heading-row">

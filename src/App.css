@@ -6814,3 +6814,374 @@ body {
     animation: none !important;
   }
 }
+
+
+/* =========================================================
+   STUCK_MAP_READABLE_MEMBERS_V93
+   目的:
+   - フロー上部のメンバー帯を「カード一覧」から「状況バー」に変更
+   - 紺背景×紺文字のコントラスト崩れを修正
+   - サイン側タスクカードの HELP / WAIT / CHECK / REVIEW 吹き出しを復活
+   ========================================================= */
+
+/* ボード上部の重複感を抑える */
+.flow-focus-layout .cluster-section-heading h3,
+.signal-focus-layout .cluster-section-heading h3 {
+  display: none !important;
+}
+
+.flow-focus-layout .cluster-section-heading,
+.signal-focus-layout .cluster-section-heading {
+  justify-content: flex-end !important;
+  margin: -4px 0 10px !important;
+}
+
+.flow-focus-layout .cluster-section-heading span,
+.signal-focus-layout .cluster-section-heading span {
+  min-height: 26px !important;
+  height: 26px !important;
+  font-size: 10px !important;
+  color: #44607f !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+}
+
+/* タブボタン：1行で読めるようにする */
+.board-mode-tabs {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(132px, 1fr)) !important;
+  gap: 8px !important;
+  min-width: 280px !important;
+  max-width: 340px !important;
+}
+
+.board-mode-tabs button {
+  min-height: 50px !important;
+  padding: 0 16px !important;
+  border-radius: 18px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #2b4666 !important;
+}
+
+.board-mode-tabs button strong,
+.board-mode-tabs button span {
+  white-space: nowrap !important;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+  letter-spacing: 0.02em !important;
+  color: inherit !important;
+}
+
+.board-mode-tabs button.active {
+  background: #21496f !important;
+  color: #ffffff !important;
+  box-shadow: 0 16px 34px rgba(33, 73, 111, 0.22) !important;
+}
+
+/* 旧CREW/メンバーカード帯を完全に薄いステータスバーへ */
+.progress-crew-strip {
+  display: none !important;
+}
+
+.member-status-strip {
+  display: grid !important;
+  grid-template-columns: 94px minmax(0, 1fr) !important;
+  gap: 10px !important;
+  align-items: center !important;
+  margin: 0 0 18px !important;
+  padding: 10px !important;
+  border: 1px solid rgba(137, 167, 204, 0.28) !important;
+  border-radius: 22px !important;
+  background: rgba(248, 252, 255, 0.82) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.78) !important;
+  overflow: hidden !important;
+}
+
+.member-status-label {
+  display: grid !important;
+  place-items: center !important;
+  min-height: 54px !important;
+  border-radius: 16px !important;
+  background: #eef5fb !important;
+  border: 1px solid rgba(137, 167, 204, 0.32) !important;
+  color: #31516f !important;
+}
+
+.member-status-label span {
+  color: #31516f !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.08em !important;
+}
+
+.member-status-list {
+  display: flex !important;
+  gap: 10px !important;
+  align-items: center !important;
+  min-width: 0 !important;
+  overflow-x: auto !important;
+  padding: 2px 2px 6px !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(109, 132, 160, 0.32) transparent !important;
+}
+
+.member-status-list::-webkit-scrollbar {
+  height: 6px !important;
+}
+
+.member-status-list::-webkit-scrollbar-thumb {
+  background: rgba(109, 132, 160, 0.28) !important;
+  border-radius: 999px !important;
+}
+
+.member-status-chip {
+  flex: 0 0 190px !important;
+  display: grid !important;
+  grid-template-columns: 42px minmax(0, 1fr) 28px !important;
+  gap: 8px !important;
+  align-items: center !important;
+  min-height: 56px !important;
+  padding: 8px 10px !important;
+  border: 1px solid rgba(137, 167, 204, 0.26) !important;
+  border-radius: 18px !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #203654 !important;
+  text-align: left !important;
+  box-shadow: 0 8px 20px rgba(69, 99, 145, 0.06) !important;
+}
+
+.member-status-chip:hover {
+  transform: translateY(-1px) !important;
+  border-color: rgba(17, 151, 255, 0.26) !important;
+  background: #ffffff !important;
+}
+
+.member-status-chip.has-signal {
+  border-color: rgba(255, 138, 61, 0.24) !important;
+}
+
+.member-status-chip.status-WAIT { border-color: rgba(140, 91, 255, 0.24) !important; }
+.member-status-chip.status-CHECK { border-color: rgba(17, 151, 255, 0.24) !important; }
+.member-status-chip.status-REVIEW { border-color: rgba(24, 183, 159, 0.24) !important; }
+.member-status-chip.status-HELP { border-color: rgba(255, 138, 61, 0.30) !important; }
+
+.member-status-avatar {
+  display: grid !important;
+  place-items: center !important;
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 14px !important;
+  background: #f7fbff !important;
+  border: 1px solid rgba(17, 151, 255, 0.18) !important;
+  color: #254766 !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+}
+
+.member-status-body {
+  display: grid !important;
+  gap: 3px !important;
+  min-width: 0 !important;
+}
+
+.member-status-body strong {
+  overflow: hidden !important;
+  color: #1e3552 !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  line-height: 1.1 !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+.member-status-body small {
+  overflow: hidden !important;
+  color: #5f7694 !important;
+  font-size: 10px !important;
+  font-weight: 900 !important;
+  line-height: 1.1 !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+.member-status-mark {
+  display: grid !important;
+  place-items: center !important;
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 999px !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  border: 1px solid rgba(137, 167, 204, 0.25) !important;
+  background: #eef3fa !important;
+  color: #607899 !important;
+}
+
+.member-status-mark.DOING { background: #e8f0ff !important; color: #245fff !important; }
+.member-status-mark.HELP { background: #fff0e5 !important; color: #d66522 !important; }
+.member-status-mark.WAIT { background: #f1eaff !important; color: #7042d8 !important; }
+.member-status-mark.CHECK { background: #e6f4ff !important; color: #0878c7 !important; }
+.member-status-mark.REVIEW { background: #e5faf4 !important; color: #078b78 !important; }
+.member-status-mark.DONE { background: #e7faf0 !important; color: #22945b !important; }
+
+/* フローは横長で見せる */
+.flow-focus-layout {
+  grid-template-columns: minmax(860px, 1fr) 300px !important;
+}
+
+.progress-tab-grid {
+  grid-template-columns: minmax(260px, 0.8fr) minmax(360px, 1.35fr) minmax(260px, 0.85fr) !important;
+  align-items: stretch !important;
+}
+
+.progress-tab-grid .status-cluster {
+  min-height: 420px !important;
+}
+
+/* サイン画面は2x2を維持 */
+.signal-focus-layout {
+  grid-template-columns: minmax(780px, 1fr) 320px !important;
+}
+
+.signal-tab-grid {
+  grid-template-columns: repeat(2, minmax(320px, 1fr)) !important;
+}
+
+/* クラスタ上の不要表示は消す */
+.cluster-status-right .signal-on,
+.cluster-status-right .signal-on::before,
+.cluster-status-right .signal-on::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* フローでは吹き出しを出さない */
+.progress-board .task-speech-bubble,
+.flow-focus-layout .task-speech-bubble,
+.task-card-wrap.status-TODO .task-speech-bubble,
+.task-card-wrap.status-DOING .task-speech-bubble,
+.task-card-wrap.status-DONE .task-speech-bubble {
+  display: none !important;
+}
+
+/* サイン側カードの吹き出しを復活。カード上にだけ出す */
+.signal-board .task-card-wrap.status-HELP,
+.signal-board .task-card-wrap.status-WAIT,
+.signal-board .task-card-wrap.status-CHECK,
+.signal-board .task-card-wrap.status-REVIEW {
+  padding-top: 54px !important;
+}
+
+.signal-board .task-card-wrap.status-HELP .task-speech-bubble,
+.signal-board .task-card-wrap.status-WAIT .task-speech-bubble,
+.signal-board .task-card-wrap.status-CHECK .task-speech-bubble,
+.signal-board .task-card-wrap.status-REVIEW .task-speech-bubble {
+  position: absolute !important;
+  top: 10px !important;
+  left: 18px !important;
+  z-index: 6 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 34px !important;
+  max-width: calc(100% - 40px) !important;
+  padding: 8px 16px 9px !important;
+  border: 2px solid rgba(255, 255, 255, 0.98) !important;
+  border-radius: 999px !important;
+  color: #ffffff !important;
+  font-size: 11px !important;
+  font-weight: 1000 !important;
+  letter-spacing: 0.04em !important;
+  white-space: nowrap !important;
+  box-shadow: 0 12px 24px rgba(69, 99, 145, 0.16) !important;
+  transform-origin: left bottom !important;
+  animation-duration: 2.4s !important;
+  animation-timing-function: ease-in-out !important;
+  animation-iteration-count: infinite !important;
+}
+
+.signal-board .task-speech-bubble span {
+  color: #ffffff !important;
+}
+
+.signal-board .task-card-wrap.status-HELP .task-speech-bubble { background: #e8783c !important; animation-name: cardSpeechHelpV93 !important; }
+.signal-board .task-card-wrap.status-WAIT .task-speech-bubble { background: #7a55dc !important; animation-name: cardSpeechWaitV93 !important; }
+.signal-board .task-card-wrap.status-CHECK .task-speech-bubble { background: #2189d7 !important; animation-name: cardSpeechCheckV93 !important; }
+.signal-board .task-card-wrap.status-REVIEW .task-speech-bubble { background: #19a891 !important; animation-name: cardSpeechReviewV93 !important; }
+
+.signal-board .task-speech-bubble::after {
+  content: "" !important;
+  position: absolute !important;
+  left: 22px !important;
+  bottom: -9px !important;
+  width: 16px !important;
+  height: 10px !important;
+  background: inherit !important;
+  clip-path: polygon(0 0, 100% 0, 50% 100%) !important;
+  filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.98)) !important;
+}
+
+.signal-board .task-card-wrap:hover .task-speech-bubble,
+.signal-board .task-card-wrap.focused .task-speech-bubble {
+  transform: translateY(-3px) scale(1.04) !important;
+}
+
+/* サインビューではカード内ステータスピルを隠して、吹き出しと二重にしない */
+.signal-board .task-status-pill {
+  display: none !important;
+}
+
+@keyframes cardSpeechHelpV93 {
+  0%, 72%, 100% { transform: translateY(0) scale(1); }
+  12% { transform: translateY(-7px) scale(1.08); }
+  24% { transform: translateY(0) scale(1); }
+}
+
+@keyframes cardSpeechWaitV93 {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(4px); }
+}
+
+@keyframes cardSpeechCheckV93 {
+  0%, 100% { opacity: 0.82; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-4px); }
+}
+
+@keyframes cardSpeechReviewV93 {
+  0%, 100% { box-shadow: 0 12px 24px rgba(24, 183, 159, 0.16); transform: translateY(0); }
+  50% { box-shadow: 0 18px 34px rgba(24, 183, 159, 0.30); transform: translateY(-3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signal-board .task-card-wrap.status-HELP .task-speech-bubble,
+  .signal-board .task-card-wrap.status-WAIT .task-speech-bubble,
+  .signal-board .task-card-wrap.status-CHECK .task-speech-bubble,
+  .signal-board .task-card-wrap.status-REVIEW .task-speech-bubble {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 1180px) {
+  .flow-focus-layout,
+  .signal-focus-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .progress-tab-grid,
+  .signal-tab-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .member-status-strip {
+    grid-template-columns: 1fr !important;
+  }
+
+  .member-status-label {
+    min-height: 40px !important;
+  }
+}
