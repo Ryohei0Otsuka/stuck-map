@@ -389,7 +389,7 @@ function renderStatusLabel(status) {
 const supportClusters = ["HELP", "WAIT", "CHECK", "REVIEW"];
 const flowClusters = ["TODO", "DOING", "DONE"];
 const allStatuses = ["TODO", "DOING", "HELP", "WAIT", "CHECK", "REVIEW", "DONE"];
-const quickSignalList = ["CHECK", "WAIT", "HELP", "REVIEW", "DONE"];
+const quickSignalList = ["CHECK", "WAIT", "HELP", "REVIEW"];
 const signalStatuses = ["HELP", "WAIT", "CHECK", "REVIEW"];
 const createCommandStatuses = ["HELP", "WAIT", "CHECK", "REVIEW", "TODO"];
 
@@ -1059,6 +1059,8 @@ function App() {
         taskForm.description.trim() ||
         "まだ詳細は仮置きです。止まる前にサインを置いています。",
     });
+
+    setSelectedTaskId(null);
   };
 
   const closeSelectedTask = () => {
@@ -1066,7 +1068,8 @@ function App() {
       return;
     }
 
-    updateTaskStatus(selectedTask.id, "DONE");
+    updateTaskStatus(selectedTask.id, "DONE", "flow");
+    setSelectedTaskId(null);
   };
 
   const deleteSelectedTask = () => {
@@ -1189,6 +1192,14 @@ function App() {
 
   const closeTaskModal = () => {
     setSelectedTaskId(null);
+  };
+
+  const startProjectEdit = () => {
+    setSelectedTaskId(null);
+    setIsCreateModalOpen(false);
+    setIsMemberModalOpen(false);
+    setIsCategoryModalOpen(false);
+    setIsプロジェクトEditing(true);
   };
 
   const openCreateModal = () => {
@@ -1724,7 +1735,7 @@ function App() {
             <button
               key={`member-status-${member.id}`}
               type="button"
-              className={`member-status-chip status-${signalStatus || mainStatus} ${hasSignal ? "has-signal" : ""}`}
+              className={`member-status-chip status-${mainStatus} ${hasSignal ? "has-signal" : ""}`}
               onClick={() => handleMemberClick(member.id)}
               title={currentTask?.title || "今は大きなサインなし"}
             >
@@ -1957,14 +1968,14 @@ function App() {
           </div>
 
           <div className="modal-message">
-            <strong>サインは仮置きでOK。</strong>
+            <strong>ここではまだ仮編集です。</strong>
             <p>
-              正しく分類することより、止まる前に置いておくことを優先します。
+              サインや内容を選んだら、最後に「保存して閉じる」で反映します。やめる場合はキャンセルします。
             </p>
           </div>
 
           <div className="modal-actions">
-            <p className="modal-section-title">軽くサインを置く</p>
+            <p className="modal-section-title">サインを選ぶ</p>
 
             <div className="modal-action-grid">
               {quickSignalList.map((status) => (
@@ -1972,12 +1983,9 @@ function App() {
                   key={`modal-${selectedTask.id}-${status}`}
                   type="button"
                   className={`modal-action ${status} ${
-                    (getTaskSignalStatus(selectedTask) || getTaskFlowStatus(selectedTask)) === status ? "active" : ""
+                    taskForm.status === status ? "active" : ""
                   }`}
-                  onClick={() => {
-                    updateTaskStatus(selectedTask.id, status, signalStatuses.includes(status) ? "signal" : "flow");
-                    updateTaskForm("status", status);
-                  }}
+                  onClick={() => updateTaskForm("status", status)}
                 >
                   <span>{statusMeta[status].icon}</span>
                   <strong>{statusMeta[status].softLabel}</strong>
@@ -2016,7 +2024,7 @@ function App() {
                 className="secondary-action"
                 onClick={closeTaskModal}
               >
-                閉じる
+                キャンセル
               </button>
 
               <button
@@ -2024,7 +2032,7 @@ function App() {
                 className="primary-action"
                 onClick={saveSelectedTask}
               >
-                保存する
+                保存して閉じる
               </button>
             </div>
           </div>
@@ -2342,7 +2350,7 @@ function App() {
               <button
                 type="button"
                 className="project-name-button"
-                onClick={() => setIsプロジェクトEditing(true)}
+                onClick={startProjectEdit}
               >
                 <span>プロジェクト</span>
                 <strong>{project.name || "Untitled プロジェクト"}</strong>
@@ -2460,7 +2468,7 @@ function App() {
           </div>
         </section>
 
-        <section className={`board-layout ${activeBoardTab === "progress" ? "flow-focus-layout" : "signal-focus-layout"}`} data-ui-version="v10.1-flow-signal-sticky-crew">
+        <section className={`board-layout ${activeBoardTab === "progress" ? "flow-focus-layout" : "signal-focus-layout"}`} data-ui-version="v9.6-flow-sign-tabs">
           {false && activeBoardTab === "signals" && (
           <aside className="panel members-panel surface">
             <div className="panel-heading panel-heading-row">
@@ -2630,11 +2638,9 @@ function App() {
               <span>
                 {activeBoardTab === "progress"
                   ? "まず流れを広く見て、気になる停滞はサイン側で拾います。"
-                  : "サインを拾っても、上のメンバー帯とフローにはカードが残ります。"}
+                  : "サインカードを見て、必要なものだけ右側で拾います。"}
               </span>
             </div>
-
-            {renderProgressCrewBadges()}
 
             {false && activeBoardTab === "signals" && (
               <div className="signal-route-strip" aria-label="サイン確認の導線">
@@ -2646,6 +2652,7 @@ function App() {
 
             {activeBoardTab === "progress" ? (
               <>
+                {renderProgressCrewBadges()}
                 <div className="cluster-board ui-tab-board progress-board">
                 <div className="cluster-section">
                   <div className="cluster-section-heading">
@@ -2701,15 +2708,6 @@ function App() {
                 <small>
                   発信: {getMember(nextSupportTask.ownerId)?.name} / 相手: {getMember(nextSupportTask.needId)?.name}
                 </small>
-
-                <div className="flow-retention-note">
-                  <span className={`mini-status ${getTaskFlowStatus(nextSupportTask)}`}>
-                    {statusMeta[getTaskFlowStatus(nextSupportTask)]?.icon || "▶"}
-                  </span>
-                  <p>
-                    フロー上は「{getStatusLabel(getTaskFlowStatus(nextSupportTask))}」に残っています。
-                  </p>
-                </div>
 
                 <div className="next-support-actions">
                   <button
