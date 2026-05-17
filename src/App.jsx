@@ -584,7 +584,6 @@ const defaultTaskForm = {
 const defaultMemberForm = {
   name: "",
   role: "",
-  avatar: "",
   memo: "",
 };
 
@@ -1318,7 +1317,6 @@ function App() {
     setMemberForm({
       name: member.name,
       role: member.role,
-      avatar: member.avatar,
       memo: member.memo,
     });
     setIsMemberModalOpen(true);
@@ -1348,7 +1346,7 @@ function App() {
       id: selectedMemberId || createMemberId(),
       name: trimmedName,
       role: memberForm.role.trim() || "チームメンバー",
-      avatar: memberForm.avatar.trim() || createAvatarFromName(trimmedName),
+      avatar: createAvatarFromName(trimmedName),
       memo: memberForm.memo.trim() || "プロジェクトを前に進めるメンバー",
     };
 
@@ -1800,6 +1798,13 @@ function App() {
       <div className="member-status-strip" aria-label="メンバー状況">
         <div className="member-status-label">
           <span>メンバー</span>
+          <button
+            type="button"
+            className="member-status-add"
+            onClick={openMemberCreateModal}
+          >
+            + メンバーを追加
+          </button>
         </div>
 
         <div className="member-status-list">
@@ -2172,17 +2177,13 @@ function App() {
               />
             </label>
 
-            <label className="form-field">
+            <div className="form-field generated-avatar-field">
               <span>アイコン</span>
-              <input
-                value={memberForm.avatar}
-                onChange={(event) =>
-                  updateMemberForm("avatar", event.target.value)
-                }
-                placeholder="例：S"
-                maxLength={2}
-              />
-            </label>
+              <div className="generated-avatar-preview">
+                <b>{createAvatarFromName(memberForm.name || "?")}</b>
+                <small>名前から自動生成</small>
+              </div>
+            </div>
 
             <label className="form-field wide">
               <span>役割</span>
@@ -2608,7 +2609,7 @@ function App() {
                 className="small-panel-action"
                 onClick={openMemberCreateModal}
               >
-                + 追加
+                + メンバーを追加
               </button>
             </div>
 
