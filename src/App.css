@@ -8109,3 +8109,100 @@ body {
       0 0 0 7px rgba(24, 183, 159, 0.08);
   }
 }
+
+/* =========================================================
+   STUCK_MAP_SUBTLE_SPEECH_BUBBLE_V99
+   v9.9: task-speech-bubble 直接アニメーションを抑えめに調整
+   ========================================================= */
+
+.task-speech-bubble.HELP,
+.task-speech-bubble.WAIT,
+.task-speech-bubble.CHECK,
+.task-speech-bubble.REVIEW {
+  animation-duration: 1.8s !important;
+  animation-timing-function: ease-in-out !important;
+  will-change: translate, rotate, scale, box-shadow !important;
+}
+
+.task-speech-bubble.HELP {
+  animation-name: subtleSpeechHelpPyokoV99 !important;
+}
+
+.task-speech-bubble.WAIT {
+  animation-name: subtleSpeechWaitPyokoV99 !important;
+}
+
+.task-speech-bubble.CHECK {
+  animation-name: subtleSpeechCheckPyokoV99 !important;
+}
+
+.task-speech-bubble.REVIEW {
+  animation-name: subtleSpeechReviewPyokoV99 !important;
+  animation-duration: 2.2s !important;
+}
+
+@keyframes subtleSpeechHelpPyokoV99 {
+  0%, 100% {
+    translate: 0 0;
+    scale: 1;
+    rotate: 0deg;
+    box-shadow: 0 12px 24px rgba(255, 138, 61, 0.14);
+  }
+  50% {
+    translate: 0 -4px;
+    scale: 1.025;
+    rotate: 0deg;
+    box-shadow: 0 16px 28px rgba(255, 138, 61, 0.2);
+  }
+}
+
+@keyframes subtleSpeechWaitPyokoV99 {
+  0%, 100% {
+    translate: 0 0;
+    rotate: 0deg;
+    scale: 1;
+  }
+  50% {
+    translate: 2px -3px;
+    rotate: 0.5deg;
+    scale: 1.018;
+  }
+}
+
+@keyframes subtleSpeechCheckPyokoV99 {
+  0%, 100% {
+    translate: 0 0;
+    scale: 1;
+    filter: brightness(1);
+  }
+  50% {
+    translate: 0 -3px;
+    scale: 1.02;
+    filter: brightness(1.03);
+  }
+}
+
+@keyframes subtleSpeechReviewPyokoV99 {
+  0%, 100% {
+    translate: 0 0;
+    scale: 1;
+    box-shadow: 0 12px 24px rgba(24, 183, 159, 0.14);
+  }
+  50% {
+    translate: 0 -3px;
+    scale: 1.018;
+    box-shadow: 0 15px 28px rgba(24, 183, 159, 0.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .task-speech-bubble.HELP,
+  .task-speech-bubble.WAIT,
+  .task-speech-bubble.CHECK,
+  .task-speech-bubble.REVIEW {
+    animation: none !important;
+    translate: 0 0 !important;
+    rotate: 0deg !important;
+    scale: 1 !important;
+  }
+}
