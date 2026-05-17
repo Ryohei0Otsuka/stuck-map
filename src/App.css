@@ -7633,3 +7633,195 @@ body {
       0 0 0 7px rgba(24, 183, 159, 0.1) !important;
   }
 }
+
+/* =========================================================
+   STUCK_MAP_FORCED_PYOKO_SIGNAL_V96
+   目的: transform の上書きに負けないよう、top と box-shadow でサイン吹き出しを常時動かす
+   ========================================================= */
+
+/* サイン画面だけ、タスクカード上の吹き出しを必ず見せる */
+.signal-focus-layout .signal-board .task-card-wrap.status-HELP,
+.signal-focus-layout .signal-board .task-card-wrap.status-WAIT,
+.signal-focus-layout .signal-board .task-card-wrap.status-CHECK,
+.signal-focus-layout .signal-board .task-card-wrap.status-REVIEW {
+  position: relative !important;
+  padding-top: 78px !important;
+  overflow: visible !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap.status-HELP .task-speech-bubble,
+.signal-focus-layout .signal-board .task-card-wrap.status-WAIT .task-speech-bubble,
+.signal-focus-layout .signal-board .task-card-wrap.status-CHECK .task-speech-bubble,
+.signal-focus-layout .signal-board .task-card-wrap.status-REVIEW .task-speech-bubble {
+  position: absolute !important;
+  left: 22px !important;
+  top: 14px !important;
+  z-index: 80 !important;
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 118px !important;
+  min-height: 42px !important;
+  padding: 10px 20px 11px !important;
+  border: 3px solid rgba(255, 255, 255, 0.98) !important;
+  border-radius: 999px !important;
+  color: #fff !important;
+  font-size: 0 !important;
+  font-weight: 1000 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  pointer-events: none !important;
+  transform: none !important;
+  will-change: top, box-shadow, filter !important;
+  box-shadow:
+    0 16px 30px rgba(35, 62, 98, 0.22),
+    0 0 0 6px rgba(255, 255, 255, 0.72) !important;
+}
+
+.signal-focus-layout .signal-board .task-speech-bubble span {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  color: #fff !important;
+  font-size: 0 !important;
+  line-height: 1 !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap.status-HELP .task-speech-bubble span::before {
+  content: "HELP!" !important;
+  font-size: 14px !important;
+  letter-spacing: 0.1em !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap.status-WAIT .task-speech-bubble span::before {
+  content: "WAIT" !important;
+  font-size: 14px !important;
+  letter-spacing: 0.1em !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap.status-CHECK .task-speech-bubble span::before {
+  content: "CHECK" !important;
+  font-size: 14px !important;
+  letter-spacing: 0.1em !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap.status-REVIEW .task-speech-bubble span::before {
+  content: "REVIEW" !important;
+  font-size: 14px !important;
+  letter-spacing: 0.1em !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap.status-HELP .task-speech-bubble span::after {
+  content: "手助け" !important;
+  font-size: 10px !important;
+  opacity: 0.92 !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap.status-WAIT .task-speech-bubble span::after {
+  content: "方向相談" !important;
+  font-size: 10px !important;
+  opacity: 0.92 !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap.status-CHECK .task-speech-bubble span::after {
+  content: "確認" !important;
+  font-size: 10px !important;
+  opacity: 0.92 !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap.status-REVIEW .task-speech-bubble span::after {
+  content: "レビュー" !important;
+  font-size: 10px !important;
+  opacity: 0.92 !important;
+}
+
+.signal-focus-layout .signal-board .task-speech-bubble::after {
+  content: "" !important;
+  position: absolute !important;
+  left: 28px !important;
+  bottom: -12px !important;
+  width: 20px !important;
+  height: 14px !important;
+  background: inherit !important;
+  clip-path: polygon(0 0, 100% 0, 50% 100%) !important;
+  filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.98)) !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap.status-HELP .task-speech-bubble {
+  background: linear-gradient(135deg, #ff8a3d, #f06f34) !important;
+  animation: forcedPyokoHelpV96 0.72s ease-in-out infinite !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap.status-WAIT .task-speech-bubble {
+  background: linear-gradient(135deg, #8c5bff, #7047d7) !important;
+  animation: forcedPyokoWaitV96 0.82s ease-in-out infinite !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap.status-CHECK .task-speech-bubble {
+  background: linear-gradient(135deg, #1197ff, #2f6dff) !important;
+  animation: forcedPyokoCheckV96 0.68s ease-in-out infinite !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap.status-REVIEW .task-speech-bubble {
+  background: linear-gradient(135deg, #18b79f, #14a38f) !important;
+  animation: forcedPyokoReviewV96 0.9s ease-in-out infinite !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap:hover .task-speech-bubble,
+.signal-focus-layout .signal-board .task-card-wrap.focused .task-speech-bubble {
+  animation-play-state: running !important;
+  transform: none !important;
+}
+
+/* フロー画面では今まで通り非表示 */
+.flow-focus-layout .task-speech-bubble,
+.progress-board .task-speech-bubble,
+.task-card-wrap.status-TODO .task-speech-bubble,
+.task-card-wrap.status-DOING .task-speech-bubble,
+.task-card-wrap.status-DONE .task-speech-bubble {
+  display: none !important;
+  animation: none !important;
+}
+
+@keyframes forcedPyokoHelpV96 {
+  0%, 100% {
+    top: 14px;
+    box-shadow: 0 16px 30px rgba(35, 62, 98, 0.22), 0 0 0 6px rgba(255, 255, 255, 0.72);
+    filter: brightness(1);
+  }
+  30% {
+    top: 2px;
+    box-shadow: 0 24px 42px rgba(255, 138, 61, 0.34), 0 0 0 8px rgba(255, 138, 61, 0.12);
+    filter: brightness(1.08);
+  }
+  60% {
+    top: 14px;
+  }
+  78% {
+    top: 7px;
+  }
+}
+
+@keyframes forcedPyokoWaitV96 {
+  0%, 100% { top: 14px; left: 22px; filter: brightness(1); }
+  35% { top: 5px; left: 29px; filter: brightness(1.06); }
+  70% { top: 12px; left: 17px; }
+}
+
+@keyframes forcedPyokoCheckV96 {
+  0%, 100% { top: 14px; opacity: 0.9; filter: brightness(1); }
+  50% { top: 3px; opacity: 1; filter: brightness(1.09); }
+}
+
+@keyframes forcedPyokoReviewV96 {
+  0%, 100% {
+    top: 14px;
+    box-shadow: 0 16px 30px rgba(35, 62, 98, 0.18), 0 0 0 6px rgba(255, 255, 255, 0.72);
+  }
+  50% {
+    top: 5px;
+    box-shadow: 0 24px 42px rgba(24, 183, 159, 0.34), 0 0 0 8px rgba(24, 183, 159, 0.12);
+  }
+}
