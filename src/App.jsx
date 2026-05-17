@@ -2346,7 +2346,7 @@ function App() {
           </div>
         </section>
 
-        <section className={`board-layout ${activeBoardTab === "progress" ? "flow-focus-layout" : "signal-focus-layout"}`}>
+        <section className={`board-layout ${activeBoardTab === "progress" ? "flow-focus-layout" : "signal-focus-layout"}`} data-ui-version="v9.1-clean-flow">
           {activeBoardTab === "signals" && (
           <aside className="panel members-panel surface">
             <div className="panel-heading panel-heading-row">
@@ -2499,18 +2499,14 @@ function App() {
                   className={activeBoardTab === "progress" ? "active" : ""}
                   onClick={() => setActiveBoardTab("progress")}
                 >
-                  <span>1</span>
                   <strong>フロー</strong>
-                  <small>流れを確認</small>
                 </button>
                 <button
                   type="button"
                   className={activeBoardTab === "signals" ? "active" : ""}
                   onClick={() => setActiveBoardTab("signals")}
                 >
-                  <span>2</span>
                   <strong>サイン</strong>
-                  <small>詰まりを拾う</small>
                 </button>
               </div>
             </div>

@@ -6158,3 +6158,323 @@ body {
     animation: none !important;
   }
 }
+
+
+/* =========================================================
+   STUCK_MAP_CLEAN_FLOW_V91
+   目的:
+   - フローを横長に見せる
+   - タブ文字を1行に収める
+   - 紺背景上の文字コントラストを改善
+   - フロー/サインの見出し重複を減らす
+   - HELP等の吹き出しはサイン画面のタスクカード側に残す
+   ========================================================= */
+
+/* 画面全体を少し広く使う */
+.app-frame {
+  max-width: 1740px !important;
+}
+
+/* メイン領域：右パネルを少し細くし、中央を広げる */
+.board-layout.flow-focus-layout,
+.board-layout.signal-focus-layout {
+  grid-template-columns: minmax(0, 1fr) 300px !important;
+  gap: 14px !important;
+  align-items: start !important;
+}
+
+/* 右パネルの存在感を抑え、中央を主役にする */
+.signals-panel {
+  padding: 18px !important;
+  border-radius: 24px !important;
+}
+
+.signals-panel .panel-heading {
+  margin-bottom: 12px !important;
+}
+
+.signals-panel .panel-heading h2 {
+  font-size: 24px !important;
+  line-height: 1.1 !important;
+}
+
+/* タブボタン：文字を1行に収める。紺背景に紺文字を禁止 */
+.board-mode-tabs {
+  display: flex !important;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
+}
+
+.board-mode-tabs button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 118px !important;
+  width: 118px !important;
+  min-height: 48px !important;
+  padding: 0 16px !important;
+  border-radius: 18px !important;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  overflow: hidden !important;
+}
+
+.board-mode-tabs button > span,
+.board-mode-tabs button > small {
+  display: none !important;
+}
+
+.board-mode-tabs button strong {
+  display: inline !important;
+  color: #183555 !important;
+  font-size: 15px !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+  white-space: nowrap !important;
+  writing-mode: horizontal-tb !important;
+}
+
+.board-mode-tabs button.active,
+.board-mode-tabs button.active:hover {
+  background: #244d75 !important;
+  color: #fff !important;
+  border-color: #244d75 !important;
+  box-shadow: 0 14px 30px rgba(32, 54, 83, 0.18) !important;
+}
+
+.board-mode-tabs button.active strong,
+.board-mode-tabs button.active * {
+  color: #fff !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+/* 二重見出しを消す：ボード内にフロー/サインがあるのでクラスタ見出しは不要 */
+.progress-board .cluster-section-heading,
+.signal-board .cluster-section-heading {
+  display: none !important;
+}
+
+/* 説明帯も情報過多なので薄く、小さく */
+.ui-board-note.route-note {
+  margin: 10px 0 14px !important;
+  padding: 10px 14px !important;
+  border-radius: 16px !important;
+  background: rgba(248, 252, 255, 0.78) !important;
+}
+
+.ui-board-note.route-note strong {
+  color: #284864 !important;
+  font-size: 12px !important;
+}
+
+.ui-board-note.route-note span {
+  display: none !important;
+}
+
+/* メンバー帯：紺に紺文字を避ける */
+.progress-crew-heading {
+  background: #244d75 !important;
+  border-color: #244d75 !important;
+  color: #fff !important;
+}
+
+.progress-crew-heading span,
+.progress-crew-heading strong,
+.progress-crew-heading * {
+  color: #fff !important;
+  opacity: 1 !important;
+}
+
+.progress-crew-strip {
+  margin-bottom: 16px !important;
+  padding: 14px !important;
+  border-radius: 22px !important;
+  background: rgba(255, 255, 255, 0.78) !important;
+}
+
+.progress-crew-list {
+  gap: 10px !important;
+}
+
+.crew-badge {
+  min-width: 220px !important;
+  max-width: 280px !important;
+  background: #fff !important;
+  border-color: rgba(91, 124, 164, 0.22) !important;
+}
+
+.crew-text strong {
+  color: #17304d !important;
+}
+
+.crew-text small {
+  color: #405a78 !important;
+}
+
+/* フローは横長の3レーンに見せる */
+.flow-focus-layout .tasks-panel {
+  min-width: 0 !important;
+  padding: 20px !important;
+}
+
+.flow-focus-layout .progress-tab-grid {
+  display: grid !important;
+  grid-template-columns: minmax(240px, 0.9fr) minmax(360px, 1.45fr) minmax(240px, 0.9fr) !important;
+  gap: 14px !important;
+  align-items: stretch !important;
+}
+
+.flow-focus-layout .status-cluster {
+  min-height: 430px !important;
+  padding: 16px !important;
+  border-radius: 24px !important;
+}
+
+.flow-focus-layout .cluster-drop-zone {
+  min-height: 310px !important;
+}
+
+.flow-focus-layout .cluster-TODO,
+.flow-focus-layout .cluster-DOING,
+.flow-focus-layout .cluster-DONE {
+  background: #ffffff !important;
+}
+
+.flow-focus-layout .cluster-DOING {
+  background: linear-gradient(180deg, #f4f8ff 0%, #ffffff 100%) !important;
+}
+
+.flow-focus-layout .cluster-DONE {
+  background: linear-gradient(180deg, #f4fff9 0%, #ffffff 100%) !important;
+}
+
+/* フロー内カードは横に読みやすく */
+.flow-focus-layout .task-card-wrap {
+  padding-top: 0 !important;
+}
+
+.flow-focus-layout .task-card {
+  padding: 18px 16px 16px 18px !important;
+}
+
+.flow-focus-layout .task-card h3 {
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+  color: #17304d !important;
+}
+
+/* フローでは吹き出しを出さない。サイン画面だけタスクカード側に出す */
+.progress-board .task-speech-bubble,
+.flow-focus-layout .task-speech-bubble,
+.task-card-wrap.status-TODO .task-speech-bubble,
+.task-card-wrap.status-DOING .task-speech-bubble,
+.task-card-wrap.status-DONE .task-speech-bubble {
+  display: none !important;
+  animation: none !important;
+}
+
+.signal-board .task-card-wrap.status-HELP,
+.signal-board .task-card-wrap.status-WAIT,
+.signal-board .task-card-wrap.status-CHECK,
+.signal-board .task-card-wrap.status-REVIEW {
+  padding-top: 48px !important;
+}
+
+.signal-board .task-card-wrap.status-HELP .task-speech-bubble,
+.signal-board .task-card-wrap.status-WAIT .task-speech-bubble,
+.signal-board .task-card-wrap.status-CHECK .task-speech-bubble,
+.signal-board .task-card-wrap.status-REVIEW .task-speech-bubble {
+  display: inline-flex !important;
+  position: absolute !important;
+  top: 5px !important;
+  left: 18px !important;
+  z-index: 10 !important;
+  min-height: 36px !important;
+  padding: 8px 16px 9px !important;
+  border: 3px solid #fff !important;
+  border-radius: 999px !important;
+  color: #fff !important;
+  font-size: 12px !important;
+  font-weight: 1000 !important;
+  letter-spacing: 0.07em !important;
+  box-shadow: 0 12px 24px rgba(29, 50, 79, 0.16), 0 0 0 5px rgba(255,255,255,0.56) !important;
+  animation-duration: 2.4s !important;
+  animation-iteration-count: infinite !important;
+  animation-timing-function: ease-in-out !important;
+}
+
+.signal-board .task-card-wrap.status-HELP .task-speech-bubble { animation-name: cardHelpV90 !important; }
+.signal-board .task-card-wrap.status-WAIT .task-speech-bubble { animation-name: cardWaitV90 !important; }
+.signal-board .task-card-wrap.status-CHECK .task-speech-bubble { animation-name: cardCheckV90 !important; }
+.signal-board .task-card-wrap.status-REVIEW .task-speech-bubble { animation-name: cardReviewV90 !important; }
+
+/* サイン画面では二重文字を防ぐ */
+.signal-board .task-status-pill,
+.signal-board .category-pill,
+.signal-board .task-meta-left {
+  display: none !important;
+}
+
+.signal-board .task-card-top {
+  justify-content: flex-end !important;
+  padding-left: 0 !important;
+}
+
+/* クラスタ上のサインあり・検知は不要 */
+.signal-on,
+.cluster-status-right .signal-on,
+.detect-bubble,
+.detect-bubble-main,
+.detect-bubble-sub {
+  display: none !important;
+}
+
+/* サイン画面も見出しを減らして、カードの声を主役にする */
+.signal-focus-layout .signal-tab-grid {
+  gap: 14px !important;
+}
+
+.signal-focus-layout .status-cluster {
+  padding-top: 16px !important;
+  background: #fff !important;
+}
+
+.signal-focus-layout .cluster-HELP { border-color: rgba(255, 138, 61, 0.24) !important; }
+.signal-focus-layout .cluster-WAIT { border-color: rgba(140, 91, 255, 0.22) !important; }
+.signal-focus-layout .cluster-CHECK { border-color: rgba(17, 151, 255, 0.22) !important; }
+.signal-focus-layout .cluster-REVIEW { border-color: rgba(24, 183, 159, 0.22) !important; }
+
+/* 右パネル：文字を読みやすくし、散らばりを抑える */
+.next-support-card {
+  padding: 16px !important;
+  border-radius: 20px !important;
+}
+
+.next-support-card strong {
+  color: #17304d !important;
+  font-size: 15px !important;
+  line-height: 1.45 !important;
+}
+
+.signal-summary {
+  gap: 8px !important;
+}
+
+.signal-summary-chip {
+  min-height: 38px !important;
+  padding: 8px 10px !important;
+}
+
+/* 小さめ画面では右パネルを下に落として、フローの横長を優先 */
+@media (max-width: 1280px) {
+  .board-layout.flow-focus-layout,
+  .board-layout.signal-focus-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .flow-focus-layout .progress-tab-grid {
+    grid-template-columns: minmax(240px, 1fr) minmax(320px, 1.4fr) minmax(240px, 1fr) !important;
+    overflow-x: auto !important;
+  }
+}
