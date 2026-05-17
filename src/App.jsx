@@ -576,7 +576,7 @@ const defaultTaskForm = {
   ownerId: "m1",
   needId: "m1",
   status: "TODO",
-  category: "FLOW",
+  category: "",
   reason: "これから",
   description: "",
 };
@@ -861,7 +861,7 @@ function App() {
       ownerId: selectedTask.ownerId,
       needId: selectedTask.needId,
       status: getTaskSignalStatus(selectedTask) || getTaskFlowStatus(selectedTask),
-      category: selectedTask.category,
+      category: selectedTask.category || "",
       reason: selectedTask.reason,
       description: selectedTask.description,
     });
@@ -1017,7 +1017,7 @@ function App() {
       ownerId: taskForm.ownerId || fallbackMemberId,
       needId: taskForm.needId || fallbackMemberId,
       ...createStatusPatch(null, taskForm.status, signalStatuses.includes(taskForm.status) ? "signal" : "flow"),
-      category: categoryMeta[taskForm.category] ? taskForm.category : fallbackCategoryId,
+      category: categoryMeta[taskForm.category] ? taskForm.category : "",
       reason: taskForm.reason.trim() || statusMeta[taskForm.status].softLabel,
       description:
         taskForm.description.trim() ||
@@ -1032,7 +1032,7 @@ function App() {
       ...defaultTaskForm,
       ownerId: fallbackMemberId,
       needId: fallbackMemberId,
-      category: fallbackCategoryId,
+      category: "",
     });
 
     window.setTimeout(() => {
@@ -1056,7 +1056,7 @@ function App() {
       ownerId: taskForm.ownerId || fallbackMemberId,
       needId: taskForm.needId || fallbackMemberId,
       ...createStatusPatch(selectedTask, taskForm.status, signalStatuses.includes(taskForm.status) ? "signal" : "flow"),
-      category: categoryMeta[taskForm.category] ? taskForm.category : fallbackCategoryId,
+      category: categoryMeta[taskForm.category] ? taskForm.category : "",
       reason: taskForm.reason.trim() || statusMeta[taskForm.status].softLabel,
       description:
         taskForm.description.trim() ||
@@ -1140,7 +1140,7 @@ function App() {
       status: "TODO",
       flowStatus: "TODO",
       signalStatus: null,
-      category: fallbackCategoryId,
+      category: "",
       reason: "これから",
       description: "カードをクリックして、タイトル・担当・内容を編集します。",
     });
@@ -1257,7 +1257,7 @@ function App() {
       reason: statusMeta[initialStatus].softLabel,
       ownerId: fallbackMemberId,
       needId: fallbackMemberId,
-      category: fallbackCategoryId,
+      category: "",
     });
     setIsCreateModalOpen(true);
   };
@@ -1268,7 +1268,7 @@ function App() {
       ...defaultTaskForm,
       ownerId: fallbackMemberId,
       needId: fallbackMemberId,
-      category: fallbackCategoryId,
+      category: "",
     });
   };
 
@@ -1483,7 +1483,7 @@ function App() {
     setTasks((currentTasks) =>
       currentTasks.map((task) =>
         task.category === selectedCategoryId
-          ? { ...task, category: replacementCategory.id }
+          ? { ...task, category: "" }
           : task
       )
     );
@@ -1491,7 +1491,7 @@ function App() {
     if (taskForm.category === selectedCategoryId) {
       setTaskForm((current) => ({
         ...current,
-        category: replacementCategory.id,
+        category: "",
       }));
     }
 
@@ -1580,11 +1580,12 @@ function App() {
         </label>
 
         <label className="form-field">
-          <span>カテゴリ</span>
+          <span>カテゴリ（任意）</span>
           <select
             value={taskForm.category}
             onChange={(event) => updateTaskForm("category", event.target.value)}
           >
+            <option value="">指定なし</option>
             {categories.map((category) => (
               <option value={category.id} key={`category-${category.id}`}>
                 {category.id}：{category.label}
@@ -1620,7 +1621,7 @@ function App() {
   const renderTaskCard = (task, mode = "signal") => {
     const owner = getMember(task.ownerId);
     const needMember = getMember(task.needId);
-    const category = categoryMeta[task.category] || categoryMeta[fallbackCategoryId];
+    const category = task.category ? categoryMeta[task.category] : null;
     const flowStatus = getTaskFlowStatus(task);
     const signalStatus = getTaskSignalStatus(task);
     const displayStatus = getTaskDisplayStatus(task, mode);
@@ -1677,10 +1678,12 @@ function App() {
                 </span>
               )}
 
-              <span className="category-pill">
-                <span>{category?.icon}</span>
-                {category?.label}
-              </span>
+              {category && (
+                <span className="category-pill">
+                  <span>{category.icon}</span>
+                  {category.label}
+                </span>
+              )}
             </div>
 
             <span className="task-owner game-owner-badge" title={`担当: ${owner?.name}`}>
@@ -1955,8 +1958,7 @@ function App() {
 
     const owner = getMember(selectedTask.ownerId);
     const needMember = getMember(selectedTask.needId);
-    const category =
-      categoryMeta[selectedTask.category] || categoryMeta[fallbackCategoryId];
+    const category = selectedTask.category ? categoryMeta[selectedTask.category] : null;
 
     return (
       <div className="modal-backdrop" onClick={closeTaskModal}>
@@ -1988,10 +1990,12 @@ function App() {
               {renderStatusLabel(getTaskSignalStatus(selectedTask) || getTaskFlowStatus(selectedTask))}
             </span>
 
-            <span className="category-pill">
-              <span>{category?.icon}</span>
-              {category?.label}
-            </span>
+            {category && (
+              <span className="category-pill">
+                <span>{category.icon}</span>
+                {category.label}
+              </span>
+            )}
 
             <span className="task-owner game-owner-badge" title={`担当: ${owner?.name}`}>
               <span className="game-owner-avatar">{owner?.avatar || createAvatarFromName(owner?.name || "?")}</span>
@@ -2244,7 +2248,7 @@ function App() {
           </div>
 
           <p className="modal-description">
-            サインに付ける分類を編集できます。削除したカテゴリを使っていたカードは、別カテゴリへ退避します。
+            タスクに付ける分類を編集できます。削除したカテゴリを使っていたタスクは、カテゴリなしになります。
           </p>
 
           <div className="category-manager-grid">
