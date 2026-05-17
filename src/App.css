@@ -8116,7 +8116,7 @@ body {
    ========================================================= */
 
 /* =========================================================
-   STUCK_MAP_ACTUAL_PYOKO_SIGNAL_V103
+   STUCK_MAP_SLOWER_PYOKO_SIGNAL_V104
    class="task-speech-bubble HELP" たちを直接、確実に動かす最終上書き
    static transform/margin !important 競合を避けるため、transform はCSS変数で駆動する
    ========================================================= */
@@ -8162,19 +8162,19 @@ body .app-shell .signal-focus-layout .signal-board .task-card-wrap .task-speech-
 }
 
 body .app-shell .signal-focus-layout .signal-board .task-card-wrap .task-speech-bubble.HELP {
-  animation: actualHelpPyokoV103 0.86s ease-in-out infinite !important;
+  animation: actualHelpPyokoV103 1.35s ease-in-out infinite !important;
 }
 
 body .app-shell .signal-focus-layout .signal-board .task-card-wrap .task-speech-bubble.WAIT {
-  animation: actualWaitPyokoV103 1.05s ease-in-out infinite !important;
+  animation: actualWaitPyokoV103 1.65s ease-in-out infinite !important;
 }
 
 body .app-shell .signal-focus-layout .signal-board .task-card-wrap .task-speech-bubble.CHECK {
-  animation: actualCheckPyokoV103 0.96s ease-in-out infinite !important;
+  animation: actualCheckPyokoV103 1.45s ease-in-out infinite !important;
 }
 
 body .app-shell .signal-focus-layout .signal-board .task-card-wrap .task-speech-bubble.REVIEW {
-  animation: actualReviewPyokoV103 1.18s ease-in-out infinite !important;
+  animation: actualReviewPyokoV103 1.9s ease-in-out infinite !important;
 }
 
 body .app-shell .signal-focus-layout .signal-board .task-card-wrap:hover .task-speech-bubble.HELP,
