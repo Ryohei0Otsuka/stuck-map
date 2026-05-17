@@ -7940,3 +7940,172 @@ body {
   display: none !important;
   animation: none !important;
 }
+
+/* =========================================================
+   STUCK_MAP_DIRECT_SPEECH_BUBBLE_V98
+   task-speech-bubble 系統を直接、常時ぴょこぴょこさせる
+   狙う対象: class="task-speech-bubble HELP" など
+   ========================================================= */
+
+/* サイン画面のタスクカード吹き出し本体を直接アニメーション対象にする */
+.signal-focus-layout .signal-board .task-speech-bubble.HELP,
+.signal-focus-layout .signal-board .task-speech-bubble.WAIT,
+.signal-focus-layout .signal-board .task-speech-bubble.CHECK,
+.signal-focus-layout .signal-board .task-speech-bubble.REVIEW,
+.task-speech-bubble.HELP,
+.task-speech-bubble.WAIT,
+.task-speech-bubble.CHECK,
+.task-speech-bubble.REVIEW {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  top: 14px !important;
+  left: 24px !important;
+  margin-top: 0 !important;
+  margin-left: 0 !important;
+  transform: none !important;
+  translate: 0 0 !important;
+  rotate: 0deg !important;
+  scale: 1 !important;
+  transform-origin: center bottom !important;
+  will-change: margin-top, margin-left, translate, rotate, scale, box-shadow, filter !important;
+}
+
+/* フロー側では吹き出しを出さない */
+.flow-focus-layout .task-speech-bubble,
+.progress-board .task-speech-bubble,
+.task-card-wrap.status-TODO .task-speech-bubble,
+.task-card-wrap.status-DOING .task-speech-bubble,
+.task-card-wrap.status-DONE .task-speech-bubble {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  animation: none !important;
+}
+
+/* HELP: 常時ぴょこぴょこ。一番目立つ */
+.signal-focus-layout .signal-board .task-speech-bubble.HELP,
+.task-speech-bubble.HELP {
+  animation: directSpeechHelpPyokoV98 0.82s ease-in-out infinite !important;
+}
+
+/* WAIT: 左右に揺れながらぴょこぴょこ */
+.signal-focus-layout .signal-board .task-speech-bubble.WAIT,
+.task-speech-bubble.WAIT {
+  animation: directSpeechWaitPyokoV98 1.05s ease-in-out infinite !important;
+}
+
+/* CHECK: 軽く上下にぴょこぴょこ */
+.signal-focus-layout .signal-board .task-speech-bubble.CHECK,
+.task-speech-bubble.CHECK {
+  animation: directSpeechCheckPyokoV98 0.92s ease-in-out infinite !important;
+}
+
+/* REVIEW: 静かに浮き続ける */
+.signal-focus-layout .signal-board .task-speech-bubble.REVIEW,
+.task-speech-bubble.REVIEW {
+  animation: directSpeechReviewPyokoV98 1.25s ease-in-out infinite !important;
+}
+
+/* hover / focused でも止めない。既存transform上書きを無効化 */
+.signal-focus-layout .signal-board .task-card-wrap:hover .task-speech-bubble,
+.signal-focus-layout .signal-board .task-card-wrap.focused .task-speech-bubble,
+.task-card-wrap:hover .task-speech-bubble.HELP,
+.task-card-wrap:hover .task-speech-bubble.WAIT,
+.task-card-wrap:hover .task-speech-bubble.CHECK,
+.task-card-wrap:hover .task-speech-bubble.REVIEW,
+.task-card-wrap.focused .task-speech-bubble.HELP,
+.task-card-wrap.focused .task-speech-bubble.WAIT,
+.task-card-wrap.focused .task-speech-bubble.CHECK,
+.task-card-wrap.focused .task-speech-bubble.REVIEW {
+  transform: none !important;
+}
+
+/* しっぽも常時表示 */
+.task-speech-bubble.HELP::after,
+.task-speech-bubble.WAIT::after,
+.task-speech-bubble.CHECK::after,
+.task-speech-bubble.REVIEW::after {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+@keyframes directSpeechHelpPyokoV98 {
+  0%, 100% {
+    margin-top: 0;
+    margin-left: 0;
+    translate: 0 0;
+    scale: 1;
+    filter: brightness(1);
+    box-shadow:
+      0 12px 24px rgba(255, 138, 61, 0.18),
+      0 0 0 0 rgba(255, 138, 61, 0.14);
+  }
+  42% {
+    margin-top: -10px;
+    margin-left: 0;
+    translate: 0 -2px;
+    scale: 1.08;
+    filter: brightness(1.04);
+    box-shadow:
+      0 22px 38px rgba(255, 138, 61, 0.32),
+      0 0 0 8px rgba(255, 138, 61, 0.08);
+  }
+}
+
+@keyframes directSpeechWaitPyokoV98 {
+  0%, 100% {
+    margin-top: 0;
+    margin-left: 0;
+    translate: 0 0;
+    rotate: 0deg;
+    scale: 1;
+  }
+  35% {
+    margin-top: -7px;
+    margin-left: 6px;
+    translate: 2px -1px;
+    rotate: 1.5deg;
+    scale: 1.05;
+  }
+  70% {
+    margin-top: -3px;
+    margin-left: -4px;
+    translate: -1px 0;
+    rotate: -1deg;
+    scale: 1.02;
+  }
+}
+
+@keyframes directSpeechCheckPyokoV98 {
+  0%, 100% {
+    margin-top: 0;
+    translate: 0 0;
+    scale: 1;
+    filter: brightness(1);
+  }
+  50% {
+    margin-top: -8px;
+    translate: 0 -1px;
+    scale: 1.06;
+    filter: brightness(1.08);
+  }
+}
+
+@keyframes directSpeechReviewPyokoV98 {
+  0%, 100% {
+    margin-top: 0;
+    translate: 0 0;
+    scale: 1;
+    box-shadow: 0 12px 24px rgba(24, 183, 159, 0.16);
+  }
+  50% {
+    margin-top: -6px;
+    translate: 0 -1px;
+    scale: 1.04;
+    box-shadow:
+      0 20px 36px rgba(24, 183, 159, 0.3),
+      0 0 0 7px rgba(24, 183, 159, 0.08);
+  }
+}
