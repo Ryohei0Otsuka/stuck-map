@@ -1500,7 +1500,10 @@ function App() {
               </span>
             </div>
 
-            <span className="task-owner">{owner?.name}</span>
+            <span className="task-owner game-owner-badge" title={`担当: ${owner?.name}`}>
+              <span className="game-owner-avatar">{owner?.avatar || createAvatarFromName(owner?.name || "?")}</span>
+              <span className="game-owner-name">{owner?.name}</span>
+            </span>
           </div>
 
           <h3>{task.title}</h3>
@@ -1564,6 +1567,66 @@ function App() {
     );
   };
 
+
+  const renderProgressCrewBadges = () => {
+    const activeMembers = members
+      .map((member) => {
+        const currentTask = getCurrentTaskForMember(member.id);
+        const memberStatuses = getMemberStatusList(member.id);
+
+        return {
+          member,
+          currentTask,
+          memberStatuses,
+        };
+      })
+      .filter(({ currentTask }) => currentTask);
+
+    return (
+      <div className="progress-crew-strip" aria-label="進行中メンバーのバッジ">
+        <div className="progress-crew-heading">
+          <span>CREW</span>
+          <strong>着手中バッジ</strong>
+        </div>
+
+        <div className="progress-crew-list">
+          {activeMembers.length > 0 ? (
+            activeMembers.map(({ member, currentTask, memberStatuses }) => {
+              const mainStatus = currentTask?.status || "DONE";
+
+              return (
+                <button
+                  key={`crew-${member.id}`}
+                  type="button"
+                  className={`crew-badge status-${mainStatus}`}
+                  onClick={() => handleMemberClick(member.id)}
+                  title={currentTask?.title || "今は大きなサインなし"}
+                >
+                  <span className="crew-avatar">{member.avatar}</span>
+                  <span className="crew-text">
+                    <strong>{member.name}</strong>
+                    <small>{currentTask?.title || "今は大きなサインなし"}</small>
+                  </span>
+                  <span className={`crew-status-dot ${mainStatus}`}>
+                    {statusMeta[mainStatus]?.icon || "✓"}
+                  </span>
+                  <span className="crew-mini-signals">
+                    {memberStatuses.slice(0, 3).map((status) => (
+                      <i key={`${member.id}-crew-${status}`} className={status}>
+                        {statusMeta[status].icon}
+                      </i>
+                    ))}
+                  </span>
+                </button>
+              );
+            })
+          ) : (
+            <span className="crew-empty">いま着手中のカードはありません</span>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   const renderIntroModal = () => {
     if (!isIntroModalOpen) {
@@ -1742,7 +1805,10 @@ function App() {
               {category?.label}
             </span>
 
-            <span className="task-owner">{owner?.name}</span>
+            <span className="task-owner game-owner-badge" title={`担当: ${owner?.name}`}>
+              <span className="game-owner-avatar">{owner?.avatar || createAvatarFromName(owner?.name || "?")}</span>
+              <span className="game-owner-name">{owner?.name}</span>
+            </span>
           </div>
 
           <p className="modal-description">{selectedTask.description}</p>
@@ -2287,7 +2353,8 @@ function App() {
           </div>
         </section>
 
-        <section className="board-layout">
+        <section className={`board-layout ${activeBoardTab === "progress" ? "flow-focus-layout" : "signal-focus-layout"}`}>
+          {activeBoardTab === "signals" && (
           <aside className="panel members-panel surface">
             <div className="panel-heading panel-heading-row">
               <div>
@@ -2419,14 +2486,17 @@ function App() {
               })}
             </div>
           </aside>
+          )}
 
           <section className="panel tasks-panel surface ui-organized-board">
             <div className="panel-heading board-heading">
               <div>
                 <p className="eyebrow">プロジェクトボード</p>
-                <h2>プロジェクトボード</h2>
+                <h2>{activeBoardTab === "progress" ? "流れビュー" : "サインビュー"}</h2>
                 <p className="panel-subtext">
-                  進捗とサインを分けました。進捗は中央、詰まりは右。詳細はカードをクリックして開きます。
+                  {activeBoardTab === "progress"
+                    ? "メンバー欄を畳み、流れを広く見ます。担当者はカード上のバッジで確認します。"
+                    : "人のサインとカードを合わせて見ます。右側には次に拾うサインを常に残します。"}
                 </p>
               </div>
 
@@ -2436,8 +2506,8 @@ function App() {
                   className={activeBoardTab === "progress" ? "active" : ""}
                   onClick={() => setActiveBoardTab("progress")}
                 >
-                  <span>進捗</span>
-                  <strong>TODO / DOING / DONE</strong>
+                  <span>流れ</span>
+                  <strong>広く見る</strong>
                 </button>
                 <button
                   type="button"
@@ -2445,7 +2515,7 @@ function App() {
                   onClick={() => setActiveBoardTab("signals")}
                 >
                   <span>サイン</span>
-                  <strong>HELP / WAIT / CHECK / REVIEW</strong>
+                  <strong>人も見る</strong>
                 </button>
               </div>
             </div>
@@ -2460,18 +2530,21 @@ function App() {
             </div>
 
             {activeBoardTab === "progress" ? (
-              <div className="cluster-board ui-tab-board progress-board">
+              <>
+                {renderProgressCrewBadges()}
+                <div className="cluster-board ui-tab-board progress-board">
                 <div className="cluster-section">
                   <div className="cluster-section-heading">
-                    <h3>進捗</h3>
-                    <span>これから / 作業中 / 完了</span>
+                    <h3>流れビュー</h3>
+                    <span>これから → 作業中 → 完了</span>
                   </div>
 
                   <div className="cluster-grid progress-tab-grid">
                     {flowClusters.map((status) => renderCluster(status))}
                   </div>
                 </div>
-              </div>
+                </div>
+              </>
             ) : (
               <div className="cluster-board ui-tab-board signal-board">
                 <div className="cluster-section">

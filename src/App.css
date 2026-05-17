@@ -3333,3 +3333,311 @@ h1 {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* v8.3: 流れビューは広く、サインビューは人も見る */
+.board-layout.flow-focus-layout {
+  grid-template-columns: minmax(840px, 1fr) 350px;
+}
+
+.board-layout.signal-focus-layout {
+  grid-template-columns: 310px minmax(720px, 1fr) 350px;
+}
+
+.flow-focus-layout .tasks-panel {
+  min-height: 690px;
+}
+
+.flow-focus-layout .progress-tab-grid {
+  grid-template-columns: 1.02fr 1.28fr 0.88fr;
+  align-items: stretch;
+}
+
+.flow-focus-layout .status-cluster {
+  min-height: 520px;
+}
+
+.flow-focus-layout .cluster-drop-zone {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.flow-focus-layout .cluster-DOING {
+  transform: scale(1.01);
+  box-shadow:
+    0 20px 46px rgba(69, 99, 145, 0.12),
+    0 0 0 1px rgba(255, 255, 255, 0.62);
+}
+
+.flow-focus-layout .cluster-DONE {
+  opacity: 0.72;
+}
+
+.flow-focus-layout .cluster-DONE .cluster-drop-zone {
+  max-height: 410px;
+  overflow: auto;
+  padding-right: 3px;
+}
+
+.flow-focus-layout .cluster-DONE .task-card-wrap:nth-of-type(n + 4) {
+  opacity: 0.72;
+}
+
+.signal-focus-layout .signal-tab-grid {
+  grid-template-columns: repeat(2, minmax(260px, 1fr));
+}
+
+.progress-crew-strip {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  margin: -2px 0 14px;
+  padding: 12px;
+  border: 1px solid rgba(17, 151, 255, 0.14);
+  border-radius: 22px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(238, 250, 255, 0.78));
+  box-shadow: 0 12px 28px rgba(69, 99, 145, 0.08);
+}
+
+.progress-crew-heading {
+  display: grid;
+  gap: 2px;
+  min-width: 116px;
+}
+
+.progress-crew-heading span {
+  color: #7c91af;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.progress-crew-heading strong {
+  color: #203654;
+  font-size: 13px;
+  letter-spacing: -0.02em;
+}
+
+.progress-crew-list {
+  display: flex;
+  gap: 9px;
+  overflow-x: auto;
+  padding: 2px 2px 4px;
+}
+
+.crew-badge {
+  position: relative;
+  display: grid;
+  grid-template-columns: 42px minmax(130px, 1fr) 28px;
+  gap: 9px;
+  align-items: center;
+  min-width: 230px;
+  max-width: 290px;
+  padding: 9px 10px;
+  border: 1px solid rgba(17, 151, 255, 0.14);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #203654;
+  text-align: left;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.crew-badge:hover {
+  transform: translateY(-1px);
+  border-color: rgba(17, 151, 255, 0.3);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 14px 28px rgba(69, 99, 145, 0.11);
+}
+
+.crew-badge.status-HELP {
+  border-color: rgba(255, 138, 61, 0.28);
+  background: rgba(255, 245, 238, 0.9);
+}
+
+.crew-badge.status-WAIT {
+  border-color: rgba(140, 91, 255, 0.24);
+  background: rgba(247, 242, 255, 0.9);
+}
+
+.crew-badge.status-CHECK {
+  border-color: rgba(17, 151, 255, 0.24);
+  background: rgba(237, 248, 255, 0.9);
+}
+
+.crew-badge.status-REVIEW {
+  border-color: rgba(24, 183, 159, 0.24);
+  background: rgba(236, 252, 248, 0.9);
+}
+
+.crew-avatar,
+.game-owner-avatar {
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.96);
+  background:
+    radial-gradient(circle at 32% 22%, rgba(255, 255, 255, 0.98), transparent 25%),
+    linear-gradient(145deg, #dff1ff, #e8fff9);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.86),
+    0 8px 18px rgba(71, 102, 151, 0.12);
+  color: #245174;
+  font-weight: 900;
+}
+
+.crew-avatar {
+  width: 42px;
+  height: 42px;
+  font-size: 13px;
+}
+
+.crew-text {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.crew-text strong {
+  overflow: hidden;
+  color: #203654;
+  font-size: 12px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.crew-text small {
+  overflow: hidden;
+  color: #6a7f9c;
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.crew-status-dot {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(105, 132, 178, 0.18);
+  background: #eef3fa;
+  color: #647b9e;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.crew-status-dot.DOING { background: #dfe9ff; color: #245fff; }
+.crew-status-dot.HELP { background: #ffe6d4; color: #dc6d1f; }
+.crew-status-dot.WAIT { background: #eee3ff; color: #7840e8; }
+.crew-status-dot.CHECK { background: #dff1ff; color: #0079d8; }
+.crew-status-dot.REVIEW { background: #dff8f3; color: #07977f; }
+.crew-status-dot.DONE { background: #dff8ea; color: #20965b; }
+
+.crew-mini-signals {
+  position: absolute;
+  right: 10px;
+  bottom: -7px;
+  display: flex;
+  gap: 3px;
+}
+
+.crew-mini-signals i {
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  border-radius: 999px;
+  background: #eef3fa;
+  color: #647b9e;
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 900;
+  box-shadow: 0 6px 12px rgba(38, 58, 92, 0.1);
+}
+
+.crew-mini-signals i.HELP { background: #ff8a3d; color: #fff; }
+.crew-mini-signals i.WAIT { background: #8c5bff; color: #fff; }
+.crew-mini-signals i.CHECK { background: #1197ff; color: #fff; }
+.crew-mini-signals i.REVIEW { background: #18b79f; color: #fff; }
+.crew-mini-signals i.DOING { background: #2f6dff; color: #fff; }
+
+.crew-empty {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px dashed rgba(105, 132, 178, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.68);
+  color: #7387a4;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.game-owner-badge {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 3px 8px 3px 4px;
+  border: 1px solid rgba(17, 151, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #506d8b;
+  font-size: 10px;
+  font-weight: 900;
+  max-width: 132px;
+}
+
+.game-owner-avatar {
+  width: 24px;
+  height: 24px;
+  font-size: 8px;
+  flex: 0 0 auto;
+}
+
+.game-owner-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.flow-focus-layout .task-card {
+  min-height: 116px;
+}
+
+.flow-focus-layout .task-card-top {
+  align-items: center;
+}
+
+.flow-focus-layout .task-info-row {
+  margin-top: 8px;
+}
+
+@media (max-width: 1380px) {
+  .board-layout.flow-focus-layout {
+    grid-template-columns: minmax(680px, 1fr) 330px;
+  }
+
+  .board-layout.signal-focus-layout {
+    grid-template-columns: 280px minmax(620px, 1fr) 320px;
+  }
+
+  .flow-focus-layout .progress-tab-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .flow-focus-layout .status-cluster {
+    min-height: 260px;
+  }
+}
