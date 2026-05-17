@@ -1021,7 +1021,7 @@ function App() {
       reason: taskForm.reason.trim() || statusMeta[taskForm.status].softLabel,
       description:
         taskForm.description.trim() ||
-        "まだ詳細は仮置きです。止まる前にサインを置いています。",
+        "まだ詳細は仮置きです。あとから内容やサインを整えられます。",
     };
 
     setTasks((currentTasks) => [nextTask, ...currentTasks]);
@@ -1060,7 +1060,7 @@ function App() {
       reason: taskForm.reason.trim() || statusMeta[taskForm.status].softLabel,
       description:
         taskForm.description.trim() ||
-        "まだ詳細は仮置きです。止まる前にサインを置いています。",
+        "まだ詳細は仮置きです。あとから内容やサインを整えられます。",
     });
 
     setSelectedTaskId(null);
@@ -1518,8 +1518,10 @@ function App() {
     );
   };
 
-  const renderTaskFields = () => {
-    const currentMeta = statusMeta[taskForm.status];
+  const renderTaskFields = (mode = "edit") => {
+    const isCreateMode = mode === "create";
+    const currentMeta = statusMeta[taskForm.status] || statusMeta.TODO;
+    const statusOptions = isCreateMode ? flowClusters : allStatuses;
 
     return (
       <div className="edit-form-grid">
@@ -1561,12 +1563,12 @@ function App() {
         </label>
 
         <label className="form-field">
-          <span>状態</span>
+          <span>{isCreateMode ? "フロー" : "状態"}</span>
           <select
             value={taskForm.status}
             onChange={(event) => chooseCreateStatus(event.target.value)}
           >
-            {allStatuses.map((status) => (
+            {statusOptions.map((status) => (
               <option value={status} key={`status-${status}`}>
                 {getStatusLabel(status)}
               </option>
@@ -1875,8 +1877,6 @@ function App() {
       return null;
     }
 
-    const currentMeta = statusMeta[taskForm.status];
-
     return (
       <div className="modal-backdrop" onClick={closeCreateModal}>
         <section
@@ -1903,21 +1903,18 @@ function App() {
           </div>
 
           <p className="modal-description">
-            通常タスクも、手助け・確認・レビューなどのサイン付きタスクも追加できます。
-            まずは軽く置いて、あとから詳細を整えます。
+            まずはタスクとして置きます。手助け・確認・レビューなどのサインは、追加後に詳細画面から付けられます。
           </p>
 
-          {renderCreateCommandPicker()}
-
-          <div className={`command-guide ${taskForm.status}`}>
-            <span>{currentMeta.icon}</span>
+          <div className="command-guide TODO">
+            <span>{statusMeta.TODO.icon}</span>
             <div>
-              <strong>{currentMeta.promptTitle}</strong>
-              <p>{currentMeta.promptDescription}</p>
+              <strong>タスクをひとつ置く</strong>
+              <p>作業の入口を作ります。必要になったら、あとからサインを付けて拾いやすくします。</p>
             </div>
           </div>
 
-          {renderTaskFields()}
+          {renderTaskFields("create")}
 
           <div className="modal-button-row">
             <button
