@@ -403,23 +403,19 @@ const supportPriority = {
 const supportActionMeta = {
   HELP: {
     label: "助かった！",
-    nextStatus: "DOING",
-    message: "手を借りられたら、また進めます",
+    message: "サインだけを外します。タスクはフロー上に残ります。",
   },
   WAIT: {
     label: "方向OK",
-    nextStatus: "DOING",
-    message: "向きが見えたら、また進めます",
+    message: "方向相談のサインだけを外します。タスクはフロー上に残ります。",
   },
   CHECK: {
     label: "確認OK",
-    nextStatus: "DOING",
-    message: "確認できたら、また進めます",
+    message: "確認サインだけを外します。タスクはフロー上に残ります。",
   },
   REVIEW: {
     label: "レビューOK",
-    nextStatus: "DONE",
-    message: "見終わったら、完了へ進めます",
+    message: "レビューサインだけを外します。タスク完了はフロー側で行います。",
   },
 };
 
@@ -974,16 +970,20 @@ function App() {
     }
 
     setTasks((currentTasks) =>
-      currentTasks.map((currentTask) =>
-        currentTask.id === task.id
-          ? {
-              ...currentTask,
-              flowStatus: action.nextStatus,
-              signalStatus: null,
-              status: action.nextStatus,
-            }
-          : currentTask
-      )
+      currentTasks.map((currentTask) => {
+        if (currentTask.id !== task.id) {
+          return currentTask;
+        }
+
+        const currentFlowStatus = getTaskFlowStatus(currentTask);
+
+        return {
+          ...currentTask,
+          flowStatus: currentFlowStatus,
+          signalStatus: null,
+          status: currentFlowStatus,
+        };
+      })
     );
     setFocusedTaskId(task.id);
 
@@ -1856,7 +1856,7 @@ function App() {
             <div>
               <span>3</span>
               <strong>流れに戻す</strong>
-              <p>助かったら作業中へ。レビューが終わったら完了へ戻します。</p>
+              <p>助かったらサインだけ外します。タスクはフロー上に残ります。</p>
             </div>
           </div>
 
@@ -1888,8 +1888,8 @@ function App() {
         >
           <div className="modal-top">
             <div className="modal-title-block">
-              <p className="eyebrow">カード作成</p>
-              <h2 id="create-modal-title">カードを追加</h2>
+              <p className="eyebrow">タスク作成</p>
+              <h2 id="create-modal-title">タスクを追加</h2>
             </div>
 
             <button
@@ -1929,7 +1929,7 @@ function App() {
             </button>
 
             <button type="button" className="primary-action" onClick={createTask}>
-              カードを追加
+              タスクを追加
             </button>
           </div>
         </section>
@@ -2416,7 +2416,7 @@ function App() {
             </div>
 
             <button type="button" className="primary-action" onClick={openCreateModal}>
-              + カードを追加
+              + タスクを追加
             </button>
 
             <button type="button" className="secondary-action" onClick={createBlankProject}>
@@ -2512,7 +2512,7 @@ function App() {
 
         <section className="compact-status-bar surface" aria-label="ボード概要">
           <div className="compact-status-main">
-            <span>全カード <strong>{tasks.length}</strong></span>
+            <span>全タスク <strong>{tasks.length}</strong></span>
             <span>拾うサイン <strong>{signalTasks.length}</strong></span>
             <span>完了 <strong>{completedCount}</strong></span>
             <span>進捗 <strong>{progressPercent}%</strong></span>
@@ -2529,7 +2529,7 @@ function App() {
             <div className="complete-copy">
               <p className="eyebrow">PROJECT COMPLETE</p>
               <h2>プロジェクト完遂！</h2>
-              <p>すべてのカードが完了しました。流れを止めずに、最後まで運び切れています。</p>
+              <p>すべてのタスクが完了しました。流れを止めずに、最後まで運び切れています。</p>
             </div>
             <div className="complete-score">
               <strong>{completedCount}</strong>
@@ -2790,7 +2790,7 @@ function App() {
 
                 <p className="next-support-note">
                   {supportActionMeta[getTaskSignalStatus(nextSupportTask)]?.message ||
-                    "必要ならカードを開いて整える"}
+                    "必要ならタスクを開いて整える"}
                 </p>
               </div>
             ) : (
