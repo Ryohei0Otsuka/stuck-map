@@ -6988,9 +6988,9 @@ body {
 }
 
 .member-status-chip {
-  flex: 0 0 190px !important;
+  flex: 0 0 238px !important;
   display: grid !important;
-  grid-template-columns: 42px minmax(0, 1fr) 28px !important;
+  grid-template-columns: 42px minmax(0, 1fr) 28px 42px !important;
   gap: 8px !important;
   align-items: center !important;
   min-height: 56px !important;
@@ -8824,4 +8824,42 @@ body .app-shell .signal-focus-layout .signal-board .task-card-wrap.focused .task
   .app-header .project-edit-inline input[aria-label="プロジェクトメモ"] {
     display: none;
   }
+}
+
+
+/* v10.14: メンバー編集とフロー移動を分離 */
+.member-status-chip {
+  cursor: pointer !important;
+}
+
+.member-status-chip.disabled {
+  cursor: default !important;
+  opacity: 0.72 !important;
+}
+
+.member-status-edit {
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  min-height: 28px !important;
+  padding: 0 8px !important;
+  border: 1px solid rgba(17, 151, 255, 0.16) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  color: #55708d !important;
+  font-size: 10px !important;
+  font-weight: 900 !important;
+  white-space: nowrap !important;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease !important;
+}
+
+.member-status-edit:hover {
+  transform: translateY(-1px) !important;
+  border-color: rgba(17, 151, 255, 0.32) !important;
+  background: #ffffff !important;
+  box-shadow: 0 8px 18px rgba(69, 99, 145, 0.1) !important;
 }

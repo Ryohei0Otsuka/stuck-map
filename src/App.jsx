@@ -925,11 +925,16 @@ function App() {
   };
 
   const getCurrentTaskForMember = (memberId) => {
-    const memberTasks = tasks
-      .filter((task) => task.ownerId === memberId)
-      .sort((a, b) => statusPriority[getTaskSignalStatus(a) || getTaskFlowStatus(a)] - statusPriority[getTaskSignalStatus(b) || getTaskFlowStatus(b)]);
+    const memberTasks = tasks.filter(
+      (task) => task.ownerId === memberId && getTaskFlowStatus(task) !== "DONE"
+    );
 
-    return memberTasks.find((task) => getTaskFlowStatus(task) !== "DONE") || null;
+    return (
+      memberTasks.find((task) => getTaskFlowStatus(task) === "DOING") ||
+      memberTasks.find((task) => getTaskFlowStatus(task) === "TODO") ||
+      memberTasks[0] ||
+      null
+    );
   };
 
   const getMemberStatusList = (memberId) => {
@@ -1168,11 +1173,14 @@ function App() {
     }, 120);
   };
 
-  const scrollToTask = (taskId) => {
+  const scrollToTask = (taskId, options = {}) => {
     const targetTask = tasks.find((task) => task.id === taskId);
+    const requestedBoardTab = options.boardTab;
+
     setActiveFilter("ALL");
     setActiveBoardTab(
-      targetTask && getTaskSignalStatus(targetTask) ? "signals" : "progress"
+      requestedBoardTab ||
+        (targetTask && getTaskSignalStatus(targetTask) ? "signals" : "progress")
     );
     setFocusedTaskId(taskId);
 
@@ -1198,7 +1206,8 @@ function App() {
       return;
     }
 
-    scrollToTask(currentTask.id);
+    setIsProgressTimelineOpen(true);
+    scrollToTask(currentTask.id, { boardTab: "progress" });
   };
 
   const handleDragStart = (event, taskId) => {
@@ -1795,12 +1804,24 @@ function App() {
 
         <div className="member-status-list">
           {memberSummaries.map(({ member, currentTask, mainStatus, signalStatus, hasSignal }) => (
-            <button
+            <article
               key={`member-status-${member.id}`}
-              type="button"
-              className={`member-status-chip status-${mainStatus} ${hasSignal ? "has-signal" : ""}`}
+              role={currentTask ? "button" : undefined}
+              tabIndex={currentTask ? 0 : -1}
+              aria-disabled={!currentTask}
+              className={`member-status-chip status-${mainStatus} ${hasSignal ? "has-signal" : ""} ${!currentTask ? "disabled" : ""}`}
               onClick={() => handleMemberClick(member.id)}
-              title={currentTask?.title || "今は大きなサインなし"}
+              onKeyDown={(event) => {
+                if (!currentTask) {
+                  return;
+                }
+
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  handleMemberClick(member.id);
+                }
+              }}
+              title={currentTask?.title || "着手中タスクなし"}
             >
               <span className="member-status-avatar">{member.avatar}</span>
               <span className="member-status-body">
@@ -1808,7 +1829,7 @@ function App() {
                 <small>
                   {currentTask
                     ? hasSignal
-                      ? statusMeta[signalStatus].signal || getStatusLabel(signalStatus)
+                      ? `${getStatusLabel(mainStatus)} / ${statusMeta[signalStatus].signal || getStatusLabel(signalStatus)}`
                       : getStatusLabel(mainStatus)
                     : "待機"}
                 </small>
@@ -1816,7 +1837,15 @@ function App() {
               <span className={`member-status-mark ${mainStatus}`}>
                 {statusMeta[mainStatus]?.icon || "✓"}
               </span>
-            </button>
+              <button
+                type="button"
+                className="member-status-edit"
+                onClick={(event) => openMemberEditModal(event, member.id)}
+                aria-label={`${member.name}を編集`}
+              >
+                編集
+              </button>
+            </article>
           ))}
         </div>
       </div>
