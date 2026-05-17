@@ -1302,6 +1302,54 @@ h1 {
   font-weight: 800;
 }
 
+.lane-add-task-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 2px;
+  border: 1px dashed rgba(17, 151, 255, 0.28);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.68);
+  color: #456381;
+  font-size: 12px;
+  font-weight: 900;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.lane-add-task-button span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #1e6fb2;
+  box-shadow: 0 6px 14px rgba(69, 99, 145, 0.08);
+}
+
+.lane-add-task-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(17, 151, 255, 0.42);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 12px 26px rgba(69, 99, 145, 0.1);
+}
+
+.lane-add-task-button.DOING {
+  border-color: rgba(47, 109, 255, 0.26);
+}
+
+.lane-add-task-button.DONE {
+  border-color: rgba(45, 187, 115, 0.26);
+}
+
 /* Task cards with outer speech bubbles */
 
 .task-card-wrap {

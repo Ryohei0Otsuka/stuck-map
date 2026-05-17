@@ -1246,8 +1246,7 @@ function App() {
     setIsプロジェクトEditing(true);
   };
 
-  const openCreateModal = () => {
-    const initialStatus = "TODO";
+  const openCreateModal = (initialStatus = "TODO") => {
     setTaskForm({
       ...defaultTaskForm,
       status: initialStatus,
@@ -1745,8 +1744,19 @@ function App() {
           ) : (
             <div className="cluster-empty">
               <span>{statusMeta[status].icon}</span>
-              <p>ここにカードを置けます</p>
+              <p>{mode === "flow" ? "ここにタスクを置けます" : "ここにカードを置けます"}</p>
             </div>
+          )}
+
+          {mode === "flow" && (
+            <button
+              type="button"
+              className={`lane-add-task-button ${status}`}
+              onClick={() => openCreateModal(status)}
+            >
+              <span>＋</span>
+              {getStatusLabel(status)}にタスクを追加
+            </button>
           )}
         </div>
       </section>
