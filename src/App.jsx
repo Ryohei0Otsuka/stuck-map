@@ -2346,8 +2346,8 @@ function App() {
           </div>
         </section>
 
-        <section className={`board-layout ${activeBoardTab === "progress" ? "flow-focus-layout" : "signal-focus-layout"}`} data-ui-version="v9.1-clean-flow">
-          {activeBoardTab === "signals" && (
+        <section className={`board-layout ${activeBoardTab === "progress" ? "flow-focus-layout" : "signal-focus-layout"}`} data-ui-version="v9.2-signal-clean">
+          {false && activeBoardTab === "signals" && (
           <aside className="panel members-panel surface">
             <div className="panel-heading panel-heading-row">
               <div>
@@ -2516,7 +2516,7 @@ function App() {
               <span>
                 {activeBoardTab === "progress"
                   ? "まず流れを広く見て、気になる停滞はサイン側で拾います。"
-                  : "右側の「次に拾う」を入口にして、必要なカードだけ開きます。"}
+                  : "サインカードを見て、必要なものだけ右側で拾います。"}
               </span>
             </div>
 
