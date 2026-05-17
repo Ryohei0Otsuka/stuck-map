@@ -2419,8 +2419,13 @@ function App() {
               + タスクを追加
             </button>
 
-            <button type="button" className="secondary-action" onClick={createBlankProject}>
-              新規
+            <button
+              type="button"
+              className="secondary-action"
+              onClick={createBlankProject}
+              aria-label="新規プロジェクトを作成"
+            >
+              新規プロジェクト
             </button>
 
             <button
