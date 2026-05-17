@@ -8805,3 +8805,23 @@ body .app-shell .signal-focus-layout .signal-board .task-card-wrap.focused .task
     top: auto;
   }
 }
+
+/* v10.12: keep header stable while editing project fields */
+.app-header .project-edit-inline {
+  grid-template-columns: minmax(150px, 0.85fr) minmax(180px, 1fr) auto;
+  max-width: 560px;
+}
+
+.app-header .project-edit-inline input {
+  min-width: 0;
+}
+
+@media (max-width: 1320px) {
+  .app-header .project-edit-inline {
+    grid-template-columns: minmax(130px, 1fr) auto;
+  }
+
+  .app-header .project-edit-inline input[aria-label="プロジェクトメモ"] {
+    display: none;
+  }
+}

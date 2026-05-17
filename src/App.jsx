@@ -1157,10 +1157,14 @@ function App() {
     setSelectedTaskId(null);
     setFocusedTaskId(blankTask.id);
     setSelectedMemberId(null);
-    setIsプロジェクトEditing(true);
+    setIsCreateModalOpen(false);
+    setIsMemberModalOpen(false);
+    setIsCategoryModalOpen(false);
+    setIsプロジェクトEditing(false);
 
     window.setTimeout(() => {
-      scrollToTask(blankTask.id);
+      setActiveFilter("ALL");
+      setActiveBoardTab("progress");
     }, 120);
   };
 
@@ -2422,7 +2426,11 @@ function App() {
               {saveNotice}
             </div>
 
-            <button type="button" className="primary-action" onClick={openCreateModal}>
+            <button
+              type="button"
+              className="primary-action"
+              onClick={() => openCreateModal("TODO")}
+            >
               + タスクを追加
             </button>
 
