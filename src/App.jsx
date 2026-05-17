@@ -1724,7 +1724,7 @@ function App() {
             <button
               key={`member-status-${member.id}`}
               type="button"
-              className={`member-status-chip status-${mainStatus} ${hasSignal ? "has-signal" : ""}`}
+              className={`member-status-chip status-${signalStatus || mainStatus} ${hasSignal ? "has-signal" : ""}`}
               onClick={() => handleMemberClick(member.id)}
               title={currentTask?.title || "今は大きなサインなし"}
             >
@@ -2460,7 +2460,7 @@ function App() {
           </div>
         </section>
 
-        <section className={`board-layout ${activeBoardTab === "progress" ? "flow-focus-layout" : "signal-focus-layout"}`} data-ui-version="v9.6-flow-sign-tabs">
+        <section className={`board-layout ${activeBoardTab === "progress" ? "flow-focus-layout" : "signal-focus-layout"}`} data-ui-version="v10.1-flow-signal-sticky-crew">
           {false && activeBoardTab === "signals" && (
           <aside className="panel members-panel surface">
             <div className="panel-heading panel-heading-row">
@@ -2630,9 +2630,11 @@ function App() {
               <span>
                 {activeBoardTab === "progress"
                   ? "まず流れを広く見て、気になる停滞はサイン側で拾います。"
-                  : "サインカードを見て、必要なものだけ右側で拾います。"}
+                  : "サインを拾っても、上のメンバー帯とフローにはカードが残ります。"}
               </span>
             </div>
+
+            {renderProgressCrewBadges()}
 
             {false && activeBoardTab === "signals" && (
               <div className="signal-route-strip" aria-label="サイン確認の導線">
@@ -2644,7 +2646,6 @@ function App() {
 
             {activeBoardTab === "progress" ? (
               <>
-                {renderProgressCrewBadges()}
                 <div className="cluster-board ui-tab-board progress-board">
                 <div className="cluster-section">
                   <div className="cluster-section-heading">
@@ -2700,6 +2701,15 @@ function App() {
                 <small>
                   発信: {getMember(nextSupportTask.ownerId)?.name} / 相手: {getMember(nextSupportTask.needId)?.name}
                 </small>
+
+                <div className="flow-retention-note">
+                  <span className={`mini-status ${getTaskFlowStatus(nextSupportTask)}`}>
+                    {statusMeta[getTaskFlowStatus(nextSupportTask)]?.icon || "▶"}
+                  </span>
+                  <p>
+                    フロー上は「{getStatusLabel(getTaskFlowStatus(nextSupportTask))}」に残っています。
+                  </p>
+                </div>
 
                 <div className="next-support-actions">
                   <button
