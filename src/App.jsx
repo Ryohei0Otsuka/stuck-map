@@ -2491,14 +2491,14 @@ function App() {
               <label htmlFor="sample-project-select">用途別サンプルデータ</label>
               <select
                 id="sample-project-select"
-                value={sampleProjectTemplates[activeSampleId] ? activeSampleId : "custom"}
+                value={sampleProjectTemplates[activeSampleId] ? activeSampleId : ""}
                 onChange={(event) => {
-                  if (event.target.value !== "custom") {
+                  if (event.target.value) {
                     applySampleProject(event.target.value);
                   }
                 }}
               >
-                <option value="custom">編集中のプロジェクト</option>
+                <option value="" disabled>サンプルを選ぶ</option>
                 {Object.entries(sampleProjectTemplates).map(([sampleId, sample]) => (
                   <option key={sampleId} value={sampleId}>
                     {sample.label}
@@ -2701,15 +2701,6 @@ function App() {
                   <strong>サイン</strong>
                 </button>
               </div>
-            </div>
-
-            <div className="ui-board-note route-note">
-              <strong>{activeBoardTab === "progress" ? "見る順番：フロー → サイン" : "見る順番：右パネル → カード"}</strong>
-              <span>
-                {activeBoardTab === "progress"
-                  ? "まず流れを広く見て、気になる停滞はサイン側で拾います。"
-                  : "サインカードを見て、必要なものだけ右側で拾います。"}
-              </span>
             </div>
 
             {false && activeBoardTab === "signals" && (
