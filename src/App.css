@@ -8114,3 +8114,140 @@ body {
    STUCK_MAP_RESTORE_DIRECT_SPEECH_V102
    v9.8 の直接アニメーション版へ戻す
    ========================================================= */
+
+/* =========================================================
+   STUCK_MAP_ACTUAL_PYOKO_SIGNAL_V103
+   class="task-speech-bubble HELP" たちを直接、確実に動かす最終上書き
+   static transform/margin !important 競合を避けるため、transform はCSS変数で駆動する
+   ========================================================= */
+
+@property --speech-x-v103 {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --speech-y-v103 {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --speech-scale-v103 {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
+@property --speech-rot-v103 {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+body .app-shell .signal-focus-layout .signal-board .task-card-wrap .task-speech-bubble.HELP,
+body .app-shell .signal-focus-layout .signal-board .task-card-wrap .task-speech-bubble.WAIT,
+body .app-shell .signal-focus-layout .signal-board .task-card-wrap .task-speech-bubble.CHECK,
+body .app-shell .signal-focus-layout .signal-board .task-card-wrap .task-speech-bubble.REVIEW {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  --speech-x-v103: 0px;
+  --speech-y-v103: 0px;
+  --speech-scale-v103: 1;
+  --speech-rot-v103: 0deg;
+  transform: translate3d(var(--speech-x-v103), var(--speech-y-v103), 0) scale(var(--speech-scale-v103)) rotate(var(--speech-rot-v103)) !important;
+  transform-origin: center bottom !important;
+  will-change: transform, box-shadow, filter !important;
+}
+
+body .app-shell .signal-focus-layout .signal-board .task-card-wrap .task-speech-bubble.HELP {
+  animation: actualHelpPyokoV103 0.86s ease-in-out infinite !important;
+}
+
+body .app-shell .signal-focus-layout .signal-board .task-card-wrap .task-speech-bubble.WAIT {
+  animation: actualWaitPyokoV103 1.05s ease-in-out infinite !important;
+}
+
+body .app-shell .signal-focus-layout .signal-board .task-card-wrap .task-speech-bubble.CHECK {
+  animation: actualCheckPyokoV103 0.96s ease-in-out infinite !important;
+}
+
+body .app-shell .signal-focus-layout .signal-board .task-card-wrap .task-speech-bubble.REVIEW {
+  animation: actualReviewPyokoV103 1.18s ease-in-out infinite !important;
+}
+
+body .app-shell .signal-focus-layout .signal-board .task-card-wrap:hover .task-speech-bubble.HELP,
+body .app-shell .signal-focus-layout .signal-board .task-card-wrap:hover .task-speech-bubble.WAIT,
+body .app-shell .signal-focus-layout .signal-board .task-card-wrap:hover .task-speech-bubble.CHECK,
+body .app-shell .signal-focus-layout .signal-board .task-card-wrap:hover .task-speech-bubble.REVIEW,
+body .app-shell .signal-focus-layout .signal-board .task-card-wrap.focused .task-speech-bubble.HELP,
+body .app-shell .signal-focus-layout .signal-board .task-card-wrap.focused .task-speech-bubble.WAIT,
+body .app-shell .signal-focus-layout .signal-board .task-card-wrap.focused .task-speech-bubble.CHECK,
+body .app-shell .signal-focus-layout .signal-board .task-card-wrap.focused .task-speech-bubble.REVIEW {
+  transform: translate3d(var(--speech-x-v103), var(--speech-y-v103), 0) scale(var(--speech-scale-v103)) rotate(var(--speech-rot-v103)) !important;
+}
+
+@keyframes actualHelpPyokoV103 {
+  0%, 100% {
+    --speech-y-v103: 0px;
+    --speech-x-v103: 0px;
+    --speech-scale-v103: 1;
+    --speech-rot-v103: 0deg;
+    filter: brightness(1);
+  }
+  45% {
+    --speech-y-v103: -10px;
+    --speech-x-v103: 0px;
+    --speech-scale-v103: 1.08;
+    --speech-rot-v103: 0deg;
+    filter: brightness(1.06);
+  }
+}
+
+@keyframes actualWaitPyokoV103 {
+  0%, 100% {
+    --speech-y-v103: 0px;
+    --speech-x-v103: 0px;
+    --speech-scale-v103: 1;
+    --speech-rot-v103: 0deg;
+  }
+  35% {
+    --speech-y-v103: -7px;
+    --speech-x-v103: 5px;
+    --speech-scale-v103: 1.05;
+    --speech-rot-v103: 1.5deg;
+  }
+  70% {
+    --speech-y-v103: -2px;
+    --speech-x-v103: -3px;
+    --speech-scale-v103: 1.02;
+    --speech-rot-v103: -1deg;
+  }
+}
+
+@keyframes actualCheckPyokoV103 {
+  0%, 100% {
+    --speech-y-v103: 0px;
+    --speech-scale-v103: 1;
+    filter: brightness(1);
+  }
+  50% {
+    --speech-y-v103: -8px;
+    --speech-scale-v103: 1.06;
+    filter: brightness(1.08);
+  }
+}
+
+@keyframes actualReviewPyokoV103 {
+  0%, 100% {
+    --speech-y-v103: 0px;
+    --speech-scale-v103: 1;
+    filter: brightness(1);
+  }
+  50% {
+    --speech-y-v103: -6px;
+    --speech-scale-v103: 1.04;
+    filter: brightness(1.06);
+  }
+}
