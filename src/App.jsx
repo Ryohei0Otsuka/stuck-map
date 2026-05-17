@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 
-const STORAGE_KEY = "stuck-map-v9-quick-sign";
-const INTRO_STORAGE_KEY = "stuck-map-intro-v9";
+const STORAGE_KEY = "stuck-map-v8";
+const INTRO_STORAGE_KEY = "stuck-map-intro-v8";
 
 const initialプロジェクト = {
   name: "Weekend Build",
@@ -141,15 +141,15 @@ const sampleProjectTemplates = {
     },
     tasks: initialTasks,
   },
-  medical: {
-    label: "医療システム導入",
+  business: {
+    label: "業務システム導入",
     project: {
-      name: "医療システム導入プロジェクト",
-      memo: "現場確認・設定・レビュー・公開前確認を、止まる前に拾う",
+      name: "業務システム導入プロジェクト",
+      memo: "業務確認・設定・レビュー・公開前確認を、止まる前に拾う",
     },
     tasks: [
       {
-        id: "med-1",
+        id: "biz-1",
         title: "部門別の確認フローを整理する",
         ownerId: "m4",
         needId: "m1",
@@ -159,7 +159,7 @@ const sampleProjectTemplates = {
         description: "誰に、どの順番で、何を確認するか。判断待ちが一点に溜まらないように流れを見る。",
       },
       {
-        id: "med-2",
+        id: "biz-2",
         title: "マスタ設定の不明点を軽く確認する",
         ownerId: "m3",
         needId: "m2",
@@ -169,7 +169,7 @@ const sampleProjectTemplates = {
         description: "設定値の意味が現場運用と合っているか、公開前に小さく確認する。",
       },
       {
-        id: "med-3",
+        id: "biz-3",
         title: "移行データの例外パターンを拾う",
         ownerId: "m4",
         needId: "m3",
@@ -179,7 +179,7 @@ const sampleProjectTemplates = {
         description: "CSVの例外パターンを一人で抱えず、早めに一緒に見る。",
       },
       {
-        id: "med-4",
+        id: "biz-4",
         title: "利用者向け説明文をレビューする",
         ownerId: "m2",
         needId: "m1",
@@ -189,7 +189,7 @@ const sampleProjectTemplates = {
         description: "操作説明が現場に伝わる文になっているか、リリース前に確認する。",
       },
       {
-        id: "med-5",
+        id: "biz-5",
         title: "本番反映前のチェックリストを作る",
         ownerId: "m1",
         needId: "m1",
@@ -199,7 +199,7 @@ const sampleProjectTemplates = {
         description: "公開前に見る項目を、担当者の記憶ではなくチェックリストに移す。",
       },
       {
-        id: "med-6",
+        id: "biz-6",
         title: "初回説明会の資料を用意する",
         ownerId: "m2",
         needId: "m2",
@@ -692,6 +692,8 @@ function App() {
   const [tasks, setTasks] = useState(savedState?.tasks || cloneTasks(initialTasks));
   const [activeSampleId, setActiveSampleId] = useState(savedState?.activeSampleId || "personal");
   const [activeFilter, setActiveFilter] = useState("ALL");
+  const [activeBoardTab, setActiveBoardTab] = useState("progress");
+  const [isSupportQueueOpen, setIsSupportQueueOpen] = useState(false);
   const [isProgressTimelineOpen, setIsProgressTimelineOpen] = useState(false);
   const [draggingTaskId, setDraggingTaskId] = useState(null);
   const [dragOverStatus, setDragOverStatus] = useState(null);
@@ -980,6 +982,7 @@ function App() {
     setCategories(initialCategories);
     setTasks(cloneTasks(sample.tasks));
     setActiveFilter("ALL");
+    setActiveBoardTab("progress");
     setIsProgressTimelineOpen(false);
     setSelectedTaskId(null);
     setFocusedTaskId(null);
@@ -998,6 +1001,7 @@ function App() {
     setCategories(initialCategories);
     setTasks(cloneTasks(sample.tasks));
     setActiveFilter("ALL");
+    setActiveBoardTab("progress");
     setIsProgressTimelineOpen(false);
     setSelectedTaskId(null);
     setFocusedTaskId(null);
@@ -1006,7 +1010,11 @@ function App() {
   };
 
   const scrollToTask = (taskId) => {
+    const targetTask = tasks.find((task) => task.id === taskId);
     setActiveFilter("ALL");
+    setActiveBoardTab(
+      targetTask && signalStatuses.includes(targetTask.status) ? "signals" : "progress"
+    );
     setFocusedTaskId(taskId);
 
     window.setTimeout(() => {
@@ -1075,7 +1083,8 @@ function App() {
     setSelectedTaskId(null);
   };
 
-  const openCreateModal = (initialStatus = "HELP") => {
+  const openCreateModal = () => {
+    const initialStatus = "HELP";
     setTaskForm({
       ...defaultTaskForm,
       status: initialStatus,
@@ -1440,7 +1449,7 @@ function App() {
     );
   };
 
-  const renderTaskCard = (task) => {
+  const renderTaskCard = (task, mode = "signal") => {
     const owner = getMember(task.ownerId);
     const needMember = getMember(task.needId);
     const category = categoryMeta[task.category] || categoryMeta[fallbackCategoryId];
@@ -1452,9 +1461,11 @@ function App() {
           focusedTaskId === task.id ? "focused" : ""
         }`}
       >
-        <div className={`task-speech-bubble ${task.status}`}>
-          <span>{statusMeta[task.status].bubble}</span>
-        </div>
+        {mode === "signal" && statusMeta[task.status].bubble && (
+          <div className={`task-speech-bubble ${task.status}`}>
+            <span>{statusMeta[task.status].bubble}</span>
+          </div>
+        )}
 
         <article
           id={`task-${task.id}`}
@@ -1492,7 +1503,10 @@ function App() {
               </span>
             </div>
 
-            <span className="task-owner">{owner?.name}</span>
+            <span className="task-owner game-owner-badge" title={`担当: ${owner?.name}`}>
+              <span className="game-owner-avatar">{owner?.avatar || createAvatarFromName(owner?.name || "?")}</span>
+              <span className="game-owner-name">{owner?.name}</span>
+            </span>
           </div>
 
           <h3>{task.title}</h3>
@@ -1508,7 +1522,9 @@ function App() {
     );
   };
 
-  const renderCluster = (status) => {
+  const renderDetectBubble = () => null;
+
+  const renderCluster = (status, mode = "signal") => {
     const clusterTasks = getTasksByStatus(status);
     const isDragOver = dragOverStatus === status;
 
@@ -1516,12 +1532,16 @@ function App() {
       <section
         key={status}
         className={`status-cluster cluster-${status} ${
-          isDragOver ? "drag-over" : ""
-        } ${clusterTasks.length > 0 ? "has-items" : ""}`}
+          mode === "signal" && signalStatuses.includes(status) ? "signal-detect-cluster" : ""
+        } ${mode === "flow" ? "flow-lane" : "signal-lane"} ${isDragOver ? "drag-over" : ""} ${
+          clusterTasks.length > 0 ? "has-items" : ""
+        }`}
         onDragOver={(event) => handleClusterDragOver(event, status)}
         onDragLeave={() => setDragOverStatus(null)}
         onDrop={(event) => handleClusterDrop(event, status)}
       >
+        {mode === "signal" && renderDetectBubble(status, clusterTasks.length)}
+
         <div className="cluster-header">
           <div className="cluster-title-row">
             <span className={`cluster-icon ${status}`}>
@@ -1535,8 +1555,8 @@ function App() {
           </div>
 
           <div className="cluster-status-right">
-            {clusterTasks.length > 0 && <span className="signal-on">サインあり</span>}
             <span className="cluster-count">{clusterTasks.length}</span>
+            <span className="cluster-count-label">件</span>
           </div>
         </div>
 
@@ -1544,7 +1564,7 @@ function App() {
 
         <div className="cluster-drop-zone">
           {clusterTasks.length > 0 ? (
-            clusterTasks.map((task) => renderTaskCard(task))
+            clusterTasks.map((task) => renderTaskCard(task, mode))
           ) : (
             <div className="cluster-empty">
               <span>{statusMeta[status].icon}</span>
@@ -1557,32 +1577,53 @@ function App() {
   };
 
 
-  const renderQuickSignalDock = () => {
-    const quickStatuses = ["HELP", "WAIT", "CHECK", "REVIEW"];
+  const renderProgressCrewBadges = () => {
+    const memberSummaries = members.map((member) => {
+      const currentTask = getCurrentTaskForMember(member.id);
+      const mainStatus = currentTask?.status || "DONE";
+      const hasSignal = currentTask && signalStatuses.includes(currentTask.status);
+
+      return {
+        member,
+        currentTask,
+        mainStatus,
+        hasSignal,
+      };
+    });
 
     return (
-      <section className="hero-card surface" aria-label="簡易サイン設置">
-        <div>
-          <p className="eyebrow">Quick Signal</p>
-          <strong>軽くサインを置く</strong>
-          <span>
-            重い報告にする前に、止まりそうな場所だけ置く。細かい整理はあとでOK。
-          </span>
+      <div className="member-status-strip" aria-label="メンバー状況">
+        <div className="member-status-label">
+          <span>メンバー</span>
         </div>
 
-        <div className="hero-tags">
-          {quickStatuses.map((status) => (
+        <div className="member-status-list">
+          {memberSummaries.map(({ member, currentTask, mainStatus, hasSignal }) => (
             <button
+              key={`member-status-${member.id}`}
               type="button"
-              className="secondary-action compact-button"
-              key={status}
-              onClick={() => openCreateModal(status)}
+              className={`member-status-chip status-${mainStatus} ${hasSignal ? "has-signal" : ""}`}
+              onClick={() => handleMemberClick(member.id)}
+              title={currentTask?.title || "今は大きなサインなし"}
             >
-              {statusMeta[status].label} {statusCodeLabels[status]}
+              <span className="member-status-avatar">{member.avatar}</span>
+              <span className="member-status-body">
+                <strong>{member.name}</strong>
+                <small>
+                  {currentTask
+                    ? hasSignal
+                      ? statusMeta[mainStatus].signal || getStatusLabel(mainStatus)
+                      : getStatusLabel(mainStatus)
+                    : "待機"}
+                </small>
+              </span>
+              <span className={`member-status-mark ${mainStatus}`}>
+                {statusMeta[mainStatus]?.icon || "✓"}
+              </span>
             </button>
           ))}
         </div>
-      </section>
+      </div>
     );
   };
 
@@ -1763,7 +1804,10 @@ function App() {
               {category?.label}
             </span>
 
-            <span className="task-owner">{owner?.name}</span>
+            <span className="task-owner game-owner-badge" title={`担当: ${owner?.name}`}>
+              <span className="game-owner-avatar">{owner?.avatar || createAvatarFromName(owner?.name || "?")}</span>
+              <span className="game-owner-name">{owner?.name}</span>
+            </span>
           </div>
 
           <p className="modal-description">{selectedTask.description}</p>
@@ -2196,7 +2240,7 @@ function App() {
               {saveNotice}
             </div>
 
-            <button type="button" className="primary-action" onClick={() => openCreateModal("HELP")}>
+            <button type="button" className="primary-action" onClick={openCreateModal}>
               + サインを置く
             </button>
 
@@ -2282,35 +2326,20 @@ function App() {
           </div>
         </section>
 
-        {renderQuickSignalDock()}
-
-        <section className="summary-grid">
-          <div className="summary-card surface">
-            <span className="summary-label">サイン</span>
-            <strong className="summary-value">{tasks.length}</strong>
-            <p>いま見えている作業</p>
+        <section className="compact-status-bar surface" aria-label="ボード概要">
+          <div className="compact-status-main">
+            <span>全カード <strong>{tasks.length}</strong></span>
+            <span>拾うサイン <strong>{signalTasks.length}</strong></span>
+            <span>完了 <strong>{completedCount}</strong></span>
           </div>
-
-          <div className="summary-card surface done-summary">
-            <span className="summary-label">完了</span>
-            <strong className="summary-value">{completedCount}</strong>
-            <p>グリーンになった作業</p>
-          </div>
-
-          <div className="summary-card surface summary-highlight">
-            <span className="summary-label">拾うサイン</span>
-            <strong className="summary-value">{signalTasks.length}</strong>
-            <p>拾いたいサイン</p>
-          </div>
-
-          <div className="summary-card surface">
-            <span className="summary-label">保存状態</span>
-            <strong className="summary-value summary-text">保存済み</strong>
-            <p>変更は自動で保存されます</p>
+          <div className={`compact-save-pill ${saveNotice === "保存しました" ? "saved-pop" : ""}`}>
+            <i />
+            {saveNotice}
           </div>
         </section>
 
-        <section className="board-layout">
+        <section className={`board-layout ${activeBoardTab === "progress" ? "flow-focus-layout" : "signal-focus-layout"}`} data-ui-version="v9.6-flow-sign-tabs">
+          {false && activeBoardTab === "signals" && (
           <aside className="panel members-panel surface">
             <div className="panel-heading panel-heading-row">
               <div>
@@ -2442,153 +2471,93 @@ function App() {
               })}
             </div>
           </aside>
+          )}
 
-          <section className="panel tasks-panel surface">
+          <section className="panel tasks-panel surface ui-organized-board">
             <div className="panel-heading board-heading">
               <div>
                 <p className="eyebrow">プロジェクトボード</p>
-                <h2>プロジェクトボード</h2>
+                <h2>{activeBoardTab === "progress" ? "フロー" : "サイン"}</h2>
                 <p className="panel-subtext">
-                  上段で拾うサインを見つけ、下段でこれから・作業中・完了の流れを見ます。カードはクリックで編集できます。
+                  {activeBoardTab === "progress"
+                    ? "これから・作業中・完了だけに絞って、プロジェクトの流れを確認します。"
+                    : "手助け・方向相談・確認・レビューをまとめ、右パネルと合わせて拾う順番を見ます。"}
                 </p>
               </div>
 
-              <div className="filter-tabs" aria-label="状態フィルター">
-                {statusList.map((status) => (
-                  <button
-                    key={status}
-                    type="button"
-                    className={activeFilter === status ? "active" : ""}
-                    onClick={() => setActiveFilter(status)}
-                  >
-                    {getStatusLabel(status)}
-                  </button>
-                ))}
+              <div className="board-mode-tabs" aria-label="ボード表示切替">
+                <button
+                  type="button"
+                  className={activeBoardTab === "progress" ? "active" : ""}
+                  onClick={() => setActiveBoardTab("progress")}
+                >
+                  <strong>フロー</strong>
+                </button>
+                <button
+                  type="button"
+                  className={activeBoardTab === "signals" ? "active" : ""}
+                  onClick={() => setActiveBoardTab("signals")}
+                >
+                  <strong>サイン</strong>
+                </button>
               </div>
             </div>
 
-            <div className="cluster-board">
-              {visibleSupportClusters.length > 0 && (
+            <div className="ui-board-note route-note">
+              <strong>{activeBoardTab === "progress" ? "見る順番：フロー → サイン" : "見る順番：右パネル → カード"}</strong>
+              <span>
+                {activeBoardTab === "progress"
+                  ? "まず流れを広く見て、気になる停滞はサイン側で拾います。"
+                  : "サインカードを見て、必要なものだけ右側で拾います。"}
+              </span>
+            </div>
+
+            {false && activeBoardTab === "signals" && (
+              <div className="signal-route-strip" aria-label="サイン確認の導線">
+                <span>① 右の優先サインを見る</span>
+                <span>② 気になる分類を見る</span>
+                <span>③ カードを開く</span>
+              </div>
+            )}
+
+            {activeBoardTab === "progress" ? (
+              <>
+                {renderProgressCrewBadges()}
+                <div className="cluster-board ui-tab-board progress-board">
                 <div className="cluster-section">
                   <div className="cluster-section-heading">
-                    <h3>拾うサイン</h3>
+                    <h3>フロー</h3>
+                    <span>これから / 作業中 / 完了</span>
+                  </div>
+
+                  <div className="cluster-grid progress-tab-grid">
+                    {flowClusters.map((status) => renderCluster(status, "flow"))}
+                  </div>
+                </div>
+                </div>
+              </>
+            ) : (
+              <div className="cluster-board ui-tab-board signal-board">
+                <div className="cluster-section">
+                  <div className="cluster-section-heading">
+                    <h3>サイン</h3>
                     <span>手助け / 方向相談 / 確認 / レビュー</span>
                   </div>
 
-                  <div className="cluster-grid support-grid">
-                    {visibleSupportClusters.map((status) => renderCluster(status))}
+                  <div className="cluster-grid signal-tab-grid">
+                    {supportClusters.map((status) => renderCluster(status, "signal"))}
                   </div>
                 </div>
-              )}
-
-              {visibleFlowClusters.length > 0 && (
-                <div className={`cluster-section progress-timeline-section ${
-                  isProgressTimelineOpen ? "open" : "collapsed"
-                }`}>
-                  <div className="cluster-section-heading progress-heading">
-                    <div>
-                      <h3>進行タイムライン</h3>
-                      <p>これから・作業中・完了は必要な時だけ開いて、流れを確認します。</p>
-                    </div>
-
-                    <div className="progress-heading-actions">
-                      <span>これから / 作業中 / 完了</span>
-                      <button
-                        type="button"
-                        className="progress-toggle-button"
-                        onClick={() => setIsProgressTimelineOpen((current) => !current)}
-                        aria-expanded={isProgressTimelineOpen}
-                      >
-                        {isProgressTimelineOpen ? "閉じる" : "開く"}
-                      </button>
-                    </div>
-                  </div>
-
-                  {!isProgressTimelineOpen ? (
-                    <div className="progress-collapsed-summary">
-                      {flowClusters.map((status) => (
-                        <button
-                          key={`progress-summary-${status}`}
-                          type="button"
-                          className={`progress-summary-chip ${status}`}
-                          onClick={() => {
-                            setActiveFilter(status);
-                            setIsProgressTimelineOpen(true);
-                          }}
-                        >
-                          <span className={`progress-summary-icon ${status}`}>
-                            {statusMeta[status].icon}
-                          </span>
-                          <span className="progress-summary-text">
-                            <strong>{getStatusLabel(status)}</strong>
-                            <small>{statusMeta[status].laneHelp}</small>
-                          </span>
-                          <b>{getTasksByStatus(status).length}</b>
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="progress-timeline-board">
-                      <div className="progress-rail" aria-hidden="true" />
-
-                      {visibleFlowClusters.map((status, index) => {
-                        const laneTasks = getTasksByStatus(status);
-
-                        return (
-                          <section
-                            key={`timeline-${status}`}
-                            className={`progress-lane lane-${status} ${
-                              dragOverStatus === status ? "drag-over" : ""
-                            }`}
-                            onDragOver={(event) => handleClusterDragOver(event, status)}
-                            onDragLeave={() => setDragOverStatus(null)}
-                            onDrop={(event) => handleClusterDrop(event, status)}
-                          >
-                            <div className="progress-lane-head">
-                              <span className={`progress-step-icon ${status}`}>
-                                {statusMeta[status].icon}
-                              </span>
-                              <div>
-                                <h4>{getStatusLabel(status)}</h4>
-                                <p>{statusMeta[status].laneHelp}</p>
-                              </div>
-                              <b>{laneTasks.length}</b>
-                            </div>
-
-                            <div className="progress-lane-body">
-                              {laneTasks.length > 0 ? (
-                                laneTasks.map((task) => renderTaskCard(task))
-                              ) : (
-                                <div className="progress-empty">
-                                  <span>{index + 1}</span>
-                                  <p>ここにカードを置けます</p>
-                                </div>
-                              )}
-                            </div>
-                          </section>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {visibleSupportClusters.length === 0 &&
-                visibleFlowClusters.length === 0 && (
-                  <div className="empty-state">
-                    <strong>このフィルターに表示するクラスタはありません。</strong>
-                    <p>「すべて」に戻すと、全体の流れを確認できます。</p>
-                  </div>
-                )}
-            </div>
+              </div>
+            )}
           </section>
 
           <aside className="panel signals-panel surface">
             <div className="panel-heading">
-              <p className="eyebrow">次のサイン</p>
-              <h2>次に拾うサイン</h2>
+              <p className="eyebrow">NEXT SIGN</p>
+              <h2>次に拾う</h2>
               <p className="panel-subtext">
-                支援が必要そうなカードを、重くならない順に並べます。
+                迷ったらここ。今見るべきカードを1件だけ大きく出します。
               </p>
             </div>
 
@@ -2598,8 +2567,8 @@ function App() {
                   <span className={`task-status-pill ${nextSupportTask.status}`}>
                     {renderStatusLabel(nextSupportTask.status)}
                   </span>
-                  <span className="next-support-bubble">
-                    {statusMeta[nextSupportTask.status].bubble}
+                  <span className={`next-support-bubble detect-${nextSupportTask.status}`}>
+                    {statusMeta[nextSupportTask.status].signal || statusCodeLabels[nextSupportTask.status]}
                   </span>
                 </div>
 
@@ -2616,7 +2585,7 @@ function App() {
                     className="secondary-action"
                     onClick={() => scrollToTask(nextSupportTask.id)}
                   >
-                    このカードを見る
+                    場所を見る
                   </button>
 
                   <button
@@ -2624,7 +2593,7 @@ function App() {
                     className="primary-action"
                     onClick={() => resolveSupportTask(nextSupportTask, false)}
                   >
-                    {supportActionMeta[nextSupportTask.status]?.label || "進める"}
+                    {supportActionMeta[nextSupportTask.status]?.label || "拾った"}
                   </button>
                 </div>
 
@@ -2646,7 +2615,7 @@ function App() {
                   key={`summary-${status}`}
                   type="button"
                   className={`signal-summary-chip ${status}`}
-                  onClick={() => setActiveFilter(status)}
+                  onClick={() => { setActiveFilter(status); setActiveBoardTab("signals"); }}
                 >
                   <span>{getStatusLabel(status)}</span>
                   <strong>{active拾うサイン[status]}</strong>
@@ -2654,35 +2623,45 @@ function App() {
               ))}
             </div>
 
-            <div className="support-queue">
-              <div className="support-queue-heading">
-                <h3>支援キュー</h3>
-                <span>{supportQueue.length}</span>
-              </div>
+            <div className={`support-queue compact-queue ${isSupportQueueOpen ? "open" : ""}`}>
+              <button
+                type="button"
+                className="support-queue-toggle"
+                onClick={() => setIsSupportQueueOpen((current) => !current)}
+                aria-expanded={isSupportQueueOpen}
+              >
+                <span>他のサイン</span>
+                <strong>{supportQueue.length}件</strong>
+                <i>{isSupportQueueOpen ? "▲" : "▼"}</i>
+              </button>
 
-              {supportQueue.length > 0 ? (
-                supportQueue.map((task) => (
-                  <button
-                    key={`queue-${task.id}`}
-                    type="button"
-                    className={`signal-card status-${task.status}`}
-                    onClick={() => scrollToTask(task.id)}
-                  >
-                    <div className="signal-card-top">
-                      <span className={`task-status-pill ${task.status}`}>
-                        {renderStatusLabel(task.status)}
-                      </span>
-                      <small>{getMember(task.ownerId)?.name}</small>
+              {isSupportQueueOpen && (
+                <div className="support-queue-list">
+                  {supportQueue.length > 0 ? (
+                    supportQueue.map((task) => (
+                      <button
+                        key={`queue-${task.id}`}
+                        type="button"
+                        className={`signal-card status-${task.status}`}
+                        onClick={() => scrollToTask(task.id)}
+                      >
+                        <div className="signal-card-top">
+                          <span className={`task-status-pill ${task.status}`}>
+                            {renderStatusLabel(task.status)}
+                          </span>
+                          <small>{getMember(task.ownerId)?.name}</small>
+                        </div>
+
+                        <strong>{task.title}</strong>
+                        <p>{statusMeta[task.status].summary}</p>
+                      </button>
+                    ))
+                  ) : (
+                    <div className="empty-state compact-empty">
+                      <strong>キューは空です。</strong>
+                      <p>手助け・方向相談・確認・レビューが出ると並びます。</p>
                     </div>
-
-                    <strong>{task.title}</strong>
-                    <p>{statusMeta[task.status].summary}</p>
-                  </button>
-                ))
-              ) : (
-                <div className="empty-state compact-empty">
-                  <strong>キューは空です。</strong>
-                  <p>手助け・方向相談・確認・レビューが出ると並びます。</p>
+                  )}
                 </div>
               )}
             </div>

@@ -8251,3 +8251,127 @@ body .app-shell .signal-focus-layout .signal-board .task-card-wrap.focused .task
     filter: brightness(1.06);
   }
 }
+
+/* v9.6: フロー / サイン分離の最終調整
+   - フロータブはガントチャート風に落ち着かせる
+   - サインタブだけ吹き出し・アニメーションを使う
+   - 「サインあり」系の補助表記は出さない
+*/
+.signal-on,
+.cluster-status-right .signal-on,
+.cluster-status-right .signal-on::before,
+.cluster-status-right .signal-on::after {
+  display: none !important;
+}
+
+.flow-focus-layout .task-speech-bubble,
+.progress-board .task-speech-bubble,
+.flow-lane .task-speech-bubble,
+.flow-card .task-speech-bubble {
+  display: none !important;
+  animation: none !important;
+}
+
+.flow-focus-layout .task-card-wrap,
+.progress-board .task-card-wrap,
+.flow-lane .task-card-wrap {
+  padding-top: 0 !important;
+}
+
+.flow-focus-layout .progress-tab-grid,
+.progress-board .progress-tab-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
+.flow-focus-layout .progress-tab-grid::before,
+.progress-board .progress-tab-grid::before {
+  content: "";
+  position: absolute;
+  top: 74px;
+  left: 13%;
+  right: 13%;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(105, 132, 178, 0.12), rgba(17, 151, 255, 0.3), rgba(45, 187, 115, 0.24));
+  pointer-events: none;
+}
+
+.flow-focus-layout .flow-lane,
+.progress-board .flow-lane {
+  min-height: 420px;
+  padding: 16px;
+  background: linear-gradient(180deg, rgba(250, 253, 255, 0.9), rgba(255, 255, 255, 0.78));
+  border-color: rgba(105, 132, 178, 0.18);
+}
+
+.flow-focus-layout .flow-lane .cluster-header,
+.progress-board .flow-lane .cluster-header {
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(105, 132, 178, 0.16);
+}
+
+.flow-focus-layout .flow-lane .cluster-icon,
+.progress-board .flow-lane .cluster-icon {
+  width: 34px;
+  height: 34px;
+  font-size: 13px;
+}
+
+.flow-focus-layout .flow-lane .cluster-helper,
+.progress-board .flow-lane .cluster-helper {
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.flow-focus-layout .flow-lane .cluster-drop-zone,
+.progress-board .flow-lane .cluster-drop-zone {
+  gap: 10px;
+}
+
+.flow-focus-layout .flow-lane .task-card,
+.progress-board .flow-lane .task-card {
+  min-height: auto;
+  padding: 15px 13px 13px 17px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(69, 99, 145, 0.06);
+}
+
+.flow-focus-layout .flow-lane .task-card:hover,
+.progress-board .flow-lane .task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(69, 99, 145, 0.12);
+}
+
+.flow-focus-layout .flow-lane .task-card h3,
+.progress-board .flow-lane .task-card h3 {
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.flow-focus-layout .flow-lane .task-info-row,
+.progress-board .flow-lane .task-info-row {
+  gap: 6px;
+}
+
+.signal-focus-layout .signal-lane .task-speech-bubble,
+.signal-board .task-speech-bubble {
+  display: inline-flex;
+}
+
+.signal-focus-layout .signal-lane .task-card-wrap,
+.signal-board .task-card-wrap {
+  padding-top: 64px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .task-speech-bubble,
+  .task-card-wrap.status-HELP .task-speech-bubble,
+  .signal-board .task-card-wrap.status-HELP .task-speech-bubble {
+    animation: none !important;
+  }
+}
