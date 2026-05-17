@@ -1520,18 +1520,7 @@ function App() {
     );
   };
 
-  const renderDetectBubble = (status, count) => {
-    if (!signalStatuses.includes(status) || count === 0) {
-      return null;
-    }
-
-    return (
-      <div className={`detect-bubble detect-${status}`} aria-label={`${getStatusLabel(status)}を拾ってほしい吹き出し`}>
-        <span className="detect-bubble-main">{statusMeta[status].signal || statusCodeLabels[status]}</span>
-        <span className="detect-bubble-sub">拾って</span>
-      </div>
-    );
-  };
+  const renderDetectBubble = () => null;
 
   const renderCluster = (status) => {
     const clusterTasks = getTasksByStatus(status);
@@ -1601,10 +1590,10 @@ function App() {
       .filter(({ currentTask }) => currentTask);
 
     return (
-      <div className="progress-crew-strip" aria-label="進行中メンバーのバッジ">
+      <div className="progress-crew-strip" aria-label="着手中メンバー">
         <div className="progress-crew-heading">
-          <span>CREW</span>
-          <strong>着手中バッジ</strong>
+          <span>メンバー</span>
+          <strong>着手中</strong>
         </div>
 
         <div className="progress-crew-list">
@@ -1639,7 +1628,7 @@ function App() {
               );
             })
           ) : (
-            <span className="crew-empty">いま着手中のカードはありません</span>
+            <span className="crew-empty">着手中のカードはありません</span>
           )}
         </div>
       </div>
@@ -2496,11 +2485,11 @@ function App() {
             <div className="panel-heading board-heading">
               <div>
                 <p className="eyebrow">プロジェクトボード</p>
-                <h2>{activeBoardTab === "progress" ? "流れビュー" : "サインビュー"}</h2>
+                <h2>{activeBoardTab === "progress" ? "フロー" : "サイン"}</h2>
                 <p className="panel-subtext">
                   {activeBoardTab === "progress"
-                    ? "TODO → DOING → DONE だけを見る。担当者はカード右上のバッジで確認。"
-                    : "上に浮いた吹き出しを見て、拾うべき詰まりから確認します。"}
+                    ? "これから・作業中・完了だけに絞って、プロジェクトの流れを確認します。"
+                    : "手助け・方向相談・確認・レビューをまとめ、右パネルと合わせて拾う順番を見ます。"}
                 </p>
               </div>
 
@@ -2511,8 +2500,8 @@ function App() {
                   onClick={() => setActiveBoardTab("progress")}
                 >
                   <span>1</span>
-                  <strong>流れを見る</strong>
-                  <small>進捗確認</small>
+                  <strong>フロー</strong>
+                  <small>流れを確認</small>
                 </button>
                 <button
                   type="button"
@@ -2520,25 +2509,25 @@ function App() {
                   onClick={() => setActiveBoardTab("signals")}
                 >
                   <span>2</span>
-                  <strong>詰まりを拾う</strong>
-                  <small>HELP / 確認</small>
+                  <strong>サイン</strong>
+                  <small>詰まりを拾う</small>
                 </button>
               </div>
             </div>
 
             <div className="ui-board-note route-note">
-              <strong>{activeBoardTab === "progress" ? "見る順番：流れ → サイン" : "見る順番：吹き出し → 右パネル → カード"}</strong>
+              <strong>{activeBoardTab === "progress" ? "見る順番：フロー → サイン" : "見る順番：右パネル → カード"}</strong>
               <span>
                 {activeBoardTab === "progress"
-                  ? "全体の進み方だけ確認し、気になるものは右のサインへ戻します。"
-                  : "上に浮いた吹き出しが入口。右側で優先順位を見て、必要なカードだけ開きます。"}
+                  ? "まず流れを広く見て、気になる停滞はサイン側で拾います。"
+                  : "右側の「次に拾う」を入口にして、必要なカードだけ開きます。"}
               </span>
             </div>
 
-            {activeBoardTab === "signals" && (
+            {false && activeBoardTab === "signals" && (
               <div className="signal-route-strip" aria-label="サイン確認の導線">
-                <span>① 上の吹き出しを見る</span>
-                <span>② 右の「次に拾う」を見る</span>
+                <span>① 右の優先サインを見る</span>
+                <span>② 気になる分類を見る</span>
                 <span>③ カードを開く</span>
               </div>
             )}
@@ -2549,8 +2538,8 @@ function App() {
                 <div className="cluster-board ui-tab-board progress-board">
                 <div className="cluster-section">
                   <div className="cluster-section-heading">
-                    <h3>流れビュー</h3>
-                    <span>これから → 作業中 → 完了</span>
+                    <h3>フロー</h3>
+                    <span>これから / 作業中 / 完了</span>
                   </div>
 
                   <div className="cluster-grid progress-tab-grid">

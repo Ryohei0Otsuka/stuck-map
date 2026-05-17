@@ -5145,3 +5145,266 @@ h1 {
     animation: none !important;
   }
 }
+
+
+/* =========================================================
+   STUCK_MAP_SIMPLE_FLOW_V88
+   目的: ガチャガチャした検知吹き出しを廃止し、配色と導線を落ち着かせる
+   ========================================================= */
+
+/* 検知吹き出し・導線チップは廃止 */
+.detect-bubble,
+.detect-bubble::before,
+.detect-bubble::after,
+.detect-bubble-main,
+.detect-bubble-sub,
+.signal-route-strip {
+  display: none !important;
+  animation: none !important;
+}
+
+/* 全体の色味を少し落ち着かせる */
+.app-shell {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(100, 148, 210, 0.12), transparent 28%),
+    radial-gradient(circle at 88% 18%, rgba(126, 190, 186, 0.10), transparent 26%),
+    linear-gradient(180deg, #f7faff 0%, #f9fbff 48%, #f6f9fc 100%) !important;
+}
+
+.surface {
+  background: rgba(255, 255, 255, 0.82) !important;
+  box-shadow: 0 14px 34px rgba(55, 82, 120, 0.08) !important;
+}
+
+/* 上部の切替を「フロー / サイン」として直感的に */
+.board-mode-tabs {
+  gap: 10px !important;
+}
+
+.board-mode-tabs button {
+  min-width: 144px !important;
+  padding: 14px 18px !important;
+  border-radius: 22px !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+  border: 1px solid rgba(89, 126, 170, 0.18) !important;
+  box-shadow: none !important;
+}
+
+.board-mode-tabs button span {
+  display: none !important;
+}
+
+.board-mode-tabs button strong {
+  font-size: 17px !important;
+  letter-spacing: -0.02em !important;
+}
+
+.board-mode-tabs button small {
+  font-size: 11px !important;
+  color: #6f819c !important;
+}
+
+.board-mode-tabs button.active {
+  background: linear-gradient(135deg, #214363, #2b5275) !important;
+  color: #fff !important;
+  box-shadow: 0 14px 30px rgba(33, 67, 99, 0.18) !important;
+}
+
+.board-mode-tabs button.active small {
+  color: rgba(255, 255, 255, 0.78) !important;
+}
+
+/* 説明は細く。読むUIではなく迷わないUIへ */
+.ui-board-note,
+.route-note {
+  min-height: auto !important;
+  padding: 11px 14px !important;
+  border-radius: 18px !important;
+  background: rgba(248, 251, 255, 0.82) !important;
+  border: 1px solid rgba(89, 126, 170, 0.14) !important;
+}
+
+.route-note strong,
+.ui-board-note strong {
+  font-size: 12px !important;
+  color: #24415f !important;
+}
+
+.route-note span,
+.ui-board-note span {
+  font-size: 12px !important;
+  color: #627690 !important;
+}
+
+/* メンバー帯：ゲーム風を弱め、実務でも見やすい着手中メンバー表示へ */
+.progress-crew-strip {
+  padding: 12px !important;
+  border-radius: 20px !important;
+  background: rgba(248, 251, 255, 0.88) !important;
+  border: 1px solid rgba(89, 126, 170, 0.14) !important;
+  box-shadow: none !important;
+}
+
+.progress-crew-heading {
+  min-width: 104px !important;
+  background: #24415f !important;
+  color: #fff !important;
+  border-radius: 18px !important;
+}
+
+.progress-crew-heading span {
+  font-size: 11px !important;
+  letter-spacing: 0.12em !important;
+}
+
+.progress-crew-heading strong {
+  font-size: 12px !important;
+  opacity: 0.78 !important;
+}
+
+.progress-crew-list {
+  gap: 10px !important;
+}
+
+.crew-badge {
+  min-width: 210px !important;
+  min-height: 64px !important;
+  padding: 10px 12px !important;
+  border-radius: 18px !important;
+  background: rgba(255, 255, 255, 0.86) !important;
+  border: 1px solid rgba(89, 126, 170, 0.16) !important;
+  box-shadow: none !important;
+}
+
+.crew-badge:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 10px 24px rgba(55, 82, 120, 0.08) !important;
+}
+
+.crew-avatar,
+.game-owner-avatar {
+  background: #f4f8fc !important;
+  color: #2d4f70 !important;
+  border-color: rgba(89, 126, 170, 0.22) !important;
+  box-shadow: none !important;
+}
+
+.crew-mini-signals {
+  opacity: 0.7 !important;
+}
+
+/* クラスタの色を淡くして、カードと文字を読みやすく */
+.status-cluster {
+  border-width: 1px !important;
+  box-shadow: none !important;
+  background: rgba(250, 252, 255, 0.82) !important;
+}
+
+.cluster-HELP {
+  background: linear-gradient(180deg, rgba(255, 248, 243, 0.9), rgba(255, 255, 255, 0.82)) !important;
+  border-color: rgba(230, 142, 86, 0.30) !important;
+}
+
+.cluster-WAIT {
+  background: linear-gradient(180deg, rgba(249, 246, 255, 0.92), rgba(255, 255, 255, 0.82)) !important;
+  border-color: rgba(145, 116, 215, 0.26) !important;
+}
+
+.cluster-CHECK {
+  background: linear-gradient(180deg, rgba(245, 250, 255, 0.94), rgba(255, 255, 255, 0.82)) !important;
+  border-color: rgba(82, 157, 213, 0.24) !important;
+}
+
+.cluster-REVIEW {
+  background: linear-gradient(180deg, rgba(244, 252, 249, 0.94), rgba(255, 255, 255, 0.82)) !important;
+  border-color: rgba(67, 170, 145, 0.24) !important;
+}
+
+.cluster-TODO,
+.cluster-DOING,
+.cluster-DONE {
+  background: linear-gradient(180deg, rgba(249, 252, 255, 0.94), rgba(255, 255, 255, 0.84)) !important;
+  border-color: rgba(89, 126, 170, 0.16) !important;
+}
+
+.cluster-title-row h3 {
+  color: #233f5e !important;
+  font-size: 20px !important;
+}
+
+.cluster-icon {
+  box-shadow: none !important;
+}
+
+.cluster-helper {
+  background: rgba(255, 255, 255, 0.72) !important;
+  color: #60758e !important;
+}
+
+/* サインカードの主張を控えめに */
+.task-card-wrap {
+  padding-top: 0 !important;
+}
+
+.task-speech-bubble {
+  display: none !important;
+}
+
+.task-card {
+  padding: 18px 14px 14px 18px !important;
+  border-radius: 18px !important;
+  background: rgba(255, 255, 255, 0.90) !important;
+  box-shadow: 0 10px 24px rgba(55, 82, 120, 0.06) !important;
+}
+
+.task-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 14px 30px rgba(55, 82, 120, 0.10) !important;
+}
+
+.task-card h3 {
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+  color: #223f5e !important;
+}
+
+.task-status-pill {
+  min-height: 24px !important;
+  padding: 0 9px !important;
+  box-shadow: none !important;
+}
+
+.task-status-pill.HELP { background: #df8050 !important; }
+.task-status-pill.WAIT { background: #7d61c7 !important; }
+.task-status-pill.CHECK { background: #318acb !important; }
+.task-status-pill.REVIEW { background: #2fa995 !important; }
+.task-status-pill.DOING { background: #416ee3 !important; }
+.task-status-pill.TODO { background: #8b9ab0 !important; }
+.task-status-pill.DONE { background: #43a66d !important; }
+
+.reason-chip,
+.need-chip,
+.category-pill,
+.task-owner {
+  background: rgba(246, 249, 253, 0.92) !important;
+  border-color: rgba(89, 126, 170, 0.14) !important;
+  color: #5c718c !important;
+}
+
+/* 右パネル：次に拾うものだけが目に入るように */
+.next-support-card {
+  border-radius: 22px !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  box-shadow: 0 12px 28px rgba(55, 82, 120, 0.08) !important;
+}
+
+.next-support-bubble {
+  animation: none !important;
+  box-shadow: none !important;
+  border-width: 1px !important;
+}
+
+.signal-summary-chip {
+  background: rgba(255, 255, 255, 0.82) !important;
+  box-shadow: none !important;
+}
