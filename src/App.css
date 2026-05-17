@@ -8638,3 +8638,81 @@ body .app-shell .signal-focus-layout .signal-board .task-card-wrap.focused .task
     top: 8px;
   }
 }
+
+
+/* v10.9: replace glass topbar surface with solid app header */
+.app-frame {
+  padding-top: 112px;
+}
+
+.app-header.topbar {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  width: min(calc(100vw - 48px), 1532px);
+  margin: 0;
+  transform: translateX(-50%);
+  z-index: 180;
+  isolation: isolate;
+  overflow: visible;
+  border: 1px solid rgba(105, 132, 178, 0.28);
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow:
+    0 18px 54px rgba(45, 74, 113, 0.16),
+    0 0 0 1px rgba(255, 255, 255, 0.9) inset;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.app-header.topbar::after {
+  content: none;
+}
+
+.app-header .topbar-left,
+.app-header .project-title-area,
+.app-header .topbar-actions {
+  position: relative;
+  z-index: 2;
+}
+
+.app-header .project-name-button,
+.app-header .project-edit-inline input,
+.app-header .save-indicator,
+.app-header .secondary-action {
+  background-color: rgba(255, 255, 255, 0.96);
+}
+
+.app-header + .hero-panel,
+.hero-panel,
+.summary-grid,
+.project-complete-banner,
+.board-layout {
+  position: relative;
+  z-index: 1;
+}
+
+.task-card,
+.task-card-wrap,
+.status-cluster,
+.panel {
+  scroll-margin-top: 128px;
+}
+
+@media (max-width: 1080px) {
+  .app-frame {
+    padding-top: 148px;
+  }
+
+  .app-header.topbar {
+    top: 8px;
+    width: calc(100vw - 24px);
+  }
+
+  .task-card,
+  .task-card-wrap,
+  .status-cluster,
+  .panel {
+    scroll-margin-top: 210px;
+  }
+}

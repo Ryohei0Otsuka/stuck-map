@@ -2343,7 +2343,7 @@ function App() {
       <div className="ripple ripple-b" />
 
       <div className="app-frame">
-        <header className="topbar surface">
+        <header className="app-header topbar">
           <div className="topbar-left">
             <div className="logo-mark">
               <span />
