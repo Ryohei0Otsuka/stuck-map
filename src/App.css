@@ -8350,3 +8350,208 @@ body {
     box-shadow: 0 16px 30px rgba(24, 183, 159, 0.23);
   }
 }
+
+/* =========================================================
+   STUCK_MAP_VARIABLE_PYOKO_SIGNAL_V101
+   v10.1: .task-speech-bubble 系統を直接、CSS変数で確実に常時アニメーション
+   既存の transform: none !important / margin-top: 0 !important に負けないため、
+   transform 自体は固定し、内部の CSS custom properties を動かす。
+   ========================================================= */
+
+@property --bubble-x {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --bubble-y {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --bubble-scale {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
+@property --bubble-rotate {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@property --bubble-brightness {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
+.signal-focus-layout .signal-board .task-speech-bubble.HELP,
+.signal-focus-layout .signal-board .task-speech-bubble.WAIT,
+.signal-focus-layout .signal-board .task-speech-bubble.CHECK,
+.signal-focus-layout .signal-board .task-speech-bubble.REVIEW,
+.task-speech-bubble.HELP,
+.task-speech-bubble.WAIT,
+.task-speech-bubble.CHECK,
+.task-speech-bubble.REVIEW {
+  --bubble-x: 0px;
+  --bubble-y: 0px;
+  --bubble-scale: 1;
+  --bubble-rotate: 0deg;
+  --bubble-brightness: 1;
+
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+
+  /* ここが肝。transformは!importantでもOK。中の変数だけをkeyframesで動かす */
+  transform:
+    translate3d(var(--bubble-x), var(--bubble-y), 0)
+    rotate(var(--bubble-rotate))
+    scale(var(--bubble-scale)) !important;
+  filter: brightness(var(--bubble-brightness)) !important;
+
+  margin-top: 0 !important;
+  margin-left: 0 !important;
+  transform-origin: center bottom !important;
+  will-change: transform, filter, box-shadow !important;
+  backface-visibility: hidden;
+  animation-iteration-count: infinite !important;
+  animation-timing-function: ease-in-out !important;
+  animation-fill-mode: both !important;
+}
+
+.signal-focus-layout .signal-board .task-speech-bubble.HELP,
+.task-speech-bubble.HELP {
+  animation-name: variableHelpPyokoV101 !important;
+  animation-duration: 1.15s !important;
+}
+
+.signal-focus-layout .signal-board .task-speech-bubble.WAIT,
+.task-speech-bubble.WAIT {
+  animation-name: variableWaitPyokoV101 !important;
+  animation-duration: 1.45s !important;
+}
+
+.signal-focus-layout .signal-board .task-speech-bubble.CHECK,
+.task-speech-bubble.CHECK {
+  animation-name: variableCheckPyokoV101 !important;
+  animation-duration: 1.25s !important;
+}
+
+.signal-focus-layout .signal-board .task-speech-bubble.REVIEW,
+.task-speech-bubble.REVIEW {
+  animation-name: variableReviewPyokoV101 !important;
+  animation-duration: 1.65s !important;
+}
+
+/* hover / focused でも同じアニメーションを維持 */
+.signal-focus-layout .signal-board .task-card-wrap:hover .task-speech-bubble.HELP,
+.signal-focus-layout .signal-board .task-card-wrap.focused .task-speech-bubble.HELP {
+  animation-name: variableHelpPyokoV101 !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap:hover .task-speech-bubble.WAIT,
+.signal-focus-layout .signal-board .task-card-wrap.focused .task-speech-bubble.WAIT {
+  animation-name: variableWaitPyokoV101 !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap:hover .task-speech-bubble.CHECK,
+.signal-focus-layout .signal-board .task-card-wrap.focused .task-speech-bubble.CHECK {
+  animation-name: variableCheckPyokoV101 !important;
+}
+
+.signal-focus-layout .signal-board .task-card-wrap:hover .task-speech-bubble.REVIEW,
+.signal-focus-layout .signal-board .task-card-wrap.focused .task-speech-bubble.REVIEW {
+  animation-name: variableReviewPyokoV101 !important;
+}
+
+@keyframes variableHelpPyokoV101 {
+  0%, 100% {
+    --bubble-y: 0px;
+    --bubble-x: 0px;
+    --bubble-scale: 1;
+    --bubble-rotate: 0deg;
+    --bubble-brightness: 1;
+    box-shadow: 0 12px 24px rgba(255, 138, 61, 0.18);
+  }
+  48% {
+    --bubble-y: -7px;
+    --bubble-x: 0px;
+    --bubble-scale: 1.055;
+    --bubble-rotate: 0deg;
+    --bubble-brightness: 1.04;
+    box-shadow: 0 18px 32px rgba(255, 138, 61, 0.28);
+  }
+}
+
+@keyframes variableWaitPyokoV101 {
+  0%, 100% {
+    --bubble-y: 0px;
+    --bubble-x: 0px;
+    --bubble-scale: 1;
+    --bubble-rotate: 0deg;
+  }
+  45% {
+    --bubble-y: -5px;
+    --bubble-x: 4px;
+    --bubble-scale: 1.035;
+    --bubble-rotate: 0.8deg;
+  }
+  72% {
+    --bubble-y: -2px;
+    --bubble-x: -2px;
+    --bubble-scale: 1.015;
+    --bubble-rotate: -0.5deg;
+  }
+}
+
+@keyframes variableCheckPyokoV101 {
+  0%, 100% {
+    --bubble-y: 0px;
+    --bubble-x: 0px;
+    --bubble-scale: 1;
+    --bubble-brightness: 1;
+  }
+  50% {
+    --bubble-y: -6px;
+    --bubble-x: 0px;
+    --bubble-scale: 1.04;
+    --bubble-brightness: 1.05;
+  }
+}
+
+@keyframes variableReviewPyokoV101 {
+  0%, 100% {
+    --bubble-y: 0px;
+    --bubble-x: 0px;
+    --bubble-scale: 1;
+    box-shadow: 0 12px 24px rgba(24, 183, 159, 0.16);
+  }
+  50% {
+    --bubble-y: -4px;
+    --bubble-x: 0px;
+    --bubble-scale: 1.025;
+    box-shadow: 0 16px 30px rgba(24, 183, 159, 0.24);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signal-focus-layout .signal-board .task-speech-bubble.HELP,
+  .signal-focus-layout .signal-board .task-speech-bubble.WAIT,
+  .signal-focus-layout .signal-board .task-speech-bubble.CHECK,
+  .signal-focus-layout .signal-board .task-speech-bubble.REVIEW,
+  .task-speech-bubble.HELP,
+  .task-speech-bubble.WAIT,
+  .task-speech-bubble.CHECK,
+  .task-speech-bubble.REVIEW {
+    animation: none !important;
+    --bubble-x: 0px !important;
+    --bubble-y: 0px !important;
+    --bubble-scale: 1 !important;
+    --bubble-rotate: 0deg !important;
+    --bubble-brightness: 1 !important;
+  }
+}
