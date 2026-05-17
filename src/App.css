@@ -4777,3 +4777,371 @@ h1 {
     animation: none !important;
   }
 }
+
+
+/* =========================================================
+   STUCK_MAP_SPEECH_ROUTE_V87
+   目的: 「サインあり」ではなく、クラスタ上に本物の吹き出しを出す。
+        さらに導線を「見る → 拾う → 開く」に整理する。
+   ========================================================= */
+
+/* board mode buttons: make the route obvious */
+.board-mode-tabs {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(190px, 1fr)) !important;
+  gap: 10px !important;
+  max-width: 430px !important;
+}
+
+.board-mode-tabs button {
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: 34px 1fr !important;
+  grid-template-rows: auto auto !important;
+  column-gap: 10px !important;
+  align-items: center !important;
+  min-height: 76px !important;
+  padding: 12px 14px !important;
+  border-radius: 22px !important;
+  text-align: left !important;
+}
+
+.board-mode-tabs button > span {
+  grid-row: 1 / 3 !important;
+  display: grid !important;
+  place-items: center !important;
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 999px !important;
+  background: rgba(255,255,255,.82) !important;
+  color: #476787 !important;
+  font-size: 13px !important;
+  font-weight: 1000 !important;
+}
+
+.board-mode-tabs button > strong {
+  display: block !important;
+  color: #203654 !important;
+  font-size: 14px !important;
+  font-weight: 1000 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.board-mode-tabs button > small {
+  color: #6d82a0 !important;
+  font-size: 10px !important;
+  font-weight: 900 !important;
+}
+
+.board-mode-tabs button.active {
+  background: linear-gradient(135deg, #193b60, #214c77) !important;
+  box-shadow: 0 18px 36px rgba(32,54,83,.22), 0 0 0 5px rgba(17,151,255,.08) !important;
+}
+
+.board-mode-tabs button.active > strong,
+.board-mode-tabs button.active > small {
+  color: #fff !important;
+}
+
+.board-mode-tabs button.active > span {
+  color: #193b60 !important;
+}
+
+.route-note {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin-bottom: 18px !important;
+  padding: 12px 14px !important;
+  border-radius: 18px !important;
+  background: rgba(255,255,255,.78) !important;
+  border: 1px solid rgba(17,151,255,.12) !important;
+}
+
+.route-note strong {
+  flex: 0 0 auto !important;
+  color: #183555 !important;
+  font-size: 12px !important;
+  font-weight: 1000 !important;
+}
+
+.route-note span {
+  color: #607899 !important;
+  font-size: 12px !important;
+  font-weight: 850 !important;
+  line-height: 1.5 !important;
+}
+
+.signal-route-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.signal-route-strip span {
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 9px 12px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.82);
+  border: 1px solid rgba(17,151,255,.12);
+  color: #4f6b8e;
+  font-size: 11px;
+  font-weight: 1000;
+  box-shadow: 0 10px 22px rgba(69,99,145,.06);
+}
+
+/* give signal clusters headroom for speech bubbles */
+.signal-tab-grid {
+  padding-top: 42px !important;
+  row-gap: 48px !important;
+}
+
+.signal-detect-cluster {
+  overflow: visible !important;
+  padding-top: 34px !important;
+}
+
+/* Remove the old card-level speech. It scattered the eye. */
+.signal-board .task-card-wrap {
+  padding-top: 10px !important;
+}
+
+.signal-board .task-speech-bubble,
+.progress-board .task-speech-bubble {
+  display: none !important;
+}
+
+/* Real speech bubble above the cluster */
+.detect-bubble {
+  position: absolute !important;
+  top: -38px !important;
+  left: 22px !important;
+  z-index: 20 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  min-height: 46px !important;
+  padding: 10px 18px 11px !important;
+  border: 3px solid rgba(255,255,255,.98) !important;
+  border-radius: 999px !important;
+  color: #fff !important;
+  font-weight: 1000 !important;
+  letter-spacing: .06em !important;
+  white-space: nowrap !important;
+  box-shadow: 0 18px 34px rgba(69,99,145,.2), 0 0 0 6px rgba(255,255,255,.5) !important;
+  transform-origin: 30px 100% !important;
+}
+
+.detect-bubble::after {
+  content: "" !important;
+  position: absolute !important;
+  left: 28px !important;
+  bottom: -12px !important;
+  width: 18px !important;
+  height: 14px !important;
+  background: inherit !important;
+  clip-path: polygon(0 0, 100% 0, 45% 100%) !important;
+  filter: drop-shadow(0 2px 0 rgba(255,255,255,.95)) !important;
+}
+
+.detect-bubble::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: -12px !important;
+  z-index: -1 !important;
+  border-radius: 999px !important;
+  background: currentColor !important;
+  opacity: .14 !important;
+  filter: blur(12px) !important;
+  animation: speechHaloV87 2.4s ease-in-out infinite !important;
+}
+
+.detect-bubble-main {
+  font-size: 15px !important;
+  line-height: 1 !important;
+}
+
+.detect-bubble-sub {
+  display: inline-flex !important;
+  align-items: center !important;
+  height: 22px !important;
+  padding: 0 8px !important;
+  border-radius: 999px !important;
+  background: rgba(255,255,255,.22) !important;
+  font-size: 10px !important;
+  letter-spacing: .02em !important;
+}
+
+.detect-HELP {
+  background: linear-gradient(135deg, #ff8a3d, #ff6b37) !important;
+  animation: speechHelpV87 1.9s ease-in-out infinite !important;
+}
+
+.detect-WAIT {
+  background: linear-gradient(135deg, #8c5bff, #7040e8) !important;
+  animation: speechWaitV87 2.5s ease-in-out infinite !important;
+}
+
+.detect-CHECK {
+  background: linear-gradient(135deg, #1197ff, #2f6dff) !important;
+  animation: speechCheckV87 2.2s ease-in-out infinite !important;
+}
+
+.detect-REVIEW {
+  background: linear-gradient(135deg, #18b79f, #4ee1cf) !important;
+  animation: speechReviewV87 2.8s ease-in-out infinite !important;
+}
+
+/* no more 'サインあり' pill */
+.signal-on {
+  display: none !important;
+}
+
+.cluster-status-right {
+  align-items: baseline !important;
+  gap: 4px !important;
+}
+
+.cluster-count {
+  min-width: 34px !important;
+  height: 34px !important;
+  font-size: 15px !important;
+}
+
+.cluster-count-label {
+  color: #7a8da8 !important;
+  font-size: 10px !important;
+  font-weight: 1000 !important;
+}
+
+/* make right panel read like an action route */
+.next-support-card {
+  position: relative !important;
+  border-width: 2px !important;
+  transform: translateZ(0) !important;
+}
+
+.next-support-card::before {
+  content: "NEXT" !important;
+  position: absolute !important;
+  top: -12px !important;
+  left: 18px !important;
+  height: 24px !important;
+  padding: 0 10px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  border-radius: 999px !important;
+  background: #193b60 !important;
+  color: #fff !important;
+  font-size: 9px !important;
+  font-weight: 1000 !important;
+  letter-spacing: .12em !important;
+  box-shadow: 0 10px 20px rgba(32,54,83,.18) !important;
+}
+
+.next-support-bubble {
+  min-height: 34px !important;
+  padding: 0 13px !important;
+  border: 2px solid rgba(255,255,255,.98) !important;
+  border-radius: 999px !important;
+  color: #fff !important;
+  font-size: 11px !important;
+  font-weight: 1000 !important;
+  animation: speechRightV87 2s ease-in-out infinite !important;
+}
+
+.next-support-actions {
+  grid-template-columns: .9fr 1.1fr !important;
+}
+
+.next-support-actions .primary-action {
+  min-height: 44px !important;
+  font-size: 13px !important;
+}
+
+.next-support-actions .secondary-action {
+  min-height: 44px !important;
+}
+
+/* quieter cards inside clusters */
+.task-card {
+  border-radius: 20px !important;
+}
+
+.task-card-top {
+  margin-bottom: 10px !important;
+}
+
+.compact-hint {
+  color: #8b9ab1 !important;
+  font-size: 10px !important;
+}
+
+@keyframes speechHelpV87 {
+  0%, 70%, 100% { transform: translateY(0) scale(1); }
+  10% { transform: translateY(-12px) scale(1.12); }
+  20% { transform: translateY(0) scale(1); }
+}
+
+@keyframes speechWaitV87 {
+  0%, 100% { transform: translateX(0) rotate(0); }
+  25% { transform: translateX(8px) rotate(1deg); }
+  50% { transform: translateX(-6px) rotate(-1deg); }
+  75% { transform: translateX(4px) rotate(.6deg); }
+}
+
+@keyframes speechCheckV87 {
+  0%, 100% { opacity: .82; transform: translateY(0) scale(1); }
+  50% { opacity: 1; transform: translateY(-7px) scale(1.07); }
+}
+
+@keyframes speechReviewV87 {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 18px 34px rgba(24,183,159,.18), 0 0 0 6px rgba(255,255,255,.5) !important;
+  }
+  50% {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 24px 48px rgba(24,183,159,.34), 0 0 0 8px rgba(24,183,159,.12) !important;
+  }
+}
+
+@keyframes speechHaloV87 {
+  0%, 100% { transform: scale(.92); opacity: .15; }
+  50% { transform: scale(1.22); opacity: .05; }
+}
+
+@keyframes speechRightV87 {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-4px) scale(1.07); }
+}
+
+@media (max-width: 1180px) {
+  .board-mode-tabs {
+    grid-template-columns: 1fr !important;
+    max-width: none !important;
+  }
+
+  .route-note {
+    display: grid !important;
+  }
+
+  .signal-route-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .signal-tab-grid {
+    padding-top: 22px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detect-bubble,
+  .detect-bubble::before,
+  .next-support-bubble {
+    animation: none !important;
+  }
+}

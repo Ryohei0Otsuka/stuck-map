@@ -1526,9 +1526,9 @@ function App() {
     }
 
     return (
-      <div className={`detect-bubble detect-${status}`} aria-label={`${getStatusLabel(status)}の検知バブル`}>
-        <span className="detect-bubble-code">{statusMeta[status].signal || statusCodeLabels[status]}</span>
-        <span className="detect-bubble-label">{getStatusLabel(status)}</span>
+      <div className={`detect-bubble detect-${status}`} aria-label={`${getStatusLabel(status)}を拾ってほしい吹き出し`}>
+        <span className="detect-bubble-main">{statusMeta[status].signal || statusCodeLabels[status]}</span>
+        <span className="detect-bubble-sub">拾って</span>
       </div>
     );
   };
@@ -1564,8 +1564,8 @@ function App() {
           </div>
 
           <div className="cluster-status-right">
-            {clusterTasks.length > 0 && <span className="signal-on">サインあり</span>}
             <span className="cluster-count">{clusterTasks.length}</span>
+            <span className="cluster-count-label">件</span>
           </div>
         </div>
 
@@ -2499,8 +2499,8 @@ function App() {
                 <h2>{activeBoardTab === "progress" ? "流れビュー" : "サインビュー"}</h2>
                 <p className="panel-subtext">
                   {activeBoardTab === "progress"
-                    ? "メンバー欄を畳み、流れを広く見ます。担当者はカード上のバッジで確認します。"
-                    : "人のサインとカードを合わせて見ます。右側には次に拾うサインを常に残します。"}
+                    ? "TODO → DOING → DONE だけを見る。担当者はカード右上のバッジで確認。"
+                    : "上に浮いた吹き出しを見て、拾うべき詰まりから確認します。"}
                 </p>
               </div>
 
@@ -2510,28 +2510,38 @@ function App() {
                   className={activeBoardTab === "progress" ? "active" : ""}
                   onClick={() => setActiveBoardTab("progress")}
                 >
-                  <span>流れ</span>
-                  <strong>広く見る</strong>
+                  <span>1</span>
+                  <strong>流れを見る</strong>
+                  <small>進捗確認</small>
                 </button>
                 <button
                   type="button"
                   className={activeBoardTab === "signals" ? "active" : ""}
                   onClick={() => setActiveBoardTab("signals")}
                 >
-                  <span>サイン</span>
-                  <strong>人も見る</strong>
+                  <span>2</span>
+                  <strong>詰まりを拾う</strong>
+                  <small>HELP / 確認</small>
                 </button>
               </div>
             </div>
 
-            <div className="ui-board-note">
-              <strong>{activeBoardTab === "progress" ? "流れを見る" : "詰まりを見る"}</strong>
+            <div className="ui-board-note route-note">
+              <strong>{activeBoardTab === "progress" ? "見る順番：流れ → サイン" : "見る順番：吹き出し → 右パネル → カード"}</strong>
               <span>
                 {activeBoardTab === "progress"
-                  ? "これから・作業中・完了だけに絞り、プロジェクトの流れを軽く確認します。"
-                  : "手助け・方向相談・確認・レビューをまとめ、右パネルと合わせて拾う順番を見ます。"}
+                  ? "全体の進み方だけ確認し、気になるものは右のサインへ戻します。"
+                  : "上に浮いた吹き出しが入口。右側で優先順位を見て、必要なカードだけ開きます。"}
               </span>
             </div>
+
+            {activeBoardTab === "signals" && (
+              <div className="signal-route-strip" aria-label="サイン確認の導線">
+                <span>① 上の吹き出しを見る</span>
+                <span>② 右の「次に拾う」を見る</span>
+                <span>③ カードを開く</span>
+              </div>
+            )}
 
             {activeBoardTab === "progress" ? (
               <>
@@ -2567,10 +2577,10 @@ function App() {
 
           <aside className="panel signals-panel surface">
             <div className="panel-heading">
-              <p className="eyebrow">次のサイン</p>
-              <h2>次に拾うサイン</h2>
+              <p className="eyebrow">NEXT SIGN</p>
+              <h2>次に拾う</h2>
               <p className="panel-subtext">
-                まず拾うものだけを大きく出します。支援キューは必要な時だけ開きます。
+                迷ったらここ。今見るべきカードを1件だけ大きく出します。
               </p>
             </div>
 
@@ -2580,8 +2590,8 @@ function App() {
                   <span className={`task-status-pill ${nextSupportTask.status}`}>
                     {renderStatusLabel(nextSupportTask.status)}
                   </span>
-                  <span className="next-support-bubble">
-                    {statusMeta[nextSupportTask.status].bubble}
+                  <span className={`next-support-bubble detect-${nextSupportTask.status}`}>
+                    {statusMeta[nextSupportTask.status].signal || statusCodeLabels[nextSupportTask.status]}
                   </span>
                 </div>
 
@@ -2598,7 +2608,7 @@ function App() {
                     className="secondary-action"
                     onClick={() => scrollToTask(nextSupportTask.id)}
                   >
-                    このカードを見る
+                    場所を見る
                   </button>
 
                   <button
@@ -2606,7 +2616,7 @@ function App() {
                     className="primary-action"
                     onClick={() => resolveSupportTask(nextSupportTask, false)}
                   >
-                    {supportActionMeta[nextSupportTask.status]?.label || "進める"}
+                    {supportActionMeta[nextSupportTask.status]?.label || "拾った"}
                   </button>
                 </div>
 
@@ -2643,7 +2653,7 @@ function App() {
                 onClick={() => setIsSupportQueueOpen((current) => !current)}
                 aria-expanded={isSupportQueueOpen}
               >
-                <span>支援キュー</span>
+                <span>他のサイン</span>
                 <strong>{supportQueue.length}件</strong>
                 <i>{isSupportQueueOpen ? "▲" : "▼"}</i>
               </button>
