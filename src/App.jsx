@@ -693,6 +693,7 @@ function App() {
   const [activeSampleId, setActiveSampleId] = useState(savedState?.activeSampleId || "personal");
   const [activeFilter, setActiveFilter] = useState("ALL");
   const [activeBoardTab, setActiveBoardTab] = useState("progress");
+  const [isSupportQueueOpen, setIsSupportQueueOpen] = useState(false);
   const [isProgressTimelineOpen, setIsProgressTimelineOpen] = useState(false);
   const [draggingTaskId, setDraggingTaskId] = useState(null);
   const [dragOverStatus, setDragOverStatus] = useState(null);
@@ -1519,6 +1520,19 @@ function App() {
     );
   };
 
+  const renderDetectBubble = (status, count) => {
+    if (!signalStatuses.includes(status) || count === 0) {
+      return null;
+    }
+
+    return (
+      <div className={`detect-bubble detect-${status}`} aria-label={`${getStatusLabel(status)}の検知バブル`}>
+        <span className="detect-bubble-code">{statusMeta[status].signal || statusCodeLabels[status]}</span>
+        <span className="detect-bubble-label">{getStatusLabel(status)}</span>
+      </div>
+    );
+  };
+
   const renderCluster = (status) => {
     const clusterTasks = getTasksByStatus(status);
     const isDragOver = dragOverStatus === status;
@@ -1527,12 +1541,16 @@ function App() {
       <section
         key={status}
         className={`status-cluster cluster-${status} ${
-          isDragOver ? "drag-over" : ""
-        } ${clusterTasks.length > 0 ? "has-items" : ""}`}
+          signalStatuses.includes(status) ? "signal-detect-cluster" : ""
+        } ${isDragOver ? "drag-over" : ""} ${
+          clusterTasks.length > 0 ? "has-items" : ""
+        }`}
         onDragOver={(event) => handleClusterDragOver(event, status)}
         onDragLeave={() => setDragOverStatus(null)}
         onDrop={(event) => handleClusterDrop(event, status)}
       >
+        {renderDetectBubble(status, clusterTasks.length)}
+
         <div className="cluster-header">
           <div className="cluster-title-row">
             <span className={`cluster-icon ${status}`}>
@@ -2327,29 +2345,15 @@ function App() {
           </div>
         </section>
 
-        <section className="summary-grid">
-          <div className="summary-card surface">
-            <span className="summary-label">サイン</span>
-            <strong className="summary-value">{tasks.length}</strong>
-            <p>いま見えている作業</p>
+        <section className="compact-status-bar surface" aria-label="ボード概要">
+          <div className="compact-status-main">
+            <span>全カード <strong>{tasks.length}</strong></span>
+            <span>拾うサイン <strong>{signalTasks.length}</strong></span>
+            <span>完了 <strong>{completedCount}</strong></span>
           </div>
-
-          <div className="summary-card surface done-summary">
-            <span className="summary-label">完了</span>
-            <strong className="summary-value">{completedCount}</strong>
-            <p>グリーンになった作業</p>
-          </div>
-
-          <div className="summary-card surface summary-highlight">
-            <span className="summary-label">拾うサイン</span>
-            <strong className="summary-value">{signalTasks.length}</strong>
-            <p>拾いたいサイン</p>
-          </div>
-
-          <div className="summary-card surface">
-            <span className="summary-label">保存状態</span>
-            <strong className="summary-value summary-text">保存済み</strong>
-            <p>変更は自動で保存されます</p>
+          <div className={`compact-save-pill ${saveNotice === "保存しました" ? "saved-pop" : ""}`}>
+            <i />
+            {saveNotice}
           </div>
         </section>
 
@@ -2566,7 +2570,7 @@ function App() {
               <p className="eyebrow">次のサイン</p>
               <h2>次に拾うサイン</h2>
               <p className="panel-subtext">
-                支援が必要そうなカードを、重くならない順に並べます。
+                まず拾うものだけを大きく出します。支援キューは必要な時だけ開きます。
               </p>
             </div>
 
@@ -2632,35 +2636,45 @@ function App() {
               ))}
             </div>
 
-            <div className="support-queue">
-              <div className="support-queue-heading">
-                <h3>支援キュー</h3>
-                <span>{supportQueue.length}</span>
-              </div>
+            <div className={`support-queue compact-queue ${isSupportQueueOpen ? "open" : ""}`}>
+              <button
+                type="button"
+                className="support-queue-toggle"
+                onClick={() => setIsSupportQueueOpen((current) => !current)}
+                aria-expanded={isSupportQueueOpen}
+              >
+                <span>支援キュー</span>
+                <strong>{supportQueue.length}件</strong>
+                <i>{isSupportQueueOpen ? "▲" : "▼"}</i>
+              </button>
 
-              {supportQueue.length > 0 ? (
-                supportQueue.map((task) => (
-                  <button
-                    key={`queue-${task.id}`}
-                    type="button"
-                    className={`signal-card status-${task.status}`}
-                    onClick={() => scrollToTask(task.id)}
-                  >
-                    <div className="signal-card-top">
-                      <span className={`task-status-pill ${task.status}`}>
-                        {renderStatusLabel(task.status)}
-                      </span>
-                      <small>{getMember(task.ownerId)?.name}</small>
+              {isSupportQueueOpen && (
+                <div className="support-queue-list">
+                  {supportQueue.length > 0 ? (
+                    supportQueue.map((task) => (
+                      <button
+                        key={`queue-${task.id}`}
+                        type="button"
+                        className={`signal-card status-${task.status}`}
+                        onClick={() => scrollToTask(task.id)}
+                      >
+                        <div className="signal-card-top">
+                          <span className={`task-status-pill ${task.status}`}>
+                            {renderStatusLabel(task.status)}
+                          </span>
+                          <small>{getMember(task.ownerId)?.name}</small>
+                        </div>
+
+                        <strong>{task.title}</strong>
+                        <p>{statusMeta[task.status].summary}</p>
+                      </button>
+                    ))
+                  ) : (
+                    <div className="empty-state compact-empty">
+                      <strong>キューは空です。</strong>
+                      <p>手助け・方向相談・確認・レビューが出ると並びます。</p>
                     </div>
-
-                    <strong>{task.title}</strong>
-                    <p>{statusMeta[task.status].summary}</p>
-                  </button>
-                ))
-              ) : (
-                <div className="empty-state compact-empty">
-                  <strong>キューは空です。</strong>
-                  <p>手助け・方向相談・確認・レビューが出ると並びます。</p>
+                  )}
                 </div>
               )}
             </div>
