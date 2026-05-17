@@ -5,8 +5,8 @@ const STORAGE_KEY = "stuck-map-v8";
 const INTRO_STORAGE_KEY = "stuck-map-intro-v8";
 
 const initialプロジェクト = {
-  name: "Weekend Build",
-  memo: "週末で、プロジェクトボードとして使えるところまで行く",
+  name: "小規模Web改修 公開準備",
+  memo: "告知ページの改修から公開前確認までを、詰まりが見える形で進める",
 };
 
 const initialメンバー = [
@@ -33,9 +33,9 @@ const initialメンバー = [
   },
   {
     id: "m4",
-    name: "R",
+    name: "整理担当",
     role: "PMO補佐 / 整理担当",
-    avatar: "R",
+    avatar: "整理",
     memo: "状況を整理して、次に見る場所を見つける人",
   },
 ];
@@ -43,183 +43,193 @@ const initialメンバー = [
 const initialTasks = [
   {
     id: "t1",
-    title: "メンバーカードに着手中バッジを出す",
+    title: "公開ページの掲載原稿を確認する",
     ownerId: "m4",
-    needId: "m3",
+    needId: "m1",
     status: "DOING",
-    category: "UI",
-    reason: "表示確認",
+    category: "COPY",
+    reason: "作業中",
     description:
-      "左のメンバーカードに、今触っているタスク名と小さなバッジを表示する。",
+      "支給された原稿をそのまま載せるだけでなく、ページとして読みやすい順番・見出し・余白になっているか整理する。",
   },
   {
     id: "t2",
-    title: "HELPの文言を重すぎない表現に整える",
+    title: "長い見出しの折り返しを一緒に見る",
     ownerId: "m3",
     needId: "m2",
     status: "HELP",
-    category: "COPY",
-    reason: "表現確認",
+    category: "UI",
+    reason: "少し手を借りたい",
     description:
-      "『助けてください』ではなく、『少し手を借りたい』くらいの軽さに寄せる。",
+      "PCでは問題ないが、スマホ幅だと見出しが窮屈に見える。CSS調整の方向を一緒に確認したい。",
   },
   {
     id: "t3",
-    title: "方向を見る置き場を右側に集約する",
+    title: "公開前チェックの責任範囲を合わせる",
     ownerId: "m4",
     needId: "m1",
     status: "WAIT",
     category: "FLOW",
     reason: "方向相談",
     description:
-      "どこを見れば前に進むかを、進捗会議前に見えるようにする。",
+      "文言確認、表示確認、リンク確認のどこまでを誰が見るかを決めて、確認待ちが一点に集まらないようにする。",
   },
   {
     id: "t4",
-    title: "レビュー待ちカードの見え方を整える",
+    title: "公開前チェックリストをレビューする",
     ownerId: "m2",
-    needId: "m2",
+    needId: "m1",
     status: "REVIEW",
-    category: "REVIEW",
+    category: "RELEASE",
     reason: "レビュー待ち",
     description:
-      "レビュー依頼が埋もれないように、色とラベルを調整する。",
+      "公開直前に見る項目が足りているか、リンク・画像・SP表示・文言の観点でレビューする。",
   },
   {
     id: "t5",
-    title: "ダミーアイコン案をカードに置く",
+    title: "サムネイル候補の見え方を確認する",
     ownerId: "m3",
-    needId: "m1",
+    needId: "m2",
     status: "CHECK",
     category: "ICON",
-    reason: "軽く見てほしい",
+    reason: "軽く確認",
     description:
-      "本番アイコンの前に、絵文字や簡易記号でイメージを固める。方向性だけ軽く確認したい。",
+      "一覧画面で埋もれないか、画像のトリミングとテキストの見え方だけ軽く確認したい。",
   },
   {
     id: "t6",
-    title: "GitHub Pages に載せる前の最終整理",
+    title: "公開後の共有文を用意する",
     ownerId: "m4",
     needId: "m1",
     status: "TODO",
-    category: "RELEASE",
-    reason: "公開準備",
+    category: "DOC",
+    reason: "これから",
     description:
-      "README・表示確認・不要ファイル整理をして公開できる状態にする。",
+      "公開URL、確認してほしいポイント、問い合わせ先を短くまとめる。",
   },
   {
     id: "t7",
-    title: "README を Stuck Map 用に差し替える",
+    title: "テスト環境でリンク切れを確認する",
+    ownerId: "m1",
+    needId: "m2",
+    status: "DONE",
+    category: "RELEASE",
+    reason: "完了",
+    description:
+      "主要リンクと画像パスを確認し、公開前に大きな抜けがない状態にした。",
+  },
+  {
+    id: "t8",
+    title: "修正内容をチームに共有する",
     ownerId: "m1",
     needId: "m1",
     status: "DONE",
     category: "DOC",
     reason: "完了",
     description:
-      "Vite 初期文から、Stuck Map の背景と目的が伝わる説明に更新する。",
-  },
-  {
-    id: "t8",
-    title: "状態フィルターを上部に置く",
-    ownerId: "m1",
-    needId: "m1",
-    status: "DONE",
-    category: "UI",
-    reason: "完了",
-    description:
-      "すべて / 進行中 / HELP などで今見たい状態だけに絞れるようにする。",
+      "何を直したか、どこを確認してほしいかを簡単に共有済み。",
   },
 ];
 
 
 const sampleProjectTemplates = {
   personal: {
-    label: "週末個人開発",
+    label: "Web改修 公開準備",
     project: {
-      name: "週末個人開発プロジェクト",
-      memo: "週末で、プロジェクトボードとして使えるところまで行く",
+      name: "小規模Web改修 公開準備",
+      memo: "告知ページの改修から公開前確認までを、詰まりが見える形で進める",
     },
     tasks: initialTasks,
   },
   business: {
     label: "業務システム導入",
     project: {
-      name: "業務システム導入プロジェクト",
-      memo: "業務確認・設定・レビュー・公開前確認を、止まる前に拾う",
+      name: "勤怠システム導入 検証フェーズ",
+      memo: "設定・データ移行・現場確認を、確認待ちで止めないための導入ボード",
     },
     tasks: [
       {
         id: "biz-1",
-        title: "部門別の確認フローを整理する",
+        title: "承認ルートの例外パターンを整理する",
         ownerId: "m4",
         needId: "m1",
         status: "WAIT",
         category: "FLOW",
         reason: "方向相談",
-        description: "誰に、どの順番で、何を確認するか。判断待ちが一点に溜まらないように流れを見る。",
+        description: "通常申請、代理承認、差し戻し時の流れを分け、どこまで今回の検証範囲に入れるかを合わせる。",
       },
       {
         id: "biz-2",
-        title: "マスタ設定の不明点を軽く確認する",
+        title: "部門マスタの設定値を軽く確認する",
         ownerId: "m3",
         needId: "m2",
         status: "CHECK",
         category: "OPS",
         reason: "軽く確認",
-        description: "設定値の意味が現場運用と合っているか、公開前に小さく確認する。",
+        description: "部署名・コード・有効開始日の扱いが現場運用と合っているか、投入前に確認する。",
       },
       {
         id: "biz-3",
-        title: "移行データの例外パターンを拾う",
+        title: "移行CSVの文字化けと改行混入を一緒に見る",
         ownerId: "m4",
         needId: "m3",
         status: "HELP",
         category: "OPS",
         reason: "少し手を借りたい",
-        description: "CSVの例外パターンを一人で抱えず、早めに一緒に見る。",
+        description: "一部の備考欄に改行が入り、CSVの列ずれが起きそう。変換ルールを一緒に確認したい。",
       },
       {
         id: "biz-4",
-        title: "利用者向け説明文をレビューする",
+        title: "利用者向け手順メモをレビューする",
         ownerId: "m2",
         needId: "m1",
         status: "REVIEW",
         category: "DOC",
         reason: "レビュー待ち",
-        description: "操作説明が現場に伝わる文になっているか、リリース前に確認する。",
+        description: "初回ログイン、打刻修正、申請の出し方が現場に伝わる文になっているか確認する。",
       },
       {
         id: "biz-5",
-        title: "本番反映前のチェックリストを作る",
+        title: "本番反映前チェックリストを作成する",
         ownerId: "m1",
         needId: "m1",
         status: "DOING",
         category: "RELEASE",
         reason: "作業中",
-        description: "公開前に見る項目を、担当者の記憶ではなくチェックリストに移す。",
+        description: "反映前に見る項目を、担当者の記憶ではなくチェックリストに移す。",
       },
       {
         id: "biz-6",
-        title: "初回説明会の資料を用意する",
+        title: "初回説明会の案内文を用意する",
         ownerId: "m2",
         needId: "m2",
         status: "TODO",
         category: "DOC",
         reason: "これから",
-        description: "導入後に迷わないよう、操作の入り口だけ先に整理する。",
+        description: "対象者、日時、事前準備、問い合わせ先をまとめて案内できるようにする。",
+      },
+      {
+        id: "biz-7",
+        title: "検証環境へのログイン確認を完了する",
+        ownerId: "m3",
+        needId: "m2",
+        status: "DONE",
+        category: "OPS",
+        reason: "完了",
+        description: "検証用アカウントでログインできることを確認済み。",
       },
     ],
   },
   web: {
-    label: "Webサイト改修",
+    label: "採用ページ更新",
     project: {
-      name: "Webサイト改修プロジェクト",
-      memo: "文言・表示・公開確認を、レビュー待ちで止めないための改修ボード",
+      name: "採用ページ更新 公開前確認",
+      memo: "原稿・画像・リンク・スマホ表示を、公開直前に慌てない形で確認する",
     },
     tasks: [
       {
         id: "web-1",
-        title: "長い掲載文の表示崩れを確認する",
+        title: "募集要項の長文セクションを整える",
         ownerId: "m3",
         needId: "m2",
         status: "CHECK",
@@ -229,56 +239,66 @@ const sampleProjectTemplates = {
       },
       {
         id: "web-2",
-        title: "公開前の文言トーンを合わせる",
+        title: "応募導線の文言トーンを合わせる",
         ownerId: "m4",
         needId: "m1",
         status: "WAIT",
         category: "COPY",
         reason: "方向相談",
-        description: "原稿の意図を壊さず、ページとして読みやすい表現に寄せる方針を合わせる。",
+        description: "応募ボタン周りの文言を、硬すぎず軽すぎない表現に寄せる方針を合わせる。",
       },
       {
         id: "web-3",
-        title: "サムネイル候補を出す",
+        title: "社員インタビュー画像を差し替える",
         ownerId: "m2",
         needId: "m1",
         status: "TODO",
         category: "ICON",
         reason: "これから",
-        description: "一覧で埋もれないよう、カードに合う見え方を検討する。",
+        description: "一覧で埋もれないよう、画像サイズとトリミングを確認して差し替える。",
       },
       {
         id: "web-4",
-        title: "公開URLを共有する前に最終確認する",
+        title: "公開URL共有前の最終レビューを行う",
         ownerId: "m1",
         needId: "m2",
         status: "REVIEW",
         category: "RELEASE",
         reason: "レビュー待ち",
-        description: "公開後に慌てないよう、リンク・表示・文言の最終確認を置いておく。",
+        description: "リンク・表示・文言・画像の最終確認を置いておく。",
       },
       {
         id: "web-5",
-        title: "エスケープ処理まわりを一緒に見る",
+        title: "HTMLタグが文字列表示される箇所を一緒に見る",
         ownerId: "m3",
         needId: "m4",
         status: "HELP",
         category: "OPS",
         reason: "少し手を借りたい",
-        description: "タグが文字列として出る原因を、ソース側から確認する。",
+        description: "改行タグがそのまま表示される箇所があり、エスケープ処理まわりを確認したい。",
+      },
+      {
+        id: "web-6",
+        title: "公開前のリンク確認を完了する",
+        ownerId: "m2",
+        needId: "m2",
+        status: "DONE",
+        category: "RELEASE",
+        reason: "完了",
+        description: "応募フォーム、会社情報、問い合わせ導線のリンク確認が完了。",
       },
     ],
   },
   onboarding: {
     label: "新人オンボーディング",
     project: {
-      name: "新人オンボーディングプロジェクト",
+      name: "新人オンボーディング 初週サポート",
       memo: "質問しにくい小さな詰まりを早めに見つけ、安心して立ち上がるためのボード",
     },
     tasks: [
       {
         id: "on-1",
-        title: "開発環境の初期設定で詰まりそう",
+        title: "開発環境の初期設定エラーを一緒に見る",
         ownerId: "m3",
         needId: "m2",
         status: "HELP",
@@ -288,17 +308,17 @@ const sampleProjectTemplates = {
       },
       {
         id: "on-2",
-        title: "最初のレビュー依頼の出し方を確認する",
+        title: "最初のレビュー依頼の粒度を確認する",
         ownerId: "m4",
         needId: "m1",
         status: "CHECK",
         category: "FLOW",
         reason: "軽く確認",
-        description: "どの粒度で依頼すればよいか、最初に合わせておく。",
+        description: "どの段階でレビュー依頼を出すとよいか、最初に合わせておく。",
       },
       {
         id: "on-3",
-        title: "よくある質問をメモにする",
+        title: "よくある質問を初週メモにまとめる",
         ownerId: "m2",
         needId: "m2",
         status: "DOING",
@@ -318,13 +338,23 @@ const sampleProjectTemplates = {
       },
       {
         id: "on-5",
-        title: "初回タスクの完了条件を確認する",
+        title: "初回タスクの完了条件をレビューする",
         ownerId: "m1",
         needId: "m2",
         status: "REVIEW",
         category: "REVIEW",
         reason: "レビュー待ち",
         description: "できた／まだ見る、の基準を曖昧にしない。",
+      },
+      {
+        id: "on-6",
+        title: "アカウント発行状況を確認済みにする",
+        ownerId: "m2",
+        needId: "m2",
+        status: "DONE",
+        category: "OPS",
+        reason: "完了",
+        description: "必要なアカウントと権限が揃っていることを確認済み。",
       },
     ],
   },
@@ -2631,15 +2661,6 @@ function App() {
                   <strong>サイン</strong>
                 </button>
               </div>
-            </div>
-
-            <div className="ui-board-note route-note">
-              <strong>{activeBoardTab === "progress" ? "見る順番：フロー → サイン" : "見る順番：右パネル → カード"}</strong>
-              <span>
-                {activeBoardTab === "progress"
-                  ? "まず流れを広く見て、気になる停滞はサイン側で拾います。"
-                  : "サインカードを見て、必要なものだけ右側で拾います。"}
-              </span>
             </div>
 
             {false && activeBoardTab === "signals" && (
