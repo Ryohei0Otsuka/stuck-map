@@ -1642,7 +1642,7 @@ function App() {
     );
   };
 
-  const renderDetectBubble = () => null;
+  const renderDetectBubble = (_status, _count) => null;
 
   const renderCluster = (status, mode = "signal") => {
     const clusterTasks = getTasksByStatus(status, mode);
@@ -1708,6 +1708,7 @@ function App() {
         member,
         currentTask,
         mainStatus,
+        signalStatus,
         hasSignal,
       };
     });
@@ -1719,7 +1720,7 @@ function App() {
         </div>
 
         <div className="member-status-list">
-          {memberSummaries.map(({ member, currentTask, mainStatus, hasSignal }) => (
+          {memberSummaries.map(({ member, currentTask, mainStatus, signalStatus, hasSignal }) => (
             <button
               key={`member-status-${member.id}`}
               type="button"
