@@ -681,6 +681,95 @@ function load保存dState() {
   }
 }
 
+
+function getTaskFlowStatus(task) {
+  if (!task) {
+    return "TODO";
+  }
+
+  if (flowClusters.includes(task.flowStatus)) {
+    return task.flowStatus;
+  }
+
+  if (flowClusters.includes(task.status)) {
+    return task.status;
+  }
+
+  if (signalStatuses.includes(task.status)) {
+    return "DOING";
+  }
+
+  return "TODO";
+}
+
+function getTaskSignalStatus(task) {
+  if (!task) {
+    return null;
+  }
+
+  if (task.signalStatus === null || task.signalStatus === "NONE") {
+    return null;
+  }
+
+  if (signalStatuses.includes(task.signalStatus)) {
+    return task.signalStatus;
+  }
+
+  if (signalStatuses.includes(task.status)) {
+    return task.status;
+  }
+
+  return null;
+}
+
+function normalizeTask(task) {
+  const flowStatus = getTaskFlowStatus(task);
+  const signalStatus = getTaskSignalStatus(task);
+
+  return {
+    ...task,
+    flowStatus,
+    signalStatus,
+    status: flowStatus,
+  };
+}
+
+function normalizeTasks(tasks) {
+  return Array.isArray(tasks) ? tasks.map(normalizeTask) : cloneTasks(initialTasks).map(normalizeTask);
+}
+
+function getTaskDisplayStatus(task, mode = "flow") {
+  const signalStatus = getTaskSignalStatus(task);
+
+  if (mode === "signal" && signalStatus) {
+    return signalStatus;
+  }
+
+  return getTaskFlowStatus(task);
+}
+
+function createStatusPatch(currentTask, nextStatus, mode = "flow") {
+  if (flowClusters.includes(nextStatus)) {
+    return {
+      flowStatus: nextStatus,
+      signalStatus: nextStatus === "DONE" ? null : getTaskSignalStatus(currentTask),
+      status: nextStatus,
+    };
+  }
+
+  if (signalStatuses.includes(nextStatus)) {
+    const currentFlowStatus = currentTask ? getTaskFlowStatus(currentTask) : "DOING";
+
+    return {
+      flowStatus: currentFlowStatus === "DONE" ? "DOING" : currentFlowStatus,
+      signalStatus: nextStatus,
+      status: currentFlowStatus === "DONE" ? "DOING" : currentFlowStatus,
+    };
+  }
+
+  return {};
+}
+
 function App() {
   const savedState = load保存dState();
 
@@ -689,7 +778,7 @@ function App() {
   const [categories, setCategories] = useState(
     getSafeCategories(savedState?.categories)
   );
-  const [tasks, setTasks] = useState(savedState?.tasks || cloneTasks(initialTasks));
+  const [tasks, setTasks] = useState(normalizeTasks(savedState?.tasks || initialTasks));
   const [activeSampleId, setActiveSampleId] = useState(savedState?.activeSampleId || "personal");
   const [activeFilter, setActiveFilter] = useState("ALL");
   const [activeBoardTab, setActiveBoardTab] = useState("progress");
@@ -775,7 +864,7 @@ function App() {
       title: selectedTask.title,
       ownerId: selectedTask.ownerId,
       needId: selectedTask.needId,
-      status: selectedTask.status,
+      status: getTaskSignalStatus(selectedTask) || getTaskFlowStatus(selectedTask),
       category: selectedTask.category,
       reason: selectedTask.reason,
       description: selectedTask.description,
@@ -783,23 +872,23 @@ function App() {
   }, [selectedTask]);
 
   const signalTasks = useMemo(() => {
-    return tasks.filter((task) => signalStatuses.includes(task.status));
+    return tasks.filter((task) => getTaskSignalStatus(task));
   }, [tasks]);
 
   const supportQueue = useMemo(() => {
     return [...signalTasks].sort((a, b) => {
-      return supportPriority[a.status] - supportPriority[b.status];
+      return supportPriority[getTaskSignalStatus(a)] - supportPriority[getTaskSignalStatus(b)];
     });
   }, [signalTasks]);
 
   const nextSupportTask = supportQueue[0] || null;
-  const completedCount = tasks.filter((task) => task.status === "DONE").length;
+  const completedCount = tasks.filter((task) => getTaskFlowStatus(task) === "DONE").length;
 
   const active拾うサイン = {
-    HELP: tasks.filter((task) => task.status === "HELP").length,
-    WAIT: tasks.filter((task) => task.status === "WAIT").length,
-    CHECK: tasks.filter((task) => task.status === "CHECK").length,
-    REVIEW: tasks.filter((task) => task.status === "REVIEW").length,
+    HELP: tasks.filter((task) => getTaskSignalStatus(task) === "HELP").length,
+    WAIT: tasks.filter((task) => getTaskSignalStatus(task) === "WAIT").length,
+    CHECK: tasks.filter((task) => getTaskSignalStatus(task) === "CHECK").length,
+    REVIEW: tasks.filter((task) => getTaskSignalStatus(task) === "REVIEW").length,
   };
 
   const visibleSupportClusters = useMemo(() => {
@@ -828,24 +917,28 @@ function App() {
     return members.find((member) => member.id === memberId) || members[0];
   };
 
-  const getTasksByStatus = (status) => {
-    return tasks.filter((task) => task.status === status);
+  const getTasksByStatus = (status, mode = "flow") => {
+    if (mode === "signal") {
+      return tasks.filter((task) => getTaskSignalStatus(task) === status);
+    }
+
+    return tasks.filter((task) => getTaskFlowStatus(task) === status);
   };
 
   const getCurrentTaskForMember = (memberId) => {
     const memberTasks = tasks
       .filter((task) => task.ownerId === memberId)
-      .sort((a, b) => statusPriority[a.status] - statusPriority[b.status]);
+      .sort((a, b) => statusPriority[getTaskSignalStatus(a) || getTaskFlowStatus(a)] - statusPriority[getTaskSignalStatus(b) || getTaskFlowStatus(b)]);
 
-    return memberTasks.find((task) => task.status !== "DONE") || null;
+    return memberTasks.find((task) => getTaskFlowStatus(task) !== "DONE") || null;
   };
 
   const getMemberStatusList = (memberId) => {
     const uniqueStatuses = [
       ...new Set(
         tasks
-          .filter((task) => task.ownerId === memberId && task.status !== "DONE")
-          .map((task) => task.status)
+          .filter((task) => task.ownerId === memberId && getTaskFlowStatus(task) !== "DONE")
+          .flatMap((task) => [getTaskFlowStatus(task), getTaskSignalStatus(task)].filter(Boolean))
       ),
     ];
 
@@ -854,10 +947,12 @@ function App() {
     );
   };
 
-  const updateTaskStatus = (taskId, nextStatus) => {
+  const updateTaskStatus = (taskId, nextStatus, mode = activeBoardTab === "signals" ? "signal" : "flow") => {
     setTasks((currentTasks) =>
       currentTasks.map((task) =>
-        task.id === taskId ? { ...task, status: nextStatus } : task
+        task.id === taskId
+          ? { ...task, ...createStatusPatch(task, nextStatus, mode) }
+          : task
       )
     );
 
@@ -865,7 +960,8 @@ function App() {
   };
 
   const resolveSupportTask = (task, shouldScroll = false) => {
-    const action = supportActionMeta[task.status];
+    const signalStatus = getTaskSignalStatus(task);
+    const action = supportActionMeta[signalStatus];
 
     if (!action) {
       if (shouldScroll) {
@@ -874,7 +970,19 @@ function App() {
       return;
     }
 
-    updateTaskStatus(task.id, action.nextStatus);
+    setTasks((currentTasks) =>
+      currentTasks.map((currentTask) =>
+        currentTask.id === task.id
+          ? {
+              ...currentTask,
+              flowStatus: action.nextStatus,
+              signalStatus: null,
+              status: action.nextStatus,
+            }
+          : currentTask
+      )
+    );
+    setFocusedTaskId(task.id);
 
     if (shouldScroll) {
       window.setTimeout(() => {
@@ -905,7 +1013,7 @@ function App() {
       title: trimmedTitle,
       ownerId: taskForm.ownerId || fallbackMemberId,
       needId: taskForm.needId || fallbackMemberId,
-      status: taskForm.status,
+      ...createStatusPatch(null, taskForm.status, signalStatuses.includes(taskForm.status) ? "signal" : "flow"),
       category: categoryMeta[taskForm.category] ? taskForm.category : fallbackCategoryId,
       reason: taskForm.reason.trim() || statusMeta[taskForm.status].softLabel,
       description:
@@ -944,7 +1052,7 @@ function App() {
       title: trimmedTitle,
       ownerId: taskForm.ownerId || fallbackMemberId,
       needId: taskForm.needId || fallbackMemberId,
-      status: taskForm.status,
+      ...createStatusPatch(selectedTask, taskForm.status, signalStatuses.includes(taskForm.status) ? "signal" : "flow"),
       category: categoryMeta[taskForm.category] ? taskForm.category : fallbackCategoryId,
       reason: taskForm.reason.trim() || statusMeta[taskForm.status].softLabel,
       description:
@@ -980,7 +1088,7 @@ function App() {
     setプロジェクト(sample.project);
     setメンバー(initialメンバー);
     setCategories(initialCategories);
-    setTasks(cloneTasks(sample.tasks));
+    setTasks(normalizeTasks(sample.tasks));
     setActiveFilter("ALL");
     setActiveBoardTab("progress");
     setIsProgressTimelineOpen(false);
@@ -999,7 +1107,7 @@ function App() {
     setプロジェクト(sample.project);
     setメンバー(initialメンバー);
     setCategories(initialCategories);
-    setTasks(cloneTasks(sample.tasks));
+    setTasks(normalizeTasks(sample.tasks));
     setActiveFilter("ALL");
     setActiveBoardTab("progress");
     setIsProgressTimelineOpen(false);
@@ -1013,7 +1121,7 @@ function App() {
     const targetTask = tasks.find((task) => task.id === taskId);
     setActiveFilter("ALL");
     setActiveBoardTab(
-      targetTask && signalStatuses.includes(targetTask.status) ? "signals" : "progress"
+      targetTask && getTaskSignalStatus(targetTask) ? "signals" : "progress"
     );
     setFocusedTaskId(taskId);
 
@@ -1059,7 +1167,7 @@ function App() {
     setDragOverStatus(status);
   };
 
-  const handleClusterDrop = (event, status) => {
+  const handleClusterDrop = (event, status, mode = "flow") => {
     event.preventDefault();
 
     const droppedTaskId =
@@ -1069,7 +1177,7 @@ function App() {
       return;
     }
 
-    updateTaskStatus(droppedTaskId, status);
+    updateTaskStatus(droppedTaskId, status, mode);
     setDraggingTaskId(null);
     setDragOverStatus(null);
   };
@@ -1453,25 +1561,31 @@ function App() {
     const owner = getMember(task.ownerId);
     const needMember = getMember(task.needId);
     const category = categoryMeta[task.category] || categoryMeta[fallbackCategoryId];
+    const flowStatus = getTaskFlowStatus(task);
+    const signalStatus = getTaskSignalStatus(task);
+    const displayStatus = getTaskDisplayStatus(task, mode);
+    const cardReasonStatus = signalStatus || flowStatus;
 
     return (
       <div
         key={task.id}
-        className={`task-card-wrap status-${task.status} ${
-          focusedTaskId === task.id ? "focused" : ""
-        }`}
+        className={`task-card-wrap status-${displayStatus} flow-${flowStatus} ${
+          signalStatus ? `has-task-signal signal-${signalStatus}` : ""
+        } ${focusedTaskId === task.id ? "focused" : ""}`}
       >
-        {mode === "signal" && statusMeta[task.status].bubble && (
-          <div className={`task-speech-bubble ${task.status}`}>
-            <span>{statusMeta[task.status].bubble}</span>
+        {mode === "signal" && signalStatus && statusMeta[signalStatus].bubble && (
+          <div className={`task-speech-bubble ${signalStatus}`}>
+            <span>{statusMeta[signalStatus].bubble}</span>
           </div>
         )}
 
         <article
           id={`task-${task.id}`}
-          className={`task-card status-${task.status} ${
-            draggingTaskId === task.id ? "dragging" : ""
-          } ${focusedTaskId === task.id ? "focused" : ""}`}
+          className={`task-card status-${displayStatus} flow-${flowStatus} ${
+            signalStatus ? `has-task-signal signal-${signalStatus}` : ""
+          } ${draggingTaskId === task.id ? "dragging" : ""} ${
+            focusedTaskId === task.id ? "focused" : ""
+          }`}
           draggable
           role="button"
           tabIndex={0}
@@ -1493,9 +1607,15 @@ function App() {
 
           <div className="task-card-top">
             <div className="task-meta-left">
-              <span className={`task-status-pill ${task.status}`}>
-                {renderStatusLabel(task.status)}
+              <span className={`task-status-pill ${displayStatus}`}>
+                {renderStatusLabel(displayStatus)}
               </span>
+
+              {mode === "flow" && signalStatus && (
+                <span className={`task-signal-mini-badge ${signalStatus}`}>
+                  {statusMeta[signalStatus].signal || getStatusLabel(signalStatus)}
+                </span>
+              )}
 
               <span className="category-pill">
                 <span>{category?.icon}</span>
@@ -1512,7 +1632,7 @@ function App() {
           <h3>{task.title}</h3>
 
           <div className="task-info-row">
-            <span className={`reason-chip ${task.status}`}>{task.reason}</span>
+            <span className={`reason-chip ${cardReasonStatus}`}>{task.reason}</span>
             <span className="need-chip">相手: {needMember?.name}</span>
           </div>
 
@@ -1525,7 +1645,7 @@ function App() {
   const renderDetectBubble = () => null;
 
   const renderCluster = (status, mode = "signal") => {
-    const clusterTasks = getTasksByStatus(status);
+    const clusterTasks = getTasksByStatus(status, mode);
     const isDragOver = dragOverStatus === status;
 
     return (
@@ -1538,7 +1658,7 @@ function App() {
         }`}
         onDragOver={(event) => handleClusterDragOver(event, status)}
         onDragLeave={() => setDragOverStatus(null)}
-        onDrop={(event) => handleClusterDrop(event, status)}
+        onDrop={(event) => handleClusterDrop(event, status, mode)}
       >
         {mode === "signal" && renderDetectBubble(status, clusterTasks.length)}
 
@@ -1580,8 +1700,9 @@ function App() {
   const renderProgressCrewBadges = () => {
     const memberSummaries = members.map((member) => {
       const currentTask = getCurrentTaskForMember(member.id);
-      const mainStatus = currentTask?.status || "DONE";
-      const hasSignal = currentTask && signalStatuses.includes(currentTask.status);
+      const mainStatus = currentTask ? getTaskFlowStatus(currentTask) : "DONE";
+      const signalStatus = currentTask ? getTaskSignalStatus(currentTask) : null;
+      const hasSignal = Boolean(signalStatus);
 
       return {
         member,
@@ -1612,7 +1733,7 @@ function App() {
                 <small>
                   {currentTask
                     ? hasSignal
-                      ? statusMeta[mainStatus].signal || getStatusLabel(mainStatus)
+                      ? statusMeta[signalStatus].signal || getStatusLabel(signalStatus)
                       : getStatusLabel(mainStatus)
                     : "待機"}
                 </small>
@@ -1772,7 +1893,7 @@ function App() {
     return (
       <div className="modal-backdrop" onClick={closeTaskModal}>
         <section
-          className={`task-modal status-${selectedTask.status}`}
+          className={`task-modal status-${getTaskSignalStatus(selectedTask) || getTaskFlowStatus(selectedTask)}`}
           onClick={(event) => event.stopPropagation()}
           role="dialog"
           aria-modal="true"
@@ -1795,8 +1916,8 @@ function App() {
           </div>
 
           <div className="modal-status-row">
-            <span className={`task-status-pill ${selectedTask.status}`}>
-              {renderStatusLabel(selectedTask.status)}
+            <span className={`task-status-pill ${getTaskSignalStatus(selectedTask) || getTaskFlowStatus(selectedTask)}`}>
+              {renderStatusLabel(getTaskSignalStatus(selectedTask) || getTaskFlowStatus(selectedTask))}
             </span>
 
             <span className="category-pill">
@@ -1815,7 +1936,7 @@ function App() {
           <div className="modal-info-grid">
             <div>
               <span>今の状態</span>
-              <strong>{statusMeta[selectedTask.status].softLabel}</strong>
+              <strong>{statusMeta[getTaskSignalStatus(selectedTask) || getTaskFlowStatus(selectedTask)].softLabel}</strong>
             </div>
 
             <div>
@@ -1850,10 +1971,10 @@ function App() {
                   key={`modal-${selectedTask.id}-${status}`}
                   type="button"
                   className={`modal-action ${status} ${
-                    selectedTask.status === status ? "active" : ""
+                    (getTaskSignalStatus(selectedTask) || getTaskFlowStatus(selectedTask)) === status ? "active" : ""
                   }`}
                   onClick={() => {
-                    updateTaskStatus(selectedTask.id, status);
+                    updateTaskStatus(selectedTask.id, status, signalStatuses.includes(status) ? "signal" : "flow");
                     updateTaskForm("status", status);
                   }}
                 >
@@ -2365,11 +2486,11 @@ function App() {
                 const memberStatuses = getMemberStatusList(member.id);
 
                 const signalTask =
-                  currentTask && signalStatuses.includes(currentTask.status)
+                  currentTask && getTaskSignalStatus(currentTask)
                     ? currentTask
                     : null;
 
-                const bubbleStatus = signalTask ? signalTask.status : "FLOW";
+                const bubbleStatus = signalTask ? getTaskSignalStatus(signalTask) : "FLOW";
 
                 return (
                   <article
@@ -2403,7 +2524,7 @@ function App() {
 
                       <span className={`speech-bubble ${bubbleStatus}`}>
                         {signalTask
-                          ? statusMeta[signalTask.status].signal
+                          ? statusMeta[getTaskSignalStatus(signalTask)].signal
                           : "進行"}
                       </span>
                     </div>
@@ -2438,11 +2559,11 @@ function App() {
                       <div className="member-task-chip">
                         <span
                           className={`member-task-icon ${
-                            currentTask ? currentTask.status : "DONE"
+                            currentTask ? getTaskFlowStatus(currentTask) : "DONE"
                           }`}
                         >
                           {currentTask
-                            ? statusMeta[currentTask.status].icon
+                            ? statusMeta[getTaskFlowStatus(currentTask)].icon
                             : "✓"}
                         </span>
 
@@ -2459,10 +2580,10 @@ function App() {
 
                         <span
                           className={`mini-status ${
-                            currentTask ? currentTask.status : "DONE"
+                            currentTask ? getTaskFlowStatus(currentTask) : "DONE"
                           }`}
                         >
-                          {currentTask ? statusMeta[currentTask.status].icon : "✓"}
+                          {currentTask ? statusMeta[getTaskFlowStatus(currentTask)].icon : "✓"}
                         </span>
                       </div>
                     </div>
@@ -2562,13 +2683,13 @@ function App() {
             </div>
 
             {nextSupportTask ? (
-              <div className={`next-support-card status-${nextSupportTask.status}`}>
+              <div className={`next-support-card status-${getTaskSignalStatus(nextSupportTask)}`}>
                 <div className="next-support-top">
-                  <span className={`task-status-pill ${nextSupportTask.status}`}>
-                    {renderStatusLabel(nextSupportTask.status)}
+                  <span className={`task-status-pill ${getTaskSignalStatus(nextSupportTask)}`}>
+                    {renderStatusLabel(getTaskSignalStatus(nextSupportTask))}
                   </span>
-                  <span className={`next-support-bubble detect-${nextSupportTask.status}`}>
-                    {statusMeta[nextSupportTask.status].signal || statusCodeLabels[nextSupportTask.status]}
+                  <span className={`next-support-bubble detect-${getTaskSignalStatus(nextSupportTask)}`}>
+                    {statusMeta[getTaskSignalStatus(nextSupportTask)].signal || statusCodeLabels[getTaskSignalStatus(nextSupportTask)]}
                   </span>
                 </div>
 
@@ -2593,12 +2714,12 @@ function App() {
                     className="primary-action"
                     onClick={() => resolveSupportTask(nextSupportTask, false)}
                   >
-                    {supportActionMeta[nextSupportTask.status]?.label || "拾った"}
+                    {supportActionMeta[getTaskSignalStatus(nextSupportTask)]?.label || "拾った"}
                   </button>
                 </div>
 
                 <p className="next-support-note">
-                  {supportActionMeta[nextSupportTask.status]?.message ||
+                  {supportActionMeta[getTaskSignalStatus(nextSupportTask)]?.message ||
                     "必要ならカードを開いて整える"}
                 </p>
               </div>
@@ -2642,18 +2763,18 @@ function App() {
                       <button
                         key={`queue-${task.id}`}
                         type="button"
-                        className={`signal-card status-${task.status}`}
+                        className={`signal-card status-${getTaskSignalStatus(task)}`}
                         onClick={() => scrollToTask(task.id)}
                       >
                         <div className="signal-card-top">
-                          <span className={`task-status-pill ${task.status}`}>
-                            {renderStatusLabel(task.status)}
+                          <span className={`task-status-pill ${getTaskSignalStatus(task)}`}>
+                            {renderStatusLabel(getTaskSignalStatus(task))}
                           </span>
                           <small>{getMember(task.ownerId)?.name}</small>
                         </div>
 
                         <strong>{task.title}</strong>
-                        <p>{statusMeta[task.status].summary}</p>
+                        <p>{statusMeta[getTaskSignalStatus(task)].summary}</p>
                       </button>
                     ))
                   ) : (

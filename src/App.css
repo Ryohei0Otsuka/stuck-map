@@ -8375,3 +8375,50 @@ body .app-shell .signal-focus-layout .signal-board .task-card-wrap.focused .task
     animation: none !important;
   }
 }
+
+/* v10: フロー状態とサイン状態を分離。フロー上には小さなサインだけ残す */
+.task-signal-mini-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  color: #fff;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  box-shadow: 0 7px 16px rgba(69, 99, 145, 0.12);
+}
+
+.task-signal-mini-badge.HELP { background: var(--orange); }
+.task-signal-mini-badge.WAIT { background: var(--purple); }
+.task-signal-mini-badge.CHECK { background: var(--cyber-blue); }
+.task-signal-mini-badge.REVIEW { background: var(--teal); }
+
+.progress-board .task-card.has-task-signal {
+  box-shadow:
+    0 12px 26px rgba(69, 99, 145, 0.08),
+    inset 0 0 0 1px rgba(17, 151, 255, 0.04);
+}
+
+.progress-board .task-card.signal-HELP { border-color: rgba(255, 138, 61, 0.24); }
+.progress-board .task-card.signal-WAIT { border-color: rgba(140, 91, 255, 0.22); }
+.progress-board .task-card.signal-CHECK { border-color: rgba(17, 151, 255, 0.22); }
+.progress-board .task-card.signal-REVIEW { border-color: rgba(24, 183, 159, 0.22); }
+
+.progress-board .task-card.signal-HELP::after,
+.progress-board .task-card.signal-WAIT::after,
+.progress-board .task-card.signal-CHECK::after,
+.progress-board .task-card.signal-REVIEW::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  opacity: 0.9;
+}
+
+.progress-board .task-card.signal-HELP::after { background: var(--orange); }
+.progress-board .task-card.signal-WAIT::after { background: var(--purple); }
+.progress-board .task-card.signal-CHECK::after { background: var(--cyber-blue); }
+.progress-board .task-card.signal-REVIEW::after { background: var(--teal); }
