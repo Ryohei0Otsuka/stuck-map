@@ -692,6 +692,7 @@ function App() {
   const [tasks, setTasks] = useState(savedState?.tasks || cloneTasks(initialTasks));
   const [activeSampleId, setActiveSampleId] = useState(savedState?.activeSampleId || "personal");
   const [activeFilter, setActiveFilter] = useState("ALL");
+  const [activeBoardTab, setActiveBoardTab] = useState("progress");
   const [isProgressTimelineOpen, setIsProgressTimelineOpen] = useState(false);
   const [draggingTaskId, setDraggingTaskId] = useState(null);
   const [dragOverStatus, setDragOverStatus] = useState(null);
@@ -980,6 +981,7 @@ function App() {
     setCategories(initialCategories);
     setTasks(cloneTasks(sample.tasks));
     setActiveFilter("ALL");
+    setActiveBoardTab("progress");
     setIsProgressTimelineOpen(false);
     setSelectedTaskId(null);
     setFocusedTaskId(null);
@@ -998,6 +1000,7 @@ function App() {
     setCategories(initialCategories);
     setTasks(cloneTasks(sample.tasks));
     setActiveFilter("ALL");
+    setActiveBoardTab("progress");
     setIsProgressTimelineOpen(false);
     setSelectedTaskId(null);
     setFocusedTaskId(null);
@@ -1006,7 +1009,11 @@ function App() {
   };
 
   const scrollToTask = (taskId) => {
+    const targetTask = tasks.find((task) => task.id === taskId);
     setActiveFilter("ALL");
+    setActiveBoardTab(
+      targetTask && signalStatuses.includes(targetTask.status) ? "signals" : "progress"
+    );
     setFocusedTaskId(taskId);
 
     window.setTimeout(() => {
@@ -2413,144 +2420,72 @@ function App() {
             </div>
           </aside>
 
-          <section className="panel tasks-panel surface">
+          <section className="panel tasks-panel surface ui-organized-board">
             <div className="panel-heading board-heading">
               <div>
                 <p className="eyebrow">プロジェクトボード</p>
                 <h2>プロジェクトボード</h2>
                 <p className="panel-subtext">
-                  上段で拾うサインを見つけ、下段でこれから・作業中・完了の流れを見ます。カードはクリックで編集できます。
+                  進捗とサインを分けました。進捗は中央、詰まりは右。詳細はカードをクリックして開きます。
                 </p>
               </div>
 
-              <div className="filter-tabs" aria-label="状態フィルター">
-                {statusList.map((status) => (
-                  <button
-                    key={status}
-                    type="button"
-                    className={activeFilter === status ? "active" : ""}
-                    onClick={() => setActiveFilter(status)}
-                  >
-                    {getStatusLabel(status)}
-                  </button>
-                ))}
+              <div className="board-mode-tabs" aria-label="ボード表示切替">
+                <button
+                  type="button"
+                  className={activeBoardTab === "progress" ? "active" : ""}
+                  onClick={() => setActiveBoardTab("progress")}
+                >
+                  <span>進捗</span>
+                  <strong>TODO / DOING / DONE</strong>
+                </button>
+                <button
+                  type="button"
+                  className={activeBoardTab === "signals" ? "active" : ""}
+                  onClick={() => setActiveBoardTab("signals")}
+                >
+                  <span>サイン</span>
+                  <strong>HELP / WAIT / CHECK / REVIEW</strong>
+                </button>
               </div>
             </div>
 
-            <div className="cluster-board">
-              {visibleSupportClusters.length > 0 && (
+            <div className="ui-board-note">
+              <strong>{activeBoardTab === "progress" ? "流れを見る" : "詰まりを見る"}</strong>
+              <span>
+                {activeBoardTab === "progress"
+                  ? "これから・作業中・完了だけに絞り、プロジェクトの流れを軽く確認します。"
+                  : "手助け・方向相談・確認・レビューをまとめ、右パネルと合わせて拾う順番を見ます。"}
+              </span>
+            </div>
+
+            {activeBoardTab === "progress" ? (
+              <div className="cluster-board ui-tab-board progress-board">
                 <div className="cluster-section">
                   <div className="cluster-section-heading">
-                    <h3>拾うサイン</h3>
+                    <h3>進捗</h3>
+                    <span>これから / 作業中 / 完了</span>
+                  </div>
+
+                  <div className="cluster-grid progress-tab-grid">
+                    {flowClusters.map((status) => renderCluster(status))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="cluster-board ui-tab-board signal-board">
+                <div className="cluster-section">
+                  <div className="cluster-section-heading">
+                    <h3>サイン</h3>
                     <span>手助け / 方向相談 / 確認 / レビュー</span>
                   </div>
 
-                  <div className="cluster-grid support-grid">
-                    {visibleSupportClusters.map((status) => renderCluster(status))}
+                  <div className="cluster-grid signal-tab-grid">
+                    {supportClusters.map((status) => renderCluster(status))}
                   </div>
                 </div>
-              )}
-
-              {visibleFlowClusters.length > 0 && (
-                <div className={`cluster-section progress-timeline-section ${
-                  isProgressTimelineOpen ? "open" : "collapsed"
-                }`}>
-                  <div className="cluster-section-heading progress-heading">
-                    <div>
-                      <h3>進行タイムライン</h3>
-                      <p>これから・作業中・完了は必要な時だけ開いて、流れを確認します。</p>
-                    </div>
-
-                    <div className="progress-heading-actions">
-                      <span>これから / 作業中 / 完了</span>
-                      <button
-                        type="button"
-                        className="progress-toggle-button"
-                        onClick={() => setIsProgressTimelineOpen((current) => !current)}
-                        aria-expanded={isProgressTimelineOpen}
-                      >
-                        {isProgressTimelineOpen ? "閉じる" : "開く"}
-                      </button>
-                    </div>
-                  </div>
-
-                  {!isProgressTimelineOpen ? (
-                    <div className="progress-collapsed-summary">
-                      {flowClusters.map((status) => (
-                        <button
-                          key={`progress-summary-${status}`}
-                          type="button"
-                          className={`progress-summary-chip ${status}`}
-                          onClick={() => {
-                            setActiveFilter(status);
-                            setIsProgressTimelineOpen(true);
-                          }}
-                        >
-                          <span className={`progress-summary-icon ${status}`}>
-                            {statusMeta[status].icon}
-                          </span>
-                          <span className="progress-summary-text">
-                            <strong>{getStatusLabel(status)}</strong>
-                            <small>{statusMeta[status].laneHelp}</small>
-                          </span>
-                          <b>{getTasksByStatus(status).length}</b>
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="progress-timeline-board">
-                      <div className="progress-rail" aria-hidden="true" />
-
-                      {visibleFlowClusters.map((status, index) => {
-                        const laneTasks = getTasksByStatus(status);
-
-                        return (
-                          <section
-                            key={`timeline-${status}`}
-                            className={`progress-lane lane-${status} ${
-                              dragOverStatus === status ? "drag-over" : ""
-                            }`}
-                            onDragOver={(event) => handleClusterDragOver(event, status)}
-                            onDragLeave={() => setDragOverStatus(null)}
-                            onDrop={(event) => handleClusterDrop(event, status)}
-                          >
-                            <div className="progress-lane-head">
-                              <span className={`progress-step-icon ${status}`}>
-                                {statusMeta[status].icon}
-                              </span>
-                              <div>
-                                <h4>{getStatusLabel(status)}</h4>
-                                <p>{statusMeta[status].laneHelp}</p>
-                              </div>
-                              <b>{laneTasks.length}</b>
-                            </div>
-
-                            <div className="progress-lane-body">
-                              {laneTasks.length > 0 ? (
-                                laneTasks.map((task) => renderTaskCard(task))
-                              ) : (
-                                <div className="progress-empty">
-                                  <span>{index + 1}</span>
-                                  <p>ここにカードを置けます</p>
-                                </div>
-                              )}
-                            </div>
-                          </section>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {visibleSupportClusters.length === 0 &&
-                visibleFlowClusters.length === 0 && (
-                  <div className="empty-state">
-                    <strong>このフィルターに表示するクラスタはありません。</strong>
-                    <p>「すべて」に戻すと、全体の流れを確認できます。</p>
-                  </div>
-                )}
-            </div>
+              </div>
+            )}
           </section>
 
           <aside className="panel signals-panel surface">
@@ -2616,7 +2551,7 @@ function App() {
                   key={`summary-${status}`}
                   type="button"
                   className={`signal-summary-chip ${status}`}
-                  onClick={() => setActiveFilter(status)}
+                  onClick={() => { setActiveFilter(status); setActiveBoardTab("signals"); }}
                 >
                   <span>{getStatusLabel(status)}</span>
                   <strong>{active拾うサイン[status]}</strong>
