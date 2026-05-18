@@ -1988,9 +1988,9 @@ function App() {
                 </small>
 
                 {hasDemand && (
-                  <span className="member-demand-line">
+                  <span className="member-demand-line" title={`${demand.label || "見てほしいサインあり"}：${demand.total}件${demand.sharePercent > 0 ? ` / 全体の${demand.sharePercent}%` : ""}`}>
                     <b>{demand.label || "見てほしいサインあり"}</b>
-                    <span>{demand.total}件{demand.sharePercent > 0 ? ` / ${demand.sharePercent}%` : ""}</span>
+                    <span>{demand.total}件</span>
                   </span>
                 )}
 
