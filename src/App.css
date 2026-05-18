@@ -9509,3 +9509,116 @@ body .app-shell .signal-focus-layout .signal-board .task-card-wrap.focused .task
     0 16px 34px rgba(69, 99, 145, 0.15),
     0 0 0 4px rgba(17, 151, 255, 0.05);
 }
+
+
+/* v10.25: third-party review cleanup */
+
+/* Header is a normal page-top element. Keep it visible without overlaying the board. */
+.app-frame {
+  padding: 20px 24px 36px !important;
+}
+
+.app-header.topbar {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 0 14px !important;
+  transform: none !important;
+  z-index: 30 !important;
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.modal-backdrop {
+  z-index: 120 !important;
+}
+
+.task-modal {
+  z-index: 130 !important;
+}
+
+/* Member role / memo are optional, so keep the card compact when they are empty. */
+.member-topline {
+  padding-right: 42px;
+}
+
+.member-role-pill:empty {
+  display: none;
+}
+
+/* Signal selection: selected state keeps each signal color instead of becoming low-contrast navy. */
+.modal-action.CHECK.active {
+  background: linear-gradient(135deg, #d3ecff, #f2f9ff) !important;
+  border-color: rgba(0, 113, 205, 0.72) !important;
+  color: #123f66 !important;
+  box-shadow:
+    0 16px 34px rgba(0, 113, 205, 0.18),
+    0 0 0 3px rgba(0, 113, 205, 0.12);
+}
+
+.modal-action.WAIT.active {
+  background: linear-gradient(135deg, #eadcff, #f9f5ff) !important;
+  border-color: rgba(140, 91, 255, 0.72) !important;
+  color: #4f28a8 !important;
+  box-shadow:
+    0 16px 34px rgba(140, 91, 255, 0.18),
+    0 0 0 3px rgba(140, 91, 255, 0.12);
+}
+
+.modal-action.HELP.active {
+  background: linear-gradient(135deg, #ffe1ca, #fff6ef) !important;
+  border-color: rgba(255, 138, 61, 0.78) !important;
+  color: #9f4d16 !important;
+  box-shadow:
+    0 16px 34px rgba(255, 138, 61, 0.2),
+    0 0 0 3px rgba(255, 138, 61, 0.12);
+}
+
+.modal-action.REVIEW.active {
+  background: linear-gradient(135deg, #d3f6ef, #f2fffb) !important;
+  border-color: rgba(24, 183, 159, 0.72) !important;
+  color: #087866 !important;
+  box-shadow:
+    0 16px 34px rgba(24, 183, 159, 0.18),
+    0 0 0 3px rgba(24, 183, 159, 0.12);
+}
+
+.modal-action.CHECK.active span,
+.modal-action.WAIT.active span,
+.modal-action.HELP.active span,
+.modal-action.REVIEW.active span {
+  background: rgba(255, 255, 255, 0.88) !important;
+}
+
+.modal-action.CHECK.active small {
+  color: #315f88 !important;
+}
+
+.modal-action.WAIT.active small {
+  color: #6d50a8 !important;
+}
+
+.modal-action.HELP.active small {
+  color: #9b6338 !important;
+}
+
+.modal-action.REVIEW.active small {
+  color: #237b6d !important;
+}
+
+@media (max-width: 1080px) {
+  .app-frame {
+    padding: 14px 12px 28px !important;
+  }
+
+  .app-header.topbar {
+    position: relative !important;
+    width: 100% !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+  }
+}
