@@ -785,6 +785,7 @@ function App() {
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [isプロジェクトEditing, setIsプロジェクトEditing] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isCreateMemoOpen, setIsCreateMemoOpen] = useState(false);
   const [taskForm, setTaskForm] = useState(defaultTaskForm);
   const [selectedMemberId, setSelectedMemberId] = useState(null);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
@@ -1019,19 +1020,18 @@ function App() {
       id: createTaskId(),
       title: trimmedTitle,
       ownerId: taskForm.ownerId || fallbackMemberId,
-      needId: taskForm.needId || fallbackMemberId,
-      ...createStatusPatch(null, taskForm.status, signalStatuses.includes(taskForm.status) ? "signal" : "flow"),
+      needId: taskForm.ownerId || fallbackMemberId,
+      ...createStatusPatch(null, taskForm.status, "flow"),
       category: categoryMeta[taskForm.category] ? taskForm.category : "",
-      reason: taskForm.reason.trim() || statusMeta[taskForm.status].softLabel,
-      description:
-        taskForm.description.trim() ||
-        "まだ詳細は仮置きです。あとから内容やサインを整えられます。",
+      reason: taskForm.reason.trim() || "",
+      description: taskForm.description.trim(),
     };
 
     setTasks((currentTasks) => [nextTask, ...currentTasks]);
     setFocusedTaskId(nextTask.id);
-    setSelectedTaskId(nextTask.id);
+    setSelectedTaskId(null);
     setIsCreateModalOpen(false);
+    setIsCreateMemoOpen(false);
     setTaskForm({
       ...defaultTaskForm,
       ownerId: fallbackMemberId,
@@ -1259,19 +1259,24 @@ function App() {
   };
 
   const openCreateModal = (initialStatus = "TODO") => {
+    setSelectedTaskId(null);
     setTaskForm({
       ...defaultTaskForm,
+      title: "",
       status: initialStatus,
-      reason: statusMeta[initialStatus].softLabel,
+      reason: "",
+      description: "",
       ownerId: fallbackMemberId,
       needId: fallbackMemberId,
       category: "",
     });
+    setIsCreateMemoOpen(false);
     setIsCreateModalOpen(true);
   };
 
   const closeCreateModal = () => {
     setIsCreateModalOpen(false);
+    setIsCreateMemoOpen(false);
     setTaskForm({
       ...defaultTaskForm,
       ownerId: fallbackMemberId,
@@ -1291,11 +1296,6 @@ function App() {
     setTaskForm((current) => ({
       ...current,
       status,
-      reason:
-        current.reason === "" ||
-        Object.values(statusMeta).some((meta) => meta.softLabel === current.reason)
-          ? statusMeta[status].softLabel
-          : current.reason,
     }));
   };
 
@@ -1533,10 +1533,91 @@ function App() {
     const currentMeta = statusMeta[taskForm.status] || statusMeta.TODO;
     const statusOptions = isCreateMode ? flowClusters : allStatuses;
 
+    if (isCreateMode) {
+      return (
+        <div className="edit-form-grid create-task-form-grid">
+          <label className="form-field wide">
+            <span>タスク名</span>
+            <input
+              value={taskForm.title}
+              onChange={(event) => updateTaskForm("title", event.target.value)}
+              placeholder="例：READMEを整える"
+              autoFocus
+            />
+          </label>
+
+          <label className="form-field">
+            <span>担当者</span>
+            <select
+              value={taskForm.ownerId}
+              onChange={(event) => updateTaskForm("ownerId", event.target.value)}
+            >
+              {members.map((member) => (
+                <option key={`owner-${member.id}`} value={member.id}>
+                  {member.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="form-field">
+            <span>フロー</span>
+            <select
+              value={taskForm.status}
+              onChange={(event) => chooseCreateStatus(event.target.value)}
+            >
+              {flowClusters.map((status) => (
+                <option value={status} key={`status-${status}`}>
+                  {getStatusLabel(status)}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="form-field wide">
+            <span>カテゴリ（任意）</span>
+            <select
+              value={taskForm.category}
+              onChange={(event) => updateTaskForm("category", event.target.value)}
+            >
+              <option value="">指定なし</option>
+              {categories.map((category) => (
+                <option value={category.id} key={`category-${category.id}`}>
+                  {category.id}：{category.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          {!isCreateMemoOpen ? (
+            <button
+              type="button"
+              className="inline-expand-button wide"
+              onClick={() => setIsCreateMemoOpen(true)}
+            >
+              ＋ 備考を追加
+            </button>
+          ) : (
+            <label className="form-field wide">
+              <span>備考（任意）</span>
+              <textarea
+                value={taskForm.description}
+                onChange={(event) =>
+                  updateTaskForm("description", event.target.value)
+                }
+                placeholder="必要なら、背景や補足を軽く書く"
+                rows={3}
+              />
+            </label>
+          )}
+        </div>
+      );
+    }
+
     return (
       <div className="edit-form-grid">
         <label className="form-field wide">
-          <span>タイトル</span>
+          <span>タスク名</span>
           <input
             value={taskForm.title}
             onChange={(event) => updateTaskForm("title", event.target.value)}
@@ -1573,7 +1654,7 @@ function App() {
         </label>
 
         <label className="form-field">
-          <span>{isCreateMode ? "フロー" : "状態"}</span>
+          <span>状態</span>
           <select
             value={taskForm.status}
             onChange={(event) => chooseCreateStatus(event.target.value)}
@@ -1611,7 +1692,7 @@ function App() {
         </label>
 
         <label className="form-field wide">
-          <span>説明</span>
+          <span>備考</span>
           <textarea
             value={taskForm.description}
             onChange={(event) =>
@@ -1953,17 +2034,9 @@ function App() {
             </button>
           </div>
 
-          <p className="modal-description">
-            まずはタスクとして置きます。手助け・確認・レビューなどのサインは、追加後に詳細画面から付けられます。
+          <p className="modal-description compact-modal-description">
+            作業の入口を作ります。サインはあとから付けられます。
           </p>
-
-          <div className="command-guide TODO">
-            <span>{statusMeta.TODO.icon}</span>
-            <div>
-              <strong>タスクをひとつ置く</strong>
-              <p>作業の入口を作ります。必要になったら、あとからサインを付けて拾いやすくします。</p>
-            </div>
-          </div>
 
           {renderTaskFields("create")}
 
@@ -1973,11 +2046,11 @@ function App() {
               className="secondary-action"
               onClick={closeCreateModal}
             >
-              やめる
+              キャンセル
             </button>
 
             <button type="button" className="primary-action" onClick={createTask}>
-              タスクを追加
+              追加する
             </button>
           </div>
         </section>

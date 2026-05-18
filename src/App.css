@@ -8934,3 +8934,98 @@ body .app-shell .signal-focus-layout .signal-board .task-card-wrap.focused .task
   font-size: 11px;
   font-weight: 800;
 }
+
+/* v10.16: lightweight task create modal and stable header */
+.app-frame {
+  padding-top: 118px !important;
+}
+
+.app-header.topbar {
+  position: fixed !important;
+  top: 14px !important;
+  left: 50% !important;
+  width: min(calc(100vw - 48px), 1532px) !important;
+  margin: 0 !important;
+  transform: translateX(-50%) !important;
+  z-index: 120 !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(105, 132, 178, 0.24) !important;
+  box-shadow:
+    0 18px 52px rgba(45, 74, 113, 0.14),
+    0 0 0 1px rgba(255, 255, 255, 0.92) inset !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.app-header.topbar::after {
+  content: none !important;
+}
+
+.modal-backdrop {
+  z-index: 400 !important;
+}
+
+.task-modal {
+  z-index: 410 !important;
+}
+
+.task-card,
+.task-card-wrap,
+.status-cluster,
+.panel {
+  scroll-margin-top: 140px !important;
+}
+
+.compact-modal-description {
+  margin-bottom: 16px !important;
+}
+
+.create-task-form-grid {
+  gap: 12px !important;
+}
+
+.inline-expand-button {
+  min-height: 42px;
+  border: 1px dashed rgba(17, 151, 255, 0.24);
+  border-radius: 16px;
+  background: rgba(248, 252, 255, 0.9);
+  color: #55708d;
+  font-size: 12px;
+  font-weight: 900;
+  text-align: left;
+  padding: 0 13px;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.inline-expand-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(17, 151, 255, 0.38);
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(69, 99, 145, 0.1);
+}
+
+.inline-expand-button.wide {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 1080px) {
+  .app-frame {
+    padding-top: 156px !important;
+  }
+
+  .app-header.topbar {
+    top: 8px !important;
+    width: calc(100vw - 24px) !important;
+  }
+
+  .task-card,
+  .task-card-wrap,
+  .status-cluster,
+  .panel {
+    scroll-margin-top: 190px !important;
+  }
+}
