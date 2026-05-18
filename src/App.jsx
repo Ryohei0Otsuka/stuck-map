@@ -878,26 +878,52 @@ function App() {
   }, [signalTasks]);
 
   const signalDemandByMember = useMemo(() => {
+    const activeSignalTasks = signalTasks.filter((task) => getTaskFlowStatus(task) !== "DONE");
+    const totalActiveSignals = activeSignalTasks.length;
     const initialCounts = Object.fromEntries(
       members.map((member) => [
         member.id,
-        { total: 0, HELP: 0, WAIT: 0, CHECK: 0, REVIEW: 0 },
+        {
+          total: 0,
+          share: 0,
+          sharePercent: 0,
+          level: "none",
+          label: "",
+          HELP: 0,
+          WAIT: 0,
+          CHECK: 0,
+          REVIEW: 0,
+        },
       ])
     );
 
-    signalTasks
-      .filter((task) => getTaskFlowStatus(task) !== "DONE")
-      .forEach((task) => {
-        const targetId = task.needId || fallbackMemberId;
-        const signalStatus = getTaskSignalStatus(task);
+    activeSignalTasks.forEach((task) => {
+      const targetId = task.needId || fallbackMemberId;
+      const signalStatus = getTaskSignalStatus(task);
 
-        if (!signalStatus || !initialCounts[targetId]) {
-          return;
-        }
+      if (!signalStatus || !initialCounts[targetId]) {
+        return;
+      }
 
-        initialCounts[targetId].total += 1;
-        initialCounts[targetId][signalStatus] += 1;
-      });
+      initialCounts[targetId].total += 1;
+      initialCounts[targetId][signalStatus] += 1;
+    });
+
+    Object.values(initialCounts).forEach((demand) => {
+      demand.share = totalActiveSignals > 0 ? demand.total / totalActiveSignals : 0;
+      demand.sharePercent = totalActiveSignals > 0 ? Math.round(demand.share * 100) : 0;
+
+      if (demand.total >= 3 && demand.share >= 0.5) {
+        demand.level = "hot";
+        demand.label = "確認・相談が集まっています";
+      } else if (demand.total >= 2 && demand.share >= 0.4) {
+        demand.level = "warm";
+        demand.label = "確認・相談が集まりやすい";
+      } else if (demand.total > 0) {
+        demand.level = "soft";
+        demand.label = "見てほしいサインあり";
+      }
+    });
 
     return initialCounts;
   }, [signalTasks, members, fallbackMemberId]);
@@ -1892,14 +1918,17 @@ function App() {
       const hasSignal = Boolean(signalStatus);
       const demand = signalDemandByMember[member.id] || {
         total: 0,
+        share: 0,
+        sharePercent: 0,
+        level: "none",
+        label: "",
         HELP: 0,
         WAIT: 0,
         CHECK: 0,
         REVIEW: 0,
       };
       const hasDemand = demand.total > 0;
-      const isDemandWarm = demand.total >= 2;
-      const isDemandHot = demand.total >= 3;
+      const demandLevel = demand.level || "none";
 
       return {
         member,
@@ -1909,8 +1938,7 @@ function App() {
         hasSignal,
         demand,
         hasDemand,
-        isDemandWarm,
-        isDemandHot,
+        demandLevel,
       };
     });
 
@@ -1928,13 +1956,13 @@ function App() {
         </div>
 
         <div className="member-status-list">
-          {memberSummaries.map(({ member, currentTask, mainStatus, signalStatus, hasSignal, demand, hasDemand, isDemandWarm, isDemandHot }) => (
+          {memberSummaries.map(({ member, currentTask, mainStatus, signalStatus, hasSignal, demand, hasDemand, demandLevel }) => (
             <article
               key={`member-status-${member.id}`}
               role={currentTask ? "button" : undefined}
               tabIndex={currentTask ? 0 : -1}
               aria-disabled={!currentTask}
-              className={`member-status-chip status-${mainStatus} ${hasSignal ? "has-signal" : ""} ${hasDemand ? "has-demand" : ""} ${isDemandWarm ? "demand-warm" : ""} ${isDemandHot ? "demand-hot" : ""} ${!currentTask ? "disabled" : ""}`}
+              className={`member-status-chip status-${mainStatus} ${hasSignal ? "has-signal" : ""} ${hasDemand ? "has-demand" : ""} ${hasDemand ? `demand-${demandLevel}` : ""} ${!currentTask ? "disabled" : ""}`}
               onClick={() => handleMemberClick(member.id)}
               onKeyDown={(event) => {
                 if (!currentTask) {
@@ -1961,8 +1989,8 @@ function App() {
 
                 {hasDemand && (
                   <span className="member-demand-line">
-                    <b>{isDemandWarm ? "確認・相談が集まりやすい" : "見てほしいサインあり"}</b>
-                    <span>{demand.total}件</span>
+                    <b>{demand.label || "見てほしいサインあり"}</b>
+                    <span>{demand.total}件{demand.sharePercent > 0 ? ` / ${demand.sharePercent}%` : ""}</span>
                   </span>
                 )}
 
