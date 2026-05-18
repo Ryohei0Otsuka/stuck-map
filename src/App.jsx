@@ -1459,9 +1459,9 @@ function App() {
     const nextMember = {
       id: selectedMemberId || createMemberId(),
       name: trimmedName,
-      role: memberForm.role.trim(),
+      role: memberForm.role.trim() || "チームメンバー",
       avatar: createAvatarFromName(trimmedName),
-      memo: memberForm.memo.trim(),
+      memo: memberForm.memo.trim() || "プロジェクトを前に進めるメンバー",
     };
 
     if (selectedMemberId) {
@@ -1475,19 +1475,6 @@ function App() {
     }
 
     closeMemberModal();
-  };
-
-  const scrollToPageHeader = (behavior = "smooth") => {
-    window.setTimeout(() => {
-      const header = document.querySelector(".app-header");
-
-      if (header) {
-        header.scrollIntoView({ behavior, block: "start" });
-        return;
-      }
-
-      window.scrollTo({ top: 0, behavior });
-    }, 80);
   };
 
   const deleteMember = () => {
@@ -1517,10 +1504,7 @@ function App() {
       }))
     );
 
-    setSelectedTaskId(null);
-    setFocusedTaskId(null);
     closeMemberModal();
-    scrollToPageHeader();
   };
 
 
