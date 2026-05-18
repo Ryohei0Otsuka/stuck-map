@@ -2132,20 +2132,23 @@ h1 {
 
 .modal-action-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 9px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
   margin-bottom: 18px;
 }
 
 .modal-action {
   display: grid;
   gap: 7px;
-  place-items: center;
-  min-height: 82px;
+  align-content: start;
+  justify-items: start;
+  min-height: 116px;
+  padding: 14px;
   border: 1px solid rgba(17, 151, 255, 0.12);
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.84);
   color: #5b7392;
+  text-align: left;
   transition:
     transform 160ms ease,
     box-shadow 160ms ease,
@@ -2183,6 +2186,62 @@ h1 {
 .modal-action strong {
   font-size: 11px;
   line-height: 1.4;
+}
+
+.modal-action small {
+  color: #6f84a3;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.modal-action.active small {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.modal-action.CHECK {
+  border-color: rgba(17, 151, 255, 0.2);
+  background: linear-gradient(135deg, rgba(233, 245, 255, 0.94), rgba(255, 255, 255, 0.86));
+}
+
+.modal-action.CHECK span {
+  background: rgba(223, 241, 255, 0.95);
+  color: var(--cyber-blue);
+}
+
+.modal-action.WAIT {
+  border-color: rgba(140, 91, 255, 0.2);
+  background: linear-gradient(135deg, rgba(244, 238, 255, 0.94), rgba(255, 255, 255, 0.86));
+}
+
+.modal-action.WAIT span {
+  background: rgba(238, 227, 255, 0.95);
+  color: var(--purple);
+}
+
+.modal-action.HELP {
+  border-color: rgba(255, 138, 61, 0.24);
+  background: linear-gradient(135deg, rgba(255, 241, 232, 0.96), rgba(255, 255, 255, 0.86));
+}
+
+.modal-action.HELP span {
+  background: rgba(255, 230, 212, 0.95);
+  color: var(--orange);
+}
+
+.modal-action.REVIEW {
+  border-color: rgba(24, 183, 159, 0.22);
+  background: linear-gradient(135deg, rgba(232, 251, 247, 0.96), rgba(255, 255, 255, 0.86));
+}
+
+.modal-action.REVIEW span {
+  background: rgba(223, 248, 243, 0.95);
+  color: var(--teal);
+}
+
+.modal-action.active span {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
 }
 
 .edit-block {
@@ -9340,4 +9399,9 @@ body .app-shell .signal-focus-layout .signal-board .task-card-wrap.focused .task
 
 .demand-dot em {
   margin-left: 1px !important;
+}
+
+.modal-action.active span {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
 }

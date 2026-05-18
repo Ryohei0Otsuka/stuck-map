@@ -70,7 +70,7 @@ const initialTasks = [
     needId: "m1",
     status: "WAIT",
     category: "FLOW",
-    reason: "方向相談",
+    reason: "認識合わせ",
     description:
       "どこを見れば前に進むかを、進捗会議前に見えるようにする。",
   },
@@ -155,7 +155,7 @@ const sampleProjectTemplates = {
         needId: "m1",
         status: "WAIT",
         category: "FLOW",
-        reason: "方向相談",
+        reason: "認識合わせ",
         description: "誰に、どの順番で、何を確認するか。判断待ちが一点に溜まらないように流れを見る。",
       },
       {
@@ -234,7 +234,7 @@ const sampleProjectTemplates = {
         needId: "m1",
         status: "WAIT",
         category: "COPY",
-        reason: "方向相談",
+        reason: "認識合わせ",
         description: "原稿の意図を壊さず、ページとして読みやすい表現に寄せる方針を合わせる。",
       },
       {
@@ -313,7 +313,7 @@ const sampleProjectTemplates = {
         needId: "m1",
         status: "WAIT",
         category: "FLOW",
-        reason: "方向相談",
+        reason: "認識合わせ",
         description: "どこまで自分で進めて、どこから相談するかを早めに合わせる。",
       },
       {
@@ -353,10 +353,10 @@ const statusDisplayLabels = {
   ALL: "すべて",
   TODO: "これから",
   DOING: "作業中",
-  HELP: "手助け",
-  WAIT: "方向相談",
-  CHECK: "確認",
-  REVIEW: "レビュー",
+  HELP: "お助け",
+  WAIT: "認識合わせ",
+  CHECK: "確認依頼",
+  REVIEW: "レビュー依頼",
   DONE: "完了",
 };
 
@@ -365,7 +365,7 @@ const statusCodeLabels = {
   TODO: "TODO",
   DOING: "DOING",
   HELP: "HELP",
-  WAIT: "WAIT",
+  WAIT: "ALIGN",
   CHECK: "CHECK",
   REVIEW: "REVIEW",
   DONE: "DONE",
@@ -406,8 +406,8 @@ const supportActionMeta = {
     message: "サインだけを外します。タスクはフロー上に残ります。",
   },
   WAIT: {
-    label: "方向OK",
-    message: "方向相談のサインだけを外します。タスクはフロー上に残ります。",
+    label: "認識OK",
+    message: "認識合わせのサインだけを外します。タスクはフロー上に残ります。",
   },
   CHECK: {
     label: "確認OK",
@@ -479,67 +479,67 @@ const statusMeta = {
     descriptionPlaceholder: "今どこまで進んでいるか、次に何を見るかを書く",
   },
   HELP: {
-    label: "手助け",
+    label: "お助け",
     icon: "!",
     signal: "HELP!",
-    laneTitle: "HELP",
-    laneHelp: "早めに拾いたい",
+    laneTitle: "お助け",
+    laneHelp: "一人で抱える前に",
     softLabel: "少し手を借りたい",
-    summary: "一人で抱えすぎる前のサイン",
+    summary: "一人で抱える前に",
     bubble: "HELP!",
-    commandTitle: "手助けがほしい",
+    commandTitle: "お助けを出す",
     promptTitle: "何に手を借りたい？",
     promptDescription: "一人で抱え込む前に、少しだけ助けてほしい場所を置きます。",
     titlePlaceholder: "例：この表示崩れを一緒に見たい",
-    reasonPlaceholder: "例：表現確認 / 実装相談 / 詰まりそう",
+    reasonPlaceholder: "例：実装相談 / 詰まりそう",
     descriptionPlaceholder: "どこで手を借りたいか、何があると進めそうかを書く",
   },
   WAIT: {
-    label: "方向相談",
-    icon: "Ⅱ",
-    signal: "WAIT",
-    laneTitle: "WAIT",
-    laneHelp: "一緒に方向を見る",
-    softLabel: "方向を見たい",
-    summary: "決めつける前に向きを合わせる",
-    bubble: "方向!",
-    commandTitle: "方向を相談する",
-    promptTitle: "どの方向を一緒に見たい？",
-    promptDescription: "判断を迫るのではなく、向きを合わせたい場所を置きます。",
-    titlePlaceholder: "例：この仕様の方向を合わせたい",
-    reasonPlaceholder: "例：方向相談 / 方針確認",
-    descriptionPlaceholder: "どの選択肢で迷っているか、何を合わせたいかを書く",
+    label: "認識合わせ",
+    icon: "⇄",
+    signal: "ALIGN",
+    laneTitle: "認識合わせ",
+    laneHelp: "進め方をそろえる",
+    softLabel: "認識を合わせたい",
+    summary: "進め方をそろえる",
+    bubble: "ALIGN",
+    commandTitle: "認識を合わせる",
+    promptTitle: "何の認識を合わせたい？",
+    promptDescription: "進め方・方針・判断の向きを合わせたい場所を置きます。",
+    titlePlaceholder: "例：この仕様の進め方を合わせたい",
+    reasonPlaceholder: "例：認識合わせ / 方針確認",
+    descriptionPlaceholder: "どの前提や進め方を合わせたいかを書く",
   },
   CHECK: {
-    label: "確認",
+    label: "確認依頼",
     icon: "?",
     signal: "CHECK",
-    laneTitle: "CHECK",
+    laneTitle: "確認依頼",
     laneHelp: "軽く見てほしい",
-    softLabel: "確認したい",
-    summary: "小さな認識ズレを早めに確認",
-    bubble: "確認!",
-    commandTitle: "確認をお願いする",
-    promptTitle: "どこを軽く確認したい？",
+    softLabel: "軽く確認してほしい",
+    summary: "認識ズレを早めに見る",
+    bubble: "CHECK",
+    commandTitle: "確認依頼を出す",
+    promptTitle: "どこを軽く確認してほしい？",
     promptDescription: "小さな認識ズレを早めにほどくためのサインです。",
     titlePlaceholder: "例：文言の見え方だけ確認したい",
-    reasonPlaceholder: "例：軽く確認 / 表示確認",
+    reasonPlaceholder: "例：表示確認",
     descriptionPlaceholder: "見てほしい箇所、確認したい観点を軽く書く",
   },
   REVIEW: {
-    label: "レビュー",
+    label: "レビュー依頼",
     icon: "◎",
     signal: "REVIEW",
-    laneTitle: "REVIEW",
-    laneHelp: "レビュー・見直し",
-    softLabel: "一度見てほしい",
-    summary: "品質確認の置き場",
-    bubble: "見て!",
-    commandTitle: "レビューをお願いする",
-    promptTitle: "何を一度見てほしい？",
+    laneTitle: "レビュー依頼",
+    laneHelp: "一度見てほしい",
+    softLabel: "レビューしてほしい",
+    summary: "一度見てほしい",
+    bubble: "REVIEW",
+    commandTitle: "レビュー依頼を出す",
+    promptTitle: "何をレビューしてほしい？",
     promptDescription: "完成前に見直したいもの、レビューしてほしいものを置きます。",
     titlePlaceholder: "例：テスト観点を一度見てほしい",
-    reasonPlaceholder: "例：レビュー待ち / 品質確認",
+    reasonPlaceholder: "例：品質確認",
     descriptionPlaceholder: "どんな観点で見てほしいかを書く",
   },
   DONE: {
@@ -2129,7 +2129,7 @@ function App() {
             <strong>誰が遅いかではなく、何が詰まっているかを見る。</strong>
             <p>
               Stuck Map は、プロジェクトの詰まりを早く見つけて助け合うための進行支援ボードです。
-              HELP・確認・方向相談・レビューを、責める材料ではなく早めに拾うサインとして扱います。
+              お助け・確認依頼・認識合わせ・レビュー依頼を、責める材料ではなく早めに拾うサインとして扱います。
             </p>
           </div>
 
@@ -2308,7 +2308,8 @@ function App() {
                   onClick={() => updateTaskForm("status", status)}
                 >
                   <span>{statusMeta[status].icon}</span>
-                  <strong>{statusMeta[status].softLabel}</strong>
+                  <strong>{statusMeta[status].label}</strong>
+                  <small>{statusCodeLabels[status]}：{statusMeta[status].summary}</small>
                 </button>
               ))}
             </div>
@@ -2954,7 +2955,7 @@ function App() {
                 <p className="panel-subtext">
                   {activeBoardTab === "progress"
                     ? "これから・作業中・完了だけに絞って、プロジェクトの流れを確認します。"
-                    : "手助け・方向相談・確認・レビューをまとめ、右パネルと合わせて拾う順番を見ます。"}
+                    : "お助け・確認依頼・認識合わせ・レビュー依頼をまとめ、右パネルと合わせて拾う順番を見ます。"}
                 </p>
               </div>
 
@@ -3005,7 +3006,7 @@ function App() {
                 <div className="cluster-section">
                   <div className="cluster-section-heading">
                     <h3>サイン</h3>
-                    <span>手助け / 方向相談 / 確認 / レビュー</span>
+                    <span>お助け / 確認依頼 / 認識合わせ / レビュー依頼</span>
                   </div>
 
                   <div className="cluster-grid signal-tab-grid">
@@ -3123,7 +3124,7 @@ function App() {
                   ) : (
                     <div className="empty-state compact-empty">
                       <strong>キューは空です。</strong>
-                      <p>手助け・方向相談・確認・レビューが出ると並びます。</p>
+                      <p>お助け・確認依頼・認識合わせ・レビュー依頼が出ると並びます。</p>
                     </div>
                   )}
                 </div>
