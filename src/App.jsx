@@ -877,6 +877,31 @@ function App() {
     });
   }, [signalTasks]);
 
+  const signalDemandByMember = useMemo(() => {
+    const initialCounts = Object.fromEntries(
+      members.map((member) => [
+        member.id,
+        { total: 0, HELP: 0, WAIT: 0, CHECK: 0, REVIEW: 0 },
+      ])
+    );
+
+    signalTasks
+      .filter((task) => getTaskFlowStatus(task) !== "DONE")
+      .forEach((task) => {
+        const targetId = task.needId || fallbackMemberId;
+        const signalStatus = getTaskSignalStatus(task);
+
+        if (!signalStatus || !initialCounts[targetId]) {
+          return;
+        }
+
+        initialCounts[targetId].total += 1;
+        initialCounts[targetId][signalStatus] += 1;
+      });
+
+    return initialCounts;
+  }, [signalTasks, members, fallbackMemberId]);
+
   const nextSupportTask = supportQueue[0] || null;
   const completedCount = tasks.filter((task) => getTaskFlowStatus(task) === "DONE").length;
   const totalTaskCount = tasks.length;
@@ -1865,6 +1890,16 @@ function App() {
       const mainStatus = currentTask ? getTaskFlowStatus(currentTask) : "DONE";
       const signalStatus = currentTask ? getTaskSignalStatus(currentTask) : null;
       const hasSignal = Boolean(signalStatus);
+      const demand = signalDemandByMember[member.id] || {
+        total: 0,
+        HELP: 0,
+        WAIT: 0,
+        CHECK: 0,
+        REVIEW: 0,
+      };
+      const hasDemand = demand.total > 0;
+      const isDemandWarm = demand.total >= 2;
+      const isDemandHot = demand.total >= 3;
 
       return {
         member,
@@ -1872,6 +1907,10 @@ function App() {
         mainStatus,
         signalStatus,
         hasSignal,
+        demand,
+        hasDemand,
+        isDemandWarm,
+        isDemandHot,
       };
     });
 
@@ -1889,13 +1928,13 @@ function App() {
         </div>
 
         <div className="member-status-list">
-          {memberSummaries.map(({ member, currentTask, mainStatus, signalStatus, hasSignal }) => (
+          {memberSummaries.map(({ member, currentTask, mainStatus, signalStatus, hasSignal, demand, hasDemand, isDemandWarm, isDemandHot }) => (
             <article
               key={`member-status-${member.id}`}
               role={currentTask ? "button" : undefined}
               tabIndex={currentTask ? 0 : -1}
               aria-disabled={!currentTask}
-              className={`member-status-chip status-${mainStatus} ${hasSignal ? "has-signal" : ""} ${!currentTask ? "disabled" : ""}`}
+              className={`member-status-chip status-${mainStatus} ${hasSignal ? "has-signal" : ""} ${hasDemand ? "has-demand" : ""} ${isDemandWarm ? "demand-warm" : ""} ${isDemandHot ? "demand-hot" : ""} ${!currentTask ? "disabled" : ""}`}
               onClick={() => handleMemberClick(member.id)}
               onKeyDown={(event) => {
                 if (!currentTask) {
@@ -1919,6 +1958,26 @@ function App() {
                       : getStatusLabel(mainStatus)
                     : "待機"}
                 </small>
+
+                {hasDemand && (
+                  <span className="member-demand-line">
+                    <b>{isDemandWarm ? "確認・相談が集まりやすい" : "見てほしいサインあり"}</b>
+                    <span>{demand.total}件</span>
+                  </span>
+                )}
+
+                {hasDemand && (
+                  <span className="member-demand-dots" aria-label={`${member.name}に集まっているサイン`}>
+                    {signalStatuses
+                      .filter((status) => demand[status] > 0)
+                      .map((status) => (
+                        <i className={`demand-dot ${status}`} key={`${member.id}-demand-${status}`}>
+                          {statusMeta[status].icon}
+                          <em>{demand[status]}</em>
+                        </i>
+                      ))}
+                  </span>
+                )}
               </span>
               <span className={`member-status-mark ${mainStatus}`}>
                 {statusMeta[mainStatus]?.icon || "✓"}
