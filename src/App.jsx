@@ -792,10 +792,18 @@ function createStatusPatch(currentTask, nextStatus, mode = "flow") {
   if (signalStatuses.includes(nextStatus)) {
     const currentFlowStatus = currentTask ? getTaskFlowStatus(currentTask) : "DOING";
 
+    if (currentFlowStatus === "DONE") {
+      return {
+        flowStatus: "DONE",
+        signalStatus: null,
+        status: "DONE",
+      };
+    }
+
     return {
-      flowStatus: currentFlowStatus === "DONE" ? "DOING" : currentFlowStatus,
+      flowStatus: currentFlowStatus,
       signalStatus: nextStatus,
-      status: currentFlowStatus === "DONE" ? "DOING" : currentFlowStatus,
+      status: currentFlowStatus,
     };
   }
 
@@ -906,7 +914,9 @@ function App() {
   }, [selectedTask]);
 
   const signalTasks = useMemo(() => {
-    return tasks.filter((task) => getTaskSignalStatus(task));
+    return tasks.filter(
+      (task) => getTaskSignalStatus(task) && getTaskFlowStatus(task) !== "DONE"
+    );
   }, [tasks]);
 
   const supportQueue = useMemo(() => {
@@ -977,10 +987,10 @@ function App() {
   const progressPercent = totalTaskCount > 0 ? Math.round((completedCount / totalTaskCount) * 100) : 0;
 
   const active拾うサイン = {
-    HELP: tasks.filter((task) => getTaskSignalStatus(task) === "HELP").length,
-    WAIT: tasks.filter((task) => getTaskSignalStatus(task) === "WAIT").length,
-    CHECK: tasks.filter((task) => getTaskSignalStatus(task) === "CHECK").length,
-    REVIEW: tasks.filter((task) => getTaskSignalStatus(task) === "REVIEW").length,
+    HELP: signalTasks.filter((task) => getTaskSignalStatus(task) === "HELP").length,
+    WAIT: signalTasks.filter((task) => getTaskSignalStatus(task) === "WAIT").length,
+    CHECK: signalTasks.filter((task) => getTaskSignalStatus(task) === "CHECK").length,
+    REVIEW: signalTasks.filter((task) => getTaskSignalStatus(task) === "REVIEW").length,
   };
 
   const visibleSupportClusters = useMemo(() => {
@@ -1021,7 +1031,10 @@ function App() {
 
   const getTasksByStatus = (status, mode = "flow") => {
     if (mode === "signal") {
-      return tasks.filter((task) => getTaskSignalStatus(task) === status);
+      return tasks.filter(
+        (task) =>
+          getTaskSignalStatus(task) === status && getTaskFlowStatus(task) !== "DONE"
+      );
     }
 
     return tasks.filter((task) => getTaskFlowStatus(task) === status);
@@ -1160,12 +1173,21 @@ function App() {
       return;
     }
 
+    const selectedFlowStatus = getTaskFlowStatus(selectedTask);
+    const nextStatus =
+      selectedFlowStatus === "DONE" && signalStatuses.includes(taskForm.status)
+        ? "DONE"
+        : taskForm.status;
+    const nextNeedType = recipientTypeLabels[taskForm.needType]
+      ? taskForm.needType
+      : "member";
+
     updateTask(selectedTask.id, {
       title: trimmedTitle,
       ownerId: taskForm.ownerId || fallbackMemberId,
-      needType: recipientTypeLabels[taskForm.needType] ? taskForm.needType : "member",
-      needId: taskForm.needType === "member" ? taskForm.needId || fallbackMemberId : taskForm.needId || fallbackMemberId,
-      ...createStatusPatch(selectedTask, taskForm.status, signalStatuses.includes(taskForm.status) ? "signal" : "flow"),
+      needType: nextNeedType,
+      needId: nextNeedType === "member" ? taskForm.needId || fallbackMemberId : "",
+      ...createStatusPatch(selectedTask, nextStatus, signalStatuses.includes(nextStatus) ? "signal" : "flow"),
       category: categoryMeta[taskForm.category] ? taskForm.category : "",
       reason: selectedTask.reason || "",
       description: taskForm.description.trim(),
@@ -2215,6 +2237,7 @@ function App() {
     const owner = getMember(selectedTask.ownerId);
     const recipientLabel = getRecipientLabel(selectedTask);
     const category = selectedTask.category ? categoryMeta[selectedTask.category] : null;
+    const isDoneTask = getTaskFlowStatus(selectedTask) === "DONE";
 
     return (
       <div className="modal-backdrop" onClick={closeTaskModal}>
@@ -2282,30 +2305,37 @@ function App() {
           <div className="modal-message">
             <strong>ここではまだ仮編集です。</strong>
             <p>
-              サインや内容を選んだら、最後に「保存して閉じる」で反映します。やめる場合はキャンセルします。
+              内容を整えたら、最後に「保存して閉じる」で反映します。やめる場合はキャンセルします。
             </p>
           </div>
 
-          <div className="modal-actions">
-            <p className="modal-section-title">サインを選ぶ</p>
-
-            <div className="modal-action-grid">
-              {quickSignalList.map((status) => (
-                <button
-                  key={`modal-${selectedTask.id}-${status}`}
-                  type="button"
-                  className={`modal-action ${status} ${
-                    taskForm.status === status ? "active" : ""
-                  }`}
-                  onClick={() => updateTaskForm("status", status)}
-                >
-                  <span>{statusMeta[status].icon}</span>
-                  <strong>{statusMeta[status].label}</strong>
-                  <small>{statusCodeLabels[status]}：{statusMeta[status].summary}</small>
-                </button>
-              ))}
+          {isDoneTask ? (
+            <div className="modal-done-note">
+              <strong>完了したタスクです。</strong>
+              <p>完了タスクにはサインを付けません。サインを出す場合は、状態を作業中へ戻してから設定します。</p>
             </div>
-          </div>
+          ) : (
+            <div className="modal-actions">
+              <p className="modal-section-title">サインを選ぶ</p>
+
+              <div className="modal-action-grid">
+                {quickSignalList.map((status) => (
+                  <button
+                    key={`modal-${selectedTask.id}-${status}`}
+                    type="button"
+                    className={`modal-action ${status} ${
+                      taskForm.status === status ? "active" : ""
+                    }`}
+                    onClick={() => updateTaskForm("status", status)}
+                  >
+                    <span>{statusMeta[status].icon}</span>
+                    <strong>{statusMeta[status].label}</strong>
+                    <small>{statusCodeLabels[status]}：{statusMeta[status].summary}</small>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="edit-block">
             <p className="modal-section-title">内容を編集する</p>
@@ -3014,7 +3044,7 @@ function App() {
               <p className="eyebrow">NEXT SIGN</p>
               <h2>次に拾う</h2>
               <p className="panel-subtext">
-                迷ったらここ。今見るべきカードを1件だけ大きく出します。
+                いま一番早くほどけそうなサインです。場所を見て、必要なら声をかけます。
               </p>
             </div>
 
@@ -3080,47 +3110,20 @@ function App() {
               ))}
             </div>
 
-            <div className={`support-queue compact-queue ${isSupportQueueOpen ? "open" : ""}`}>
+            <div className="support-queue compact-queue">
               <button
                 type="button"
-                className="support-queue-toggle"
-                onClick={() => setIsSupportQueueOpen((current) => !current)}
-                aria-expanded={isSupportQueueOpen}
+                className="support-queue-toggle signal-tab-link"
+                onClick={() => {
+                  setActiveFilter("ALL");
+                  setActiveBoardTab("signals");
+                  setIsSupportQueueOpen(false);
+                }}
               >
-                <span>他のサイン</span>
+                <span>サインタブで見る</span>
                 <strong>{supportQueue.length}件</strong>
-                <i>{isSupportQueueOpen ? "▲" : "▼"}</i>
+                <i>→</i>
               </button>
-
-              {isSupportQueueOpen && (
-                <div className="support-queue-list">
-                  {supportQueue.length > 0 ? (
-                    supportQueue.map((task) => (
-                      <button
-                        key={`queue-${task.id}`}
-                        type="button"
-                        className={`signal-card status-${getTaskSignalStatus(task)}`}
-                        onClick={() => scrollToTask(task.id)}
-                      >
-                        <div className="signal-card-top">
-                          <span className={`task-status-pill ${getTaskSignalStatus(task)}`}>
-                            {renderStatusLabel(getTaskSignalStatus(task))}
-                          </span>
-                          <small>{getMember(task.ownerId)?.name}</small>
-                        </div>
-
-                        <strong>{task.title}</strong>
-                        <p>{statusMeta[getTaskSignalStatus(task)].summary}</p>
-                      </button>
-                    ))
-                  ) : (
-                    <div className="empty-state compact-empty">
-                      <strong>キューは空です。</strong>
-                      <p>お助け・確認依頼・認識合わせ・レビュー依頼が出ると並びます。</p>
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
 
             <div className="principle-box">
