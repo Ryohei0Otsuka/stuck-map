@@ -578,7 +578,7 @@ const defaultTaskForm = {
   needId: "m1",
   status: "TODO",
   category: "",
-  reason: "これから",
+  reason: "",
   description: "",
 };
 
@@ -587,16 +587,6 @@ const recipientTypes = [
     id: "anyone",
     label: "誰でもOK",
     description: "拾える人が見つけてくれればよいサイン",
-  },
-  {
-    id: "review",
-    label: "レビュー担当",
-    description: "レビューや見直しをお願いしたいサイン",
-  },
-  {
-    id: "decision",
-    label: "判断者",
-    description: "方針・優先順位・判断が必要なサイン",
   },
   {
     id: "member",
@@ -749,6 +739,10 @@ function getTaskSignalStatus(task) {
 function getTaskNeedType(task) {
   if (!task) {
     return "member";
+  }
+
+  if (task.needType === "review" || task.needType === "decision") {
+    return "anyone";
   }
 
   if (recipientTypeLabels[task.needType]) {
@@ -1174,9 +1168,7 @@ function App() {
       ...createStatusPatch(selectedTask, taskForm.status, signalStatuses.includes(taskForm.status) ? "signal" : "flow"),
       category: categoryMeta[taskForm.category] ? taskForm.category : "",
       reason: selectedTask.reason || "",
-      description:
-        taskForm.description.trim() ||
-        "まだ詳細は仮置きです。あとから内容やサインを整えられます。",
+      description: taskForm.description.trim(),
     });
 
     setSelectedTaskId(null);
