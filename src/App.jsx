@@ -574,12 +574,41 @@ const initialCategories = [
 const defaultTaskForm = {
   title: "",
   ownerId: "m1",
+  needType: "member",
   needId: "m1",
   status: "TODO",
   category: "",
   reason: "これから",
   description: "",
 };
+
+const recipientTypes = [
+  {
+    id: "anyone",
+    label: "誰でもOK",
+    description: "拾える人が見つけてくれればよいサイン",
+  },
+  {
+    id: "review",
+    label: "レビュー担当",
+    description: "レビューや見直しをお願いしたいサイン",
+  },
+  {
+    id: "decision",
+    label: "判断者",
+    description: "方針・優先順位・判断が必要なサイン",
+  },
+  {
+    id: "member",
+    label: "特定メンバー",
+    description: "特定の相手に見てほしいサイン",
+  },
+];
+
+const recipientTypeLabels = recipientTypes.reduce((acc, type) => {
+  acc[type.id] = type.label;
+  return acc;
+}, {});
 
 const defaultMemberForm = {
   name: "",
@@ -717,14 +746,28 @@ function getTaskSignalStatus(task) {
   return null;
 }
 
+function getTaskNeedType(task) {
+  if (!task) {
+    return "member";
+  }
+
+  if (recipientTypeLabels[task.needType]) {
+    return task.needType;
+  }
+
+  return "member";
+}
+
 function normalizeTask(task) {
   const flowStatus = getTaskFlowStatus(task);
   const signalStatus = getTaskSignalStatus(task);
+  const needType = getTaskNeedType(task);
 
   return {
     ...task,
     flowStatus,
     signalStatus,
+    needType,
     status: flowStatus,
   };
 }
@@ -859,6 +902,7 @@ function App() {
     setTaskForm({
       title: selectedTask.title,
       ownerId: selectedTask.ownerId,
+      needType: getTaskNeedType(selectedTask),
       needId: selectedTask.needId,
       status: getTaskSignalStatus(selectedTask) || getTaskFlowStatus(selectedTask),
       category: selectedTask.category || "",
@@ -898,6 +942,10 @@ function App() {
     );
 
     activeSignalTasks.forEach((task) => {
+      if (getTaskNeedType(task) !== "member") {
+        return;
+      }
+
       const targetId = task.needId || fallbackMemberId;
       const signalStatus = getTaskSignalStatus(task);
 
@@ -965,6 +1013,16 @@ function App() {
 
   const getMember = (memberId) => {
     return members.find((member) => member.id === memberId) || members[0];
+  };
+
+  const getRecipientLabel = (taskOrForm) => {
+    const needType = getTaskNeedType(taskOrForm);
+
+    if (needType === "member") {
+      return getMember(taskOrForm.needId)?.name || "特定メンバー";
+    }
+
+    return recipientTypeLabels[needType] || "受け先未設定";
   };
 
   const getTasksByStatus = (status, mode = "flow") => {
@@ -1071,6 +1129,7 @@ function App() {
       id: createTaskId(),
       title: trimmedTitle,
       ownerId: taskForm.ownerId || fallbackMemberId,
+      needType: "member",
       needId: taskForm.ownerId || fallbackMemberId,
       ...createStatusPatch(null, taskForm.status, "flow"),
       category: categoryMeta[taskForm.category] ? taskForm.category : "",
@@ -1086,6 +1145,7 @@ function App() {
     setTaskForm({
       ...defaultTaskForm,
       ownerId: fallbackMemberId,
+      needType: "member",
       needId: fallbackMemberId,
       category: "",
     });
@@ -1109,7 +1169,8 @@ function App() {
     updateTask(selectedTask.id, {
       title: trimmedTitle,
       ownerId: taskForm.ownerId || fallbackMemberId,
-      needId: taskForm.needId || fallbackMemberId,
+      needType: recipientTypeLabels[taskForm.needType] ? taskForm.needType : "member",
+      needId: taskForm.needType === "member" ? taskForm.needId || fallbackMemberId : taskForm.needId || fallbackMemberId,
       ...createStatusPatch(selectedTask, taskForm.status, signalStatuses.includes(taskForm.status) ? "signal" : "flow"),
       category: categoryMeta[taskForm.category] ? taskForm.category : "",
       reason: taskForm.reason.trim() || statusMeta[taskForm.status].softLabel,
@@ -1318,6 +1379,7 @@ function App() {
       reason: "",
       description: "",
       ownerId: fallbackMemberId,
+      needType: "member",
       needId: fallbackMemberId,
       category: "",
     });
@@ -1331,6 +1393,7 @@ function App() {
     setTaskForm({
       ...defaultTaskForm,
       ownerId: fallbackMemberId,
+      needType: "member",
       needId: fallbackMemberId,
       category: "",
     });
@@ -1691,18 +1754,34 @@ function App() {
         </label>
 
         <label className="form-field">
-          <span>相手</span>
+          <span>受け先</span>
           <select
-            value={taskForm.needId}
-            onChange={(event) => updateTaskForm("needId", event.target.value)}
+            value={taskForm.needType || "member"}
+            onChange={(event) => updateTaskForm("needType", event.target.value)}
           >
-            {members.map((member) => (
-              <option key={`need-${member.id}`} value={member.id}>
-                {member.name}
+            {recipientTypes.map((type) => (
+              <option key={`recipient-${type.id}`} value={type.id}>
+                {type.label}
               </option>
             ))}
           </select>
         </label>
+
+        {taskForm.needType === "member" && (
+          <label className="form-field">
+            <span>見てほしい相手</span>
+            <select
+              value={taskForm.needId}
+              onChange={(event) => updateTaskForm("needId", event.target.value)}
+            >
+              {members.map((member) => (
+                <option key={`need-${member.id}`} value={member.id}>
+                  {member.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
 
         <label className="form-field">
           <span>状態</span>
@@ -1759,7 +1838,7 @@ function App() {
 
   const renderTaskCard = (task, mode = "signal") => {
     const owner = getMember(task.ownerId);
-    const needMember = getMember(task.needId);
+    const recipientLabel = getRecipientLabel(task);
     const category = task.category ? categoryMeta[task.category] : null;
     const flowStatus = getTaskFlowStatus(task);
     const signalStatus = getTaskSignalStatus(task);
@@ -1835,7 +1914,7 @@ function App() {
 
           <div className="task-info-row">
             <span className={`reason-chip ${cardReasonStatus}`}>{task.reason}</span>
-            <span className="need-chip">相手: {needMember?.name}</span>
+            <span className="need-chip">受け先: {recipientLabel}</span>
           </div>
 
           <p className="compact-hint">クリックで編集・作戦を見る</p>
@@ -2151,7 +2230,7 @@ function App() {
     }
 
     const owner = getMember(selectedTask.ownerId);
-    const needMember = getMember(selectedTask.needId);
+    const recipientLabel = getRecipientLabel(selectedTask);
     const category = selectedTask.category ? categoryMeta[selectedTask.category] : null;
 
     return (
@@ -2211,8 +2290,8 @@ function App() {
             </div>
 
             <div>
-              <span>相手</span>
-              <strong>{needMember?.name}</strong>
+              <span>受け先</span>
+              <strong>{recipientLabel}</strong>
             </div>
 
             <div>
@@ -2974,7 +3053,7 @@ function App() {
                 <p>{nextSupportTask.reason}</p>
 
                 <small>
-                  発信: {getMember(nextSupportTask.ownerId)?.name} / 相手: {getMember(nextSupportTask.needId)?.name}
+                  発信: {getMember(nextSupportTask.ownerId)?.name} / 受け先: {getRecipientLabel(nextSupportTask)}
                 </small>
 
                 <div className="next-support-actions">
