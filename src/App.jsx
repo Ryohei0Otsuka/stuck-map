@@ -1299,14 +1299,11 @@ function App() {
   };
 
   const scrollToTask = (taskId, options = {}) => {
-    const targetTask = tasks.find((task) => task.id === taskId);
-    const requestedBoardTab = options.boardTab;
+    const requestedBoardTab = options.boardTab || "progress";
 
-    setActiveFilter("ALL");
-    setActiveBoardTab(
-      requestedBoardTab ||
-        (targetTask && getTaskSignalStatus(targetTask) ? "signals" : "progress")
-    );
+    setActiveFilter(options.filter || "ALL");
+    setActiveBoardTab(requestedBoardTab);
+    setSelectedTaskId(null);
     setFocusedTaskId(taskId);
 
     window.setTimeout(() => {
@@ -1316,12 +1313,15 @@ function App() {
         return;
       }
 
-      target.scrollIntoView({
+      const rect = target.getBoundingClientRect();
+      const absoluteTop = rect.top + window.scrollY;
+      const safeTop = Math.max(0, absoluteTop - 120);
+
+      window.scrollTo({
+        top: safeTop,
         behavior: "smooth",
-        block: "center",
-        inline: "center",
       });
-    }, 80);
+    }, 140);
   };
 
   const handleMemberClick = (memberId) => {
@@ -3070,7 +3070,7 @@ function App() {
                   <button
                     type="button"
                     className="secondary-action"
-                    onClick={() => scrollToTask(nextSupportTask.id)}
+                    onClick={() => scrollToTask(nextSupportTask.id, { boardTab: "progress" })}
                   >
                     場所を見る
                   </button>

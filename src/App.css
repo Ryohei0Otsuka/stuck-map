@@ -9671,3 +9671,48 @@ body .app-shell .signal-focus-layout .signal-board .task-card-wrap.focused .task
   font-weight: 800;
   line-height: 1.65;
 }
+
+
+/* v10.31: location jump should never trap the page away from the header */
+html,
+body,
+#root {
+  min-height: 100% !important;
+  overflow-y: auto !important;
+}
+
+body {
+  overflow-x: auto !important;
+}
+
+.app-shell {
+  overflow-x: hidden !important;
+  overflow-y: visible !important;
+  min-height: 100vh !important;
+}
+
+.app-frame {
+  padding: 20px 24px 36px !important;
+}
+
+.app-header.topbar {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 0 14px !important;
+  transform: none !important;
+  z-index: 10 !important;
+}
+
+.app-header.topbar::after {
+  content: none !important;
+}
+
+.task-card,
+.task-card-wrap,
+.status-cluster,
+.panel {
+  scroll-margin-top: 120px !important;
+}
