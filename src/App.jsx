@@ -205,7 +205,7 @@ const sampleProjectTemplates = {
         needId: "m2",
         status: "TODO",
         category: "DOC",
-        reason: "これから",
+        reason: "",
         description: "導入後に迷わないよう、操作の入り口だけ先に整理する。",
       },
     ],
@@ -1133,7 +1133,7 @@ function App() {
       needId: taskForm.ownerId || fallbackMemberId,
       ...createStatusPatch(null, taskForm.status, "flow"),
       category: categoryMeta[taskForm.category] ? taskForm.category : "",
-      reason: taskForm.reason.trim() || "",
+      reason: "",
       description: taskForm.description.trim(),
     };
 
@@ -1173,7 +1173,7 @@ function App() {
       needId: taskForm.needType === "member" ? taskForm.needId || fallbackMemberId : taskForm.needId || fallbackMemberId,
       ...createStatusPatch(selectedTask, taskForm.status, signalStatuses.includes(taskForm.status) ? "signal" : "flow"),
       category: categoryMeta[taskForm.category] ? taskForm.category : "",
-      reason: taskForm.reason.trim() || statusMeta[taskForm.status].softLabel,
+      reason: selectedTask.reason || "",
       description:
         taskForm.description.trim() ||
         "まだ詳細は仮置きです。あとから内容やサインを整えられます。",
@@ -1812,14 +1812,6 @@ function App() {
           </select>
         </label>
 
-        <label className="form-field wide">
-          <span>理由</span>
-          <input
-            value={taskForm.reason}
-            onChange={(event) => updateTaskForm("reason", event.target.value)}
-            placeholder={currentMeta.reasonPlaceholder}
-          />
-        </label>
 
         <label className="form-field wide">
           <span>備考</span>
@@ -1913,7 +1905,6 @@ function App() {
           <h3>{task.title}</h3>
 
           <div className="task-info-row">
-            <span className={`reason-chip ${cardReasonStatus}`}>{task.reason}</span>
             <span className="need-chip">受け先: {recipientLabel}</span>
           </div>
 
@@ -2294,10 +2285,6 @@ function App() {
               <strong>{recipientLabel}</strong>
             </div>
 
-            <div>
-              <span>理由</span>
-              <strong>{selectedTask.reason}</strong>
-            </div>
           </div>
 
           <div className="modal-message">
@@ -3050,7 +3037,7 @@ function App() {
                 </div>
 
                 <strong>{nextSupportTask.title}</strong>
-                <p>{nextSupportTask.reason}</p>
+                {nextSupportTask.description && <p>{nextSupportTask.description}</p>}
 
                 <small>
                   発信: {getMember(nextSupportTask.ownerId)?.name} / 受け先: {getRecipientLabel(nextSupportTask)}
