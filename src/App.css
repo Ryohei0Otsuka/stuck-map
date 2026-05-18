@@ -9029,3 +9029,70 @@ body .app-shell .signal-focus-layout .signal-board .task-card-wrap.focused .task
     scroll-margin-top: 190px !important;
   }
 }
+
+
+/* v10.16 revised: page-top header, no viewport-fixed overlap */
+.app-frame {
+  padding: 20px 24px 36px !important;
+}
+
+.app-header.topbar {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 0 14px !important;
+  transform: none !important;
+  z-index: 10 !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  border: 1px solid rgba(105, 132, 178, 0.22) !important;
+  box-shadow: 0 12px 32px rgba(69, 99, 145, 0.1) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.app-header.topbar::after {
+  content: none !important;
+}
+
+.app-header + .hero-panel {
+  margin-top: 0 !important;
+}
+
+.task-card,
+.task-card-wrap,
+.status-cluster,
+.panel {
+  scroll-margin-top: 24px !important;
+}
+
+.modal-backdrop {
+  z-index: 400 !important;
+}
+
+.task-modal {
+  z-index: 410 !important;
+}
+
+@media (max-width: 1080px) {
+  .app-frame {
+    padding: 14px 12px 28px !important;
+  }
+
+  .app-header.topbar {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    width: 100% !important;
+    transform: none !important;
+    margin-bottom: 12px !important;
+  }
+
+  .task-card,
+  .task-card-wrap,
+  .status-cluster,
+  .panel {
+    scroll-margin-top: 20px !important;
+  }
+}

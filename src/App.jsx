@@ -2533,13 +2533,6 @@ function App() {
               {saveNotice}
             </div>
 
-            <button
-              type="button"
-              className="primary-action"
-              onClick={() => openCreateModal("TODO")}
-            >
-              + タスクを追加
-            </button>
 
             <button
               type="button"
