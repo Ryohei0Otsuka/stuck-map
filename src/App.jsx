@@ -589,6 +589,16 @@ const recipientTypes = [
     description: "拾える人が見つけてくれればよいサイン",
   },
   {
+    id: "review",
+    label: "レビュー担当",
+    description: "レビューや見直しをお願いしたいサイン",
+  },
+  {
+    id: "decision",
+    label: "判断者",
+    description: "方針・優先順位・判断が必要なサイン",
+  },
+  {
     id: "member",
     label: "特定メンバー",
     description: "特定の相手に見てほしいサイン",
@@ -741,15 +751,11 @@ function getTaskNeedType(task) {
     return "member";
   }
 
-  if (task.needType === "review" || task.needType === "decision") {
-    return "anyone";
-  }
-
   if (recipientTypeLabels[task.needType]) {
     return task.needType;
   }
 
-  return task.needId ? "member" : "anyone";
+  return "member";
 }
 
 function normalizeTask(task) {
@@ -1168,7 +1174,9 @@ function App() {
       ...createStatusPatch(selectedTask, taskForm.status, signalStatuses.includes(taskForm.status) ? "signal" : "flow"),
       category: categoryMeta[taskForm.category] ? taskForm.category : "",
       reason: selectedTask.reason || "",
-      description: taskForm.description.trim(),
+      description:
+        taskForm.description.trim() ||
+        "まだ詳細は仮置きです。あとから内容やサインを整えられます。",
     });
 
     setSelectedTaskId(null);
@@ -1469,6 +1477,19 @@ function App() {
     closeMemberModal();
   };
 
+  const scrollToPageHeader = (behavior = "smooth") => {
+    window.setTimeout(() => {
+      const header = document.querySelector(".app-header");
+
+      if (header) {
+        header.scrollIntoView({ behavior, block: "start" });
+        return;
+      }
+
+      window.scrollTo({ top: 0, behavior });
+    }, 80);
+  };
+
   const deleteMember = () => {
     if (!selectedMemberId || members.length <= 1) {
       return;
@@ -1496,7 +1517,10 @@ function App() {
       }))
     );
 
+    setSelectedTaskId(null);
+    setFocusedTaskId(null);
     closeMemberModal();
+    scrollToPageHeader();
   };
 
 
@@ -2259,9 +2283,7 @@ function App() {
             </span>
           </div>
 
-          {selectedTask.description && (
-            <p className="modal-description">{selectedTask.description}</p>
-          )}
+          <p className="modal-description">{selectedTask.description}</p>
 
           <div className="modal-info-grid">
             <div>
@@ -2407,7 +2429,7 @@ function App() {
             </div>
 
             <label className="form-field wide">
-              <span>役割（任意）</span>
+              <span>役割</span>
               <input
                 value={memberForm.role}
                 onChange={(event) => updateMemberForm("role", event.target.value)}
@@ -2416,7 +2438,7 @@ function App() {
             </label>
 
             <label className="form-field wide">
-              <span>メモ（任意）</span>
+              <span>メモ</span>
               <textarea
                 value={memberForm.memo}
                 onChange={(event) => updateMemberForm("memo", event.target.value)}
@@ -2898,12 +2920,10 @@ function App() {
                           </div>
                         </div>
 
-                        {member.role && (
-                          <span className="member-role-pill">{member.role}</span>
-                        )}
+                        <span className="member-role-pill">{member.role}</span>
                       </div>
 
-                      {member.memo && <small>{member.memo}</small>}
+                      <small>{member.memo}</small>
 
                       <div className="member-task-chip">
                         <span
