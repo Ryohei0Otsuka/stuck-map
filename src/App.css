@@ -9510,170 +9510,7 @@ body .app-shell .signal-focus-layout .signal-board .task-card-wrap.focused .task
     0 0 0 4px rgba(17, 151, 255, 0.05);
 }
 
-
-/* v10.29: task modal signal active contrast final override
-   Keep recipient cleanup from v10.28 and only strengthen modal signal selection. */
-.modal-action.CHECK.active,
-.modal-action.CHECK.active:hover {
-  background: linear-gradient(135deg, #0b78c8, #1a9be8) !important;
-  border-color: rgba(4, 103, 174, 0.92) !important;
-  color: #ffffff !important;
-  box-shadow:
-    0 18px 34px rgba(17, 151, 255, 0.26),
-    0 0 0 4px rgba(17, 151, 255, 0.18) !important;
-}
-
-.modal-action.WAIT.active,
-.modal-action.WAIT.active:hover {
-  background: linear-gradient(135deg, #6f36dd, #8c5bff) !important;
-  border-color: rgba(111, 54, 221, 0.92) !important;
-  color: #ffffff !important;
-  box-shadow:
-    0 18px 34px rgba(140, 91, 255, 0.26),
-    0 0 0 4px rgba(140, 91, 255, 0.16) !important;
-}
-
-.modal-action.HELP.active,
-.modal-action.HELP.active:hover {
-  background: linear-gradient(135deg, #d85d16, #ff8a3d) !important;
-  border-color: rgba(216, 93, 22, 0.92) !important;
-  color: #ffffff !important;
-  box-shadow:
-    0 18px 34px rgba(255, 138, 61, 0.28),
-    0 0 0 4px rgba(255, 138, 61, 0.18) !important;
-}
-
-.modal-action.REVIEW.active,
-.modal-action.REVIEW.active:hover {
-  background: linear-gradient(135deg, #007f6f, #18b79f) !important;
-  border-color: rgba(0, 127, 111, 0.92) !important;
-  color: #ffffff !important;
-  box-shadow:
-    0 18px 34px rgba(24, 183, 159, 0.25),
-    0 0 0 4px rgba(24, 183, 159, 0.16) !important;
-}
-
-.modal-action.CHECK.active span,
-.modal-action.WAIT.active span,
-.modal-action.HELP.active span,
-.modal-action.REVIEW.active span {
-  background: rgba(255, 255, 255, 0.96) !important;
-  color: inherit !important;
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.75),
-    0 10px 20px rgba(28, 49, 80, 0.2) !important;
-}
-
-.modal-action.CHECK.active span { color: #006fbf !important; }
-.modal-action.WAIT.active span { color: #6f36dd !important; }
-.modal-action.HELP.active span { color: #d85d16 !important; }
-.modal-action.REVIEW.active span { color: #007f6f !important; }
-
-.modal-action.CHECK.active strong,
-.modal-action.CHECK.active small,
-.modal-action.WAIT.active strong,
-.modal-action.WAIT.active small,
-.modal-action.HELP.active strong,
-.modal-action.HELP.active small,
-.modal-action.REVIEW.active strong,
-.modal-action.REVIEW.active small {
-  color: #ffffff !important;
-}
-
-.modal-action.CHECK.active small,
-.modal-action.WAIT.active small,
-.modal-action.HELP.active small,
-.modal-action.REVIEW.active small {
-  opacity: 0.92 !important;
-}
-
-
-/* v10.30: right panel is an entry point, not another full list */
-.signals-panel .panel-subtext {
-  color: #5d7392 !important;
-  font-size: 12px !important;
-  line-height: 1.7 !important;
-}
-
-.signals-panel .signal-summary {
-  margin-top: 14px !important;
-  margin-bottom: 12px !important;
-  padding: 10px !important;
-  border: 1px solid rgba(17, 151, 255, 0.1) !important;
-  border-radius: 18px !important;
-  background: rgba(248, 252, 255, 0.52) !important;
-  box-shadow: none !important;
-}
-
-.signals-panel .signal-summary::before {
-  content: "サイン状況";
-  grid-column: 1 / -1;
-  color: #7d8faa;
-  font-size: 9px;
-  font-weight: 1000;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.signals-panel .signal-summary-chip {
-  min-height: 36px !important;
-  padding: 7px 9px !important;
-  border-radius: 13px !important;
-  box-shadow: none !important;
-  opacity: 0.88;
-}
-
-.signals-panel .signal-summary-chip span {
-  font-size: 9px !important;
-  letter-spacing: 0.04em !important;
-}
-
-.signals-panel .signal-summary-chip strong {
-  font-size: 15px !important;
-}
-
-.support-queue-toggle.signal-tab-link {
-  grid-template-columns: 1fr auto auto !important;
-  background: rgba(255, 255, 255, 0.72) !important;
-  border-style: dashed !important;
-  box-shadow: none !important;
-}
-
-.support-queue-toggle.signal-tab-link:hover {
-  transform: translateY(-1px);
-  border-color: rgba(17, 151, 255, 0.28) !important;
-  background: rgba(255, 255, 255, 0.94) !important;
-}
-
-/* v10.30: completed tasks should not invite new signs */
-.modal-done-note {
-  margin: 18px 0;
-  padding: 16px 18px;
-  border: 1px solid rgba(45, 187, 115, 0.22);
-  border-radius: 20px;
-  background:
-    linear-gradient(135deg, rgba(232, 251, 241, 0.88), rgba(255, 255, 255, 0.82));
-  color: #315f4a;
-}
-
-.modal-done-note strong {
-  display: block;
-  margin-bottom: 6px;
-  color: #20764f;
-  font-size: 13px;
-  font-weight: 1000;
-}
-
-.modal-done-note p {
-  margin: 0;
-  color: #547064;
-  font-size: 12px;
-  font-weight: 800;
-  line-height: 1.65;
-}
-
-
-/* v10.31: location jump should never trap the page away from the header */
+/* v10.33: restore page-top header and scroll safety after member-field cleanup */
 html,
 body,
 #root {
@@ -9704,10 +9541,21 @@ body {
   margin: 0 0 14px !important;
   transform: none !important;
   z-index: 10 !important;
+  isolation: isolate !important;
+  overflow: visible !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  border: 1px solid rgba(105, 132, 178, 0.22) !important;
+  box-shadow: 0 12px 32px rgba(69, 99, 145, 0.1) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 .app-header.topbar::after {
   content: none !important;
+}
+
+.app-header + .hero-panel {
+  margin-top: 0 !important;
 }
 
 .task-card,
@@ -9715,4 +9563,34 @@ body {
 .status-cluster,
 .panel {
   scroll-margin-top: 120px !important;
+}
+
+.modal-backdrop {
+  z-index: 400 !important;
+}
+
+.task-modal {
+  z-index: 410 !important;
+}
+
+@media (max-width: 1080px) {
+  .app-frame {
+    padding: 14px 12px 28px !important;
+  }
+
+  .app-header.topbar {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    width: 100% !important;
+    transform: none !important;
+    margin-bottom: 12px !important;
+  }
+
+  .task-card,
+  .task-card-wrap,
+  .status-cluster,
+  .panel {
+    scroll-margin-top: 120px !important;
+  }
 }
