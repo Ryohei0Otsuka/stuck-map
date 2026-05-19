@@ -612,6 +612,7 @@ const recipientTypeLabels = recipientTypes.reduce((acc, type) => {
 
 const defaultMemberForm = {
   name: "",
+  role: "",
   memo: "",
 };
 
@@ -1429,6 +1430,7 @@ function App() {
     setSelectedMemberId(member.id);
     setMemberForm({
       name: member.name,
+      role: member.role,
       memo: member.memo || "",
     });
     setIsMemberModalOpen(true);
@@ -1454,14 +1456,10 @@ function App() {
       return;
     }
 
-    const existingMember = selectedMemberId
-      ? members.find((member) => member.id === selectedMemberId)
-      : null;
-
     const nextMember = {
-      ...(existingMember || {}),
       id: selectedMemberId || createMemberId(),
       name: trimmedName,
+      role: memberForm.role.trim() || "チームメンバー",
       avatar: createAvatarFromName(trimmedName),
       memo: memberForm.memo.trim(),
     };
@@ -2414,13 +2412,20 @@ function App() {
               </div>
             </div>
 
+            <label className="form-field wide">
+              <span>役割</span>
+              <input
+                value={memberForm.role}
+                onChange={(event) => updateMemberForm("role", event.target.value)}
+                placeholder="例：レビュー担当 / 実装担当"
+              />
+            </label>
 
             <label className="form-field wide">
-              <span>メモ</span>
+              <span>メモ（任意）</span>
               <textarea
                 value={memberForm.memo}
                 onChange={(event) => updateMemberForm("memo", event.target.value)}
-                placeholder="この人がどんな支え方をするか"
                 rows={3}
               />
             </label>
@@ -2898,9 +2903,10 @@ function App() {
                           </div>
                         </div>
 
+                        <span className="member-role-pill">{member.role}</span>
                       </div>
 
-                      {member.memo && <small>{member.memo}</small>}
+                      <small>{member.memo}</small>
 
                       <div className="member-task-chip">
                         <span
