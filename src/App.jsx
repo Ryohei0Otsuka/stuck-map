@@ -905,7 +905,9 @@ function App() {
   }, [selectedTask]);
 
   const signalTasks = useMemo(() => {
-    return tasks.filter((task) => getTaskSignalStatus(task));
+    return tasks.filter(
+      (task) => getTaskSignalStatus(task) && getTaskFlowStatus(task) !== "DONE"
+    );
   }, [tasks]);
 
   const supportQueue = useMemo(() => {
@@ -970,16 +972,18 @@ function App() {
   }, [signalTasks, members, fallbackMemberId]);
 
   const nextSupportTask = supportQueue[0] || null;
+  const otherSupportQueue = nextSupportTask ? supportQueue.slice(1) : supportQueue;
+  const otherSupportCount = otherSupportQueue.length;
   const completedCount = tasks.filter((task) => getTaskFlowStatus(task) === "DONE").length;
   const totalTaskCount = tasks.length;
   const isProjectComplete = totalTaskCount > 0 && completedCount === totalTaskCount;
   const progressPercent = totalTaskCount > 0 ? Math.round((completedCount / totalTaskCount) * 100) : 0;
 
   const active拾うサイン = {
-    HELP: tasks.filter((task) => getTaskSignalStatus(task) === "HELP").length,
-    WAIT: tasks.filter((task) => getTaskSignalStatus(task) === "WAIT").length,
-    CHECK: tasks.filter((task) => getTaskSignalStatus(task) === "CHECK").length,
-    REVIEW: tasks.filter((task) => getTaskSignalStatus(task) === "REVIEW").length,
+    HELP: signalTasks.filter((task) => getTaskSignalStatus(task) === "HELP").length,
+    WAIT: signalTasks.filter((task) => getTaskSignalStatus(task) === "WAIT").length,
+    CHECK: signalTasks.filter((task) => getTaskSignalStatus(task) === "CHECK").length,
+    REVIEW: signalTasks.filter((task) => getTaskSignalStatus(task) === "REVIEW").length,
   };
 
   const visibleSupportClusters = useMemo(() => {
@@ -2709,47 +2713,22 @@ function App() {
           </div>
         </header>
 
-        <section className="hero-panel">
+        <section className="hero-panel hero-panel-compact">
           <div className="hero-copy-block surface">
-            <p className="eyebrow">チーム進行ボード</p>
-            <h1>Stuck Map</h1>
+            <p className="eyebrow">プロジェクト</p>
+            <h1>{project.name || "Untitled プロジェクト"}</h1>
+            {project.memo && <p className="hero-project-memo">{project.memo}</p>}
             <p className="hero-copy">
-              今どこを見れば、チームが前に進むか。
+              Stuck Map は、チーム進行中の小さな詰まりを早めに見つけるためのボードです。
               <br />
-              小さなサインを置いて、止まる前に流れをつなぐ。
+              誰が遅いかではなく、何が詰まっているかを見る。ひとりで抱え込まず、小さく出して、みんなで進めます。
             </p>
-
-            <div className="hero-tags">
-              <span>HELPは作戦サイン</span>
-              <span>確認は軽く出す</span>
-              <span>方向は早めに合わせる</span>
-              <span>完了はグリーン</span>
-            </div>
-
-            <div className="purpose-panel-inline">
-              <strong>このボードの目的</strong>
-              <p>
-                誰が遅いかではなく、何が詰まっているかを見る。
-                Stuck Map は、プロジェクトの詰まりを早く見つけて助け合うための進行支援ボードです。
-              </p>
-            </div>
           </div>
 
-          <div className="hero-card surface">
-            <p className="eyebrow">今の目的</p>
-            <strong>{project.name}</strong>
-            <span>{project.memo}</span>
-
-            <div className="concept-lines">
-              <div>
-                <b>Not</b>
-                <span>ひとりで抱え込む</span>
-              </div>
-              <div>
-                <b>Do</b>
-                <span>小さく出して、みんなで進める</span>
-              </div>
-            </div>
+          <div className="hero-card surface hero-control-card">
+            <p className="eyebrow">サンプル</p>
+            <strong>使い方を切り替える</strong>
+            <span>用途別サンプルで、詰まりの見え方を試せます。</span>
 
             <div className="sample-switcher">
               <label htmlFor="sample-project-select">用途別サンプルデータ</label>
@@ -2769,7 +2748,7 @@ function App() {
                   </option>
                 ))}
               </select>
-              <small>用途を切り替えると、初見でも使いどころを想像しやすくなります。</small>
+              <small>架空サンプルです。実名・機密情報は含めない方針です。</small>
             </div>
           </div>
         </section>
@@ -2801,6 +2780,10 @@ function App() {
             </div>
           </section>
         )}
+
+        <section className="member-overview-section" aria-label="メンバー状況">
+          {renderProgressCrewBadges()}
+        </section>
 
         <section className={`board-layout ${activeBoardTab === "progress" ? "flow-focus-layout" : "signal-focus-layout"}`} data-ui-version="v9.6-flow-sign-tabs">
           {false && activeBoardTab === "signals" && (
@@ -2948,21 +2931,34 @@ function App() {
                 </p>
               </div>
 
-              <div className="board-mode-tabs" aria-label="ボード表示切替">
-                <button
-                  type="button"
-                  className={activeBoardTab === "progress" ? "active" : ""}
-                  onClick={() => setActiveBoardTab("progress")}
-                >
-                  <strong>フロー</strong>
-                </button>
-                <button
-                  type="button"
-                  className={activeBoardTab === "signals" ? "active" : ""}
-                  onClick={() => setActiveBoardTab("signals")}
-                >
-                  <strong>サイン</strong>
-                </button>
+              <div className="board-control-row">
+                <div className="board-mode-tabs" aria-label="ボード表示切替">
+                  <button
+                    type="button"
+                    className={activeBoardTab === "progress" ? "active" : ""}
+                    onClick={() => setActiveBoardTab("progress")}
+                  >
+                    <strong>フロー</strong>
+                  </button>
+                  <button
+                    type="button"
+                    className={activeBoardTab === "signals" ? "active" : ""}
+                    onClick={() => setActiveBoardTab("signals")}
+                  >
+                    <strong>サイン</strong>
+                  </button>
+                </div>
+
+                {activeBoardTab === "progress" && (
+                  <button
+                    type="button"
+                    className="board-add-task-button"
+                    onClick={() => openCreateModal("TODO")}
+                  >
+                    <span>＋</span>
+                    タスク
+                  </button>
+                )}
               </div>
             </div>
 
@@ -2976,7 +2972,6 @@ function App() {
 
             {activeBoardTab === "progress" ? (
               <>
-                {renderProgressCrewBadges()}
                 <div className="cluster-board ui-tab-board progress-board">
                 <div className="cluster-section">
                   <div className="cluster-section-heading">
@@ -3011,7 +3006,7 @@ function App() {
               <p className="eyebrow">NEXT SIGN</p>
               <h2>次に拾う</h2>
               <p className="panel-subtext">
-                迷ったらここ。今見るべきカードを1件だけ大きく出します。
+                迷ったらここ。次に拾うサインを1件だけ大きく出します。
               </p>
             </div>
 
@@ -3085,14 +3080,14 @@ function App() {
                 aria-expanded={isSupportQueueOpen}
               >
                 <span>サインタブで見る</span>
-                <strong>{supportQueue.length}件</strong>
+                <strong>{otherSupportCount}件</strong>
                 <i>{isSupportQueueOpen ? "▲" : "▼"}</i>
               </button>
 
               {isSupportQueueOpen && (
                 <div className="support-queue-list">
-                  {supportQueue.length > 0 ? (
-                    supportQueue.map((task) => (
+                  {otherSupportQueue.length > 0 ? (
+                    otherSupportQueue.map((task) => (
                       <button
                         key={`queue-${task.id}`}
                         type="button"
@@ -3112,8 +3107,8 @@ function App() {
                     ))
                   ) : (
                     <div className="empty-state compact-empty">
-                      <strong>キューは空です。</strong>
-                      <p>お助け・確認依頼・認識合わせ・レビュー依頼が出ると並びます。</p>
+                      <strong>他のサインはありません。</strong>
+                      <p>次に拾う1件以外のサインが出ると、ここに並びます。</p>
                     </div>
                   )}
                 </div>

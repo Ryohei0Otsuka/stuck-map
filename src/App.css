@@ -9645,3 +9645,170 @@ body {
 .task-modal .modal-action.WAIT.active span { color: var(--purple) !important; }
 .task-modal .modal-action.HELP.active span { color: var(--orange) !important; }
 .task-modal .modal-action.REVIEW.active span { color: var(--teal) !important; }
+
+/* =========================================================
+   v10.38: hero / board controls / member overview cleanup
+   - 上部説明を圧縮し、プロジェクト名を主役にする
+   - メンバー帯をボード上部の状態バーとして扱う
+   - フロー/サイン切替横に +タスク を置く
+   ========================================================= */
+
+.hero-panel.hero-panel-compact {
+  grid-template-columns: minmax(760px, 1.4fr) minmax(320px, 0.6fr) !important;
+  align-items: stretch !important;
+}
+
+.hero-panel-compact .hero-copy-block,
+.hero-panel-compact .hero-card {
+  min-height: 0 !important;
+  padding: 18px 22px !important;
+}
+
+.hero-panel-compact h1 {
+  margin-bottom: 8px !important;
+  font-size: clamp(34px, 3.4vw, 48px) !important;
+  line-height: 1 !important;
+  letter-spacing: -0.07em !important;
+}
+
+.hero-project-memo {
+  width: fit-content !important;
+  max-width: 920px !important;
+  margin: 0 0 10px !important;
+  padding: 7px 10px !important;
+  border: 1px solid rgba(17, 151, 255, 0.12) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.74) !important;
+  color: #526b8a !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+}
+
+.hero-panel-compact .hero-copy {
+  max-width: 980px !important;
+  color: #3f5877 !important;
+  font-size: 14px !important;
+  line-height: 1.72 !important;
+}
+
+.hero-panel-compact .hero-tags,
+.hero-panel-compact .purpose-panel-inline,
+.hero-panel-compact .concept-lines {
+  display: none !important;
+}
+
+.hero-control-card {
+  gap: 10px !important;
+}
+
+.hero-control-card strong {
+  margin-bottom: 4px !important;
+  font-size: 18px !important;
+}
+
+.hero-control-card span {
+  font-size: 12px !important;
+}
+
+.hero-control-card .sample-switcher {
+  margin-top: 10px !important;
+}
+
+.member-overview-section {
+  margin-bottom: 14px !important;
+}
+
+.member-overview-section .member-status-strip {
+  margin: 0 !important;
+  border-color: rgba(105, 132, 178, 0.22) !important;
+  background: rgba(255, 255, 255, 0.74) !important;
+  box-shadow: 0 12px 28px rgba(69, 99, 145, 0.08) !important;
+}
+
+.ui-organized-board .board-heading {
+  align-items: center !important;
+}
+
+.board-control-row {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  flex: 0 0 auto !important;
+}
+
+.board-mode-tabs {
+  min-height: 0 !important;
+  width: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 4px !important;
+  border: 1px solid rgba(105, 132, 178, 0.18) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.76) !important;
+}
+
+.board-mode-tabs button {
+  min-width: 76px !important;
+  min-height: 36px !important;
+  padding: 0 13px !important;
+  border-radius: 999px !important;
+  white-space: nowrap !important;
+}
+
+.board-add-task-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  min-height: 42px !important;
+  padding: 0 15px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: linear-gradient(135deg, #193b60, #24577f) !important;
+  color: #ffffff !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  box-shadow: 0 14px 28px rgba(32, 54, 83, 0.18), 0 0 0 4px rgba(17, 151, 255, 0.06) !important;
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease !important;
+}
+
+.board-add-task-button:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 18px 34px rgba(32, 54, 83, 0.24), 0 0 0 5px rgba(17, 151, 255, 0.08) !important;
+}
+
+.board-add-task-button span {
+  display: grid !important;
+  place-items: center !important;
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.94) !important;
+  color: #193b60 !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+}
+
+.support-queue-toggle strong::after {
+  content: " 残り" !important;
+  font-size: 9px !important;
+  color: #7a8eaa !important;
+  margin-left: 2px !important;
+}
+
+@media (max-width: 1280px) {
+  .hero-panel.hero-panel-compact {
+    grid-template-columns: 1fr !important;
+  }
+
+  .board-heading {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .board-control-row {
+    justify-content: flex-start !important;
+  }
+}
