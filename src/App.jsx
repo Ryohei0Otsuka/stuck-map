@@ -574,11 +574,11 @@ const initialCategories = [
 const defaultTaskForm = {
   title: "",
   ownerId: "m1",
-  needType: "member",
+  needType: "anyone",
   needId: "m1",
   status: "TODO",
   category: "",
-  reason: "これから",
+  reason: "",
   description: "",
 };
 
@@ -587,16 +587,6 @@ const recipientTypes = [
     id: "anyone",
     label: "誰でもOK",
     description: "拾える人が見つけてくれればよいサイン",
-  },
-  {
-    id: "review",
-    label: "レビュー担当",
-    description: "レビューや見直しをお願いしたいサイン",
-  },
-  {
-    id: "decision",
-    label: "判断者",
-    description: "方針・優先順位・判断が必要なサイン",
   },
   {
     id: "member",
@@ -612,7 +602,6 @@ const recipientTypeLabels = recipientTypes.reduce((acc, type) => {
 
 const defaultMemberForm = {
   name: "",
-  role: "",
   memo: "",
 };
 
@@ -748,14 +737,18 @@ function getTaskSignalStatus(task) {
 
 function getTaskNeedType(task) {
   if (!task) {
-    return "member";
+    return "anyone";
+  }
+
+  if (task.needType === "review" || task.needType === "decision") {
+    return "anyone";
   }
 
   if (recipientTypeLabels[task.needType]) {
     return task.needType;
   }
 
-  return "member";
+  return task.needId ? "member" : "anyone";
 }
 
 function normalizeTask(task) {
@@ -1129,7 +1122,7 @@ function App() {
       id: createTaskId(),
       title: trimmedTitle,
       ownerId: taskForm.ownerId || fallbackMemberId,
-      needType: "member",
+      needType: "anyone",
       needId: taskForm.ownerId || fallbackMemberId,
       ...createStatusPatch(null, taskForm.status, "flow"),
       category: categoryMeta[taskForm.category] ? taskForm.category : "",
@@ -1145,7 +1138,7 @@ function App() {
     setTaskForm({
       ...defaultTaskForm,
       ownerId: fallbackMemberId,
-      needType: "member",
+      needType: "anyone",
       needId: fallbackMemberId,
       category: "",
     });
@@ -1169,14 +1162,12 @@ function App() {
     updateTask(selectedTask.id, {
       title: trimmedTitle,
       ownerId: taskForm.ownerId || fallbackMemberId,
-      needType: recipientTypeLabels[taskForm.needType] ? taskForm.needType : "member",
-      needId: taskForm.needType === "member" ? taskForm.needId || fallbackMemberId : taskForm.needId || fallbackMemberId,
+      needType: recipientTypeLabels[taskForm.needType] ? taskForm.needType : "anyone",
+      needId: taskForm.needType === "member" ? taskForm.needId || fallbackMemberId : fallbackMemberId,
       ...createStatusPatch(selectedTask, taskForm.status, signalStatuses.includes(taskForm.status) ? "signal" : "flow"),
       category: categoryMeta[taskForm.category] ? taskForm.category : "",
       reason: selectedTask.reason || "",
-      description:
-        taskForm.description.trim() ||
-        "まだ詳細は仮置きです。あとから内容やサインを整えられます。",
+      description: taskForm.description.trim(),
     });
 
     setSelectedTaskId(null);
@@ -1379,7 +1370,7 @@ function App() {
       reason: "",
       description: "",
       ownerId: fallbackMemberId,
-      needType: "member",
+      needType: "anyone",
       needId: fallbackMemberId,
       category: "",
     });
@@ -1393,7 +1384,7 @@ function App() {
     setTaskForm({
       ...defaultTaskForm,
       ownerId: fallbackMemberId,
-      needType: "member",
+      needType: "anyone",
       needId: fallbackMemberId,
       category: "",
     });
@@ -1430,7 +1421,6 @@ function App() {
     setSelectedMemberId(member.id);
     setMemberForm({
       name: member.name,
-      role: member.role,
       memo: member.memo || "",
     });
     setIsMemberModalOpen(true);
@@ -1459,7 +1449,7 @@ function App() {
     const nextMember = {
       id: selectedMemberId || createMemberId(),
       name: trimmedName,
-      role: memberForm.role.trim() || "チームメンバー",
+      role: selectedMember?.role || "",
       avatar: createAvatarFromName(trimmedName),
       memo: memberForm.memo.trim(),
     };
@@ -2223,6 +2213,8 @@ function App() {
     const owner = getMember(selectedTask.ownerId);
     const recipientLabel = getRecipientLabel(selectedTask);
     const category = selectedTask.category ? categoryMeta[selectedTask.category] : null;
+    const selectedFlowStatus = getTaskFlowStatus(selectedTask);
+    const isSelectedTaskDone = selectedFlowStatus === "DONE";
 
     return (
       <div className="modal-backdrop" onClick={closeTaskModal}>
@@ -2267,7 +2259,9 @@ function App() {
             </span>
           </div>
 
-          <p className="modal-description">{selectedTask.description}</p>
+          {selectedTask.description && (
+            <p className="modal-description">{selectedTask.description}</p>
+          )}
 
           <div className="modal-info-grid">
             <div>
@@ -2294,26 +2288,33 @@ function App() {
             </p>
           </div>
 
-          <div className="modal-actions">
-            <p className="modal-section-title">サインを選ぶ</p>
+          {!isSelectedTaskDone ? (
+            <div className="modal-actions">
+              <p className="modal-section-title">サインを選ぶ</p>
 
-            <div className="modal-action-grid">
-              {quickSignalList.map((status) => (
-                <button
-                  key={`modal-${selectedTask.id}-${status}`}
-                  type="button"
-                  className={`modal-action ${status} ${
-                    taskForm.status === status ? "active" : ""
-                  }`}
-                  onClick={() => updateTaskForm("status", status)}
-                >
-                  <span>{statusMeta[status].icon}</span>
-                  <strong>{statusMeta[status].label}</strong>
-                  <small>{statusCodeLabels[status]}：{statusMeta[status].summary}</small>
-                </button>
-              ))}
+              <div className="modal-action-grid">
+                {quickSignalList.map((status) => (
+                  <button
+                    key={`modal-${selectedTask.id}-${status}`}
+                    type="button"
+                    className={`modal-action ${status} ${
+                      taskForm.status === status ? "active" : ""
+                    }`}
+                    onClick={() => updateTaskForm("status", status)}
+                  >
+                    <span>{statusMeta[status].icon}</span>
+                    <strong>{statusMeta[status].label}</strong>
+                    <small>{statusCodeLabels[status]}：{statusMeta[status].summary}</small>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="modal-message done-task-note">
+              <strong>完了したタスクです。</strong>
+              <p>完了済みのタスクにはサインを付けません。必要ならフローを戻してからサインを付けます。</p>
+            </div>
+          )}
 
           <div className="edit-block">
             <p className="modal-section-title">内容を編集する</p>
@@ -2412,14 +2413,6 @@ function App() {
               </div>
             </div>
 
-            <label className="form-field wide">
-              <span>役割</span>
-              <input
-                value={memberForm.role}
-                onChange={(event) => updateMemberForm("role", event.target.value)}
-                placeholder="例：レビュー担当 / 実装担当"
-              />
-            </label>
 
             <label className="form-field wide">
               <span>メモ（任意）</span>
@@ -2903,10 +2896,9 @@ function App() {
                           </div>
                         </div>
 
-                        <span className="member-role-pill">{member.role}</span>
                       </div>
 
-                      <small>{member.memo}</small>
+                      {member.memo && <small>{member.memo}</small>}
 
                       <div className="member-task-chip">
                         <span
@@ -3094,7 +3086,7 @@ function App() {
                 onClick={() => setIsSupportQueueOpen((current) => !current)}
                 aria-expanded={isSupportQueueOpen}
               >
-                <span>他のサイン</span>
+                <span>サインタブで見る</span>
                 <strong>{supportQueue.length}件</strong>
                 <i>{isSupportQueueOpen ? "▲" : "▼"}</i>
               </button>

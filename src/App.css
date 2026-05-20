@@ -9594,3 +9594,54 @@ body {
     scroll-margin-top: 120px !important;
   }
 }
+
+
+/* v10.36: keep modal signal active states strong and independent from generic active styles */
+.task-modal .modal-action.CHECK.active {
+  border-color: rgba(0, 113, 205, 0.72) !important;
+  background: linear-gradient(135deg, #1f8fe5, #d7efff) !important;
+  box-shadow: 0 16px 34px rgba(0, 113, 205, 0.18), 0 0 0 4px rgba(0, 113, 205, 0.12) !important;
+}
+
+.task-modal .modal-action.WAIT.active {
+  border-color: rgba(140, 91, 255, 0.72) !important;
+  background: linear-gradient(135deg, #7b4ee8, #eadfff) !important;
+  box-shadow: 0 16px 34px rgba(140, 91, 255, 0.18), 0 0 0 4px rgba(140, 91, 255, 0.12) !important;
+}
+
+.task-modal .modal-action.HELP.active {
+  border-color: rgba(255, 138, 61, 0.78) !important;
+  background: linear-gradient(135deg, #f07a2b, #ffe0c7) !important;
+  box-shadow: 0 16px 34px rgba(255, 138, 61, 0.2), 0 0 0 4px rgba(255, 138, 61, 0.13) !important;
+}
+
+.task-modal .modal-action.REVIEW.active {
+  border-color: rgba(24, 183, 159, 0.74) !important;
+  background: linear-gradient(135deg, #13a892, #d3f7ef) !important;
+  box-shadow: 0 16px 34px rgba(24, 183, 159, 0.18), 0 0 0 4px rgba(24, 183, 159, 0.12) !important;
+}
+
+.task-modal .modal-action.CHECK.active strong,
+.task-modal .modal-action.CHECK.active small,
+.task-modal .modal-action.WAIT.active strong,
+.task-modal .modal-action.WAIT.active small,
+.task-modal .modal-action.HELP.active strong,
+.task-modal .modal-action.HELP.active small,
+.task-modal .modal-action.REVIEW.active strong,
+.task-modal .modal-action.REVIEW.active small {
+  color: #ffffff !important;
+  text-shadow: 0 1px 8px rgba(21, 38, 62, 0.22) !important;
+}
+
+.task-modal .modal-action.CHECK.active span,
+.task-modal .modal-action.WAIT.active span,
+.task-modal .modal-action.HELP.active span,
+.task-modal .modal-action.REVIEW.active span {
+  background: rgba(255, 255, 255, 0.96) !important;
+  box-shadow: 0 8px 18px rgba(21, 38, 62, 0.16) !important;
+}
+
+.task-modal .modal-action.CHECK.active span { color: #006abf !important; }
+.task-modal .modal-action.WAIT.active span { color: var(--purple) !important; }
+.task-modal .modal-action.HELP.active span { color: var(--orange) !important; }
+.task-modal .modal-action.REVIEW.active span { color: var(--teal) !important; }
