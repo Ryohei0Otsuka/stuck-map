@@ -9929,3 +9929,95 @@ body {
     justify-content: flex-start !important;
   }
 }
+
+/* v10.40 project-first header cleanup */
+.project-first-header.app-header.topbar {
+  display: grid !important;
+  grid-template-columns: minmax(460px, 1fr) auto !important;
+  align-items: center !important;
+  gap: 18px !important;
+  padding: 14px 18px !important;
+}
+
+.project-first-header .header-project-main {
+  display: grid !important;
+  grid-template-columns: 42px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 12px !important;
+  min-width: 0 !important;
+}
+
+.project-first-header .compact-logo {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 16px !important;
+}
+
+.project-first-header .compact-logo span {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.project-first-header .header-project-content {
+  display: grid !important;
+  gap: 6px !important;
+  min-width: 0 !important;
+}
+
+.project-first-header .project-name-button {
+  max-width: 620px !important;
+  width: 100% !important;
+  padding: 9px 13px !important;
+  background: rgba(255, 255, 255, 0.86) !important;
+}
+
+.project-first-header .project-name-button span {
+  color: #5d789b !important;
+  font-size: 9px !important;
+}
+
+.project-first-header .project-name-button strong {
+  color: #17304d !important;
+  font-size: 18px !important;
+  letter-spacing: -0.04em !important;
+}
+
+.project-first-header .project-name-button small {
+  color: #5b7191 !important;
+  font-size: 11px !important;
+}
+
+.project-first-header .header-compact-copy {
+  max-width: 760px !important;
+  margin: 0 !important;
+  color: #516b8d !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  line-height: 1.55 !important;
+}
+
+.project-first-header .topbar-actions {
+  justify-content: flex-end !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  max-width: 640px !important;
+}
+
+.project-first-header .topbar-sample-select {
+  min-width: 190px !important;
+}
+
+.project-first-header .topbar-sample-select select {
+  max-width: 170px !important;
+}
+
+@media (max-width: 1320px) {
+  .project-first-header.app-header.topbar {
+    grid-template-columns: 1fr !important;
+  }
+
+  .project-first-header .topbar-actions {
+    justify-content: flex-start !important;
+    max-width: none !important;
+  }
+}

@@ -2612,65 +2612,61 @@ function App() {
       <div className="ripple ripple-b" />
 
       <div className="app-frame">
-        <header className="app-header topbar">
-          <div className="topbar-left">
-            <div className="logo-mark">
+        <header className="app-header topbar project-first-header">
+          <div className="project-title-area header-project-main">
+            <div className="logo-mark compact-logo" aria-hidden="true">
               <span />
             </div>
 
-            <div className="topbar-brand-copy">
-              <p className="eyebrow">チーム進行ボード</p>
-              <strong>Stuck Map</strong>
-              <p className="topbar-intro">
-                チーム進行中の小さな詰まりを早めに見つけるボード。誰が遅いかではなく、何が詰まっているかを見る。ひとりで抱え込まず、小さく出して、みんなで進めます。
-              </p>
-            </div>
-          </div>
+            <div className="header-project-content">
+              {isプロジェクトEditing ? (
+                <div className="project-edit-inline">
+                  <input
+                    value={project.name}
+                    onChange={(event) =>
+                      setプロジェクト((current) => ({
+                        ...current,
+                        name: event.target.value,
+                      }))
+                    }
+                    aria-label="プロジェクト名"
+                  />
 
-          <div className="project-title-area">
-            {isプロジェクトEditing ? (
-              <div className="project-edit-inline">
-                <input
-                  value={project.name}
-                  onChange={(event) =>
-                    setプロジェクト((current) => ({
-                      ...current,
-                      name: event.target.value,
-                    }))
-                  }
-                  aria-label="プロジェクト名"
-                />
+                  <input
+                    value={project.memo}
+                    onChange={(event) =>
+                      setプロジェクト((current) => ({
+                        ...current,
+                        memo: event.target.value,
+                      }))
+                    }
+                    aria-label="プロジェクトメモ"
+                  />
 
-                <input
-                  value={project.memo}
-                  onChange={(event) =>
-                    setプロジェクト((current) => ({
-                      ...current,
-                      memo: event.target.value,
-                    }))
-                  }
-                  aria-label="プロジェクトメモ"
-                />
-
+                  <button
+                    type="button"
+                    className="secondary-action compact-button"
+                    onClick={() => setIsプロジェクトEditing(false)}
+                  >
+                    OK
+                  </button>
+                </div>
+              ) : (
                 <button
                   type="button"
-                  className="secondary-action compact-button"
-                  onClick={() => setIsプロジェクトEditing(false)}
+                  className="project-name-button"
+                  onClick={startProjectEdit}
                 >
-                  OK
+                  <span>プロジェクトボード</span>
+                  <strong>{project.name || "Untitled プロジェクト"}</strong>
+                  <small>{project.memo}</small>
                 </button>
-              </div>
-            ) : (
-              <button
-                type="button"
-                className="project-name-button"
-                onClick={startProjectEdit}
-              >
-                <span>プロジェクト</span>
-                <strong>{project.name || "Untitled プロジェクト"}</strong>
-                <small>{project.memo}</small>
-              </button>
-            )}
+              )}
+
+              <p className="topbar-intro header-compact-copy">
+                小さな詰まりを早めに見つけるボード。誰が遅いかではなく、何が詰まっているかを見る。
+              </p>
+            </div>
           </div>
 
           <div className="topbar-actions">
