@@ -1649,7 +1649,6 @@ function App() {
             <input
               value={taskForm.title}
               onChange={(event) => updateTaskForm("title", event.target.value)}
-              placeholder="例：READMEを整える"
               autoFocus
             />
           </label>
