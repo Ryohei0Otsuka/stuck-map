@@ -2618,9 +2618,12 @@ function App() {
               <span />
             </div>
 
-            <div>
-              <p className="eyebrow">プロジェクトボード</p>
+            <div className="topbar-brand-copy">
+              <p className="eyebrow">チーム進行ボード</p>
               <strong>Stuck Map</strong>
+              <p className="topbar-intro">
+                チーム進行中の小さな詰まりを早めに見つけるボード。誰が遅いかではなく、何が詰まっているかを見る。ひとりで抱え込まず、小さく出して、みんなで進めます。
+              </p>
             </div>
           </div>
 
@@ -2671,6 +2674,26 @@ function App() {
           </div>
 
           <div className="topbar-actions">
+            <div className="topbar-sample-select">
+              <label htmlFor="topbar-sample-project-select">サンプル</label>
+              <select
+                id="topbar-sample-project-select"
+                value={sampleProjectTemplates[activeSampleId] ? activeSampleId : ""}
+                onChange={(event) => {
+                  if (event.target.value) {
+                    applySampleProject(event.target.value);
+                  }
+                }}
+              >
+                <option value="" disabled>選ぶ</option>
+                {Object.entries(sampleProjectTemplates).map(([sampleId, sample]) => (
+                  <option key={sampleId} value={sampleId}>
+                    {sample.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <div
               className={`save-indicator ${
                 saveNotice === "保存しました" ? "saved-pop" : ""
@@ -2712,46 +2735,6 @@ function App() {
             </button>
           </div>
         </header>
-
-        <section className="hero-panel hero-panel-compact">
-          <div className="hero-copy-block surface">
-            <p className="eyebrow">プロジェクト</p>
-            <h1>{project.name || "Untitled プロジェクト"}</h1>
-            {project.memo && <p className="hero-project-memo">{project.memo}</p>}
-            <p className="hero-copy">
-              Stuck Map は、チーム進行中の小さな詰まりを早めに見つけるためのボードです。
-              <br />
-              誰が遅いかではなく、何が詰まっているかを見る。ひとりで抱え込まず、小さく出して、みんなで進めます。
-            </p>
-          </div>
-
-          <div className="hero-card surface hero-control-card">
-            <p className="eyebrow">サンプル</p>
-            <strong>使い方を切り替える</strong>
-            <span>用途別サンプルで、詰まりの見え方を試せます。</span>
-
-            <div className="sample-switcher">
-              <label htmlFor="sample-project-select">用途別サンプルデータ</label>
-              <select
-                id="sample-project-select"
-                value={sampleProjectTemplates[activeSampleId] ? activeSampleId : ""}
-                onChange={(event) => {
-                  if (event.target.value) {
-                    applySampleProject(event.target.value);
-                  }
-                }}
-              >
-                <option value="" disabled>サンプルを選ぶ</option>
-                {Object.entries(sampleProjectTemplates).map(([sampleId, sample]) => (
-                  <option key={sampleId} value={sampleId}>
-                    {sample.label}
-                  </option>
-                ))}
-              </select>
-              <small>架空サンプルです。実名・機密情報は含めない方針です。</small>
-            </div>
-          </div>
-        </section>
 
         <section className="compact-status-bar surface" aria-label="ボード概要">
           <div className="compact-status-main">

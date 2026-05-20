@@ -9812,3 +9812,120 @@ body {
     justify-content: flex-start !important;
   }
 }
+
+
+/* =========================================================
+   v10.39: remove hero panel and move concept copy into header
+   - ヒーロー説明カードを削除
+   - ヘッダー内に短い説明文を統合
+   - サンプル切替はヘッダーの小さなselectへ移動
+   ========================================================= */
+
+.app-header.topbar {
+  align-items: stretch !important;
+  gap: 14px !important;
+  padding: 14px 16px !important;
+}
+
+.app-header .topbar-left {
+  flex: 1.15 1 420px !important;
+  align-items: flex-start !important;
+  min-width: 360px !important;
+}
+
+.topbar-brand-copy {
+  display: grid !important;
+  gap: 2px !important;
+  min-width: 0 !important;
+}
+
+.topbar-brand-copy .eyebrow {
+  margin-bottom: 2px !important;
+}
+
+.topbar-brand-copy strong {
+  margin-top: 0 !important;
+}
+
+.topbar-intro {
+  max-width: 620px !important;
+  margin: 2px 0 0 !important;
+  color: #526b8a !important;
+  font-size: 11.5px !important;
+  font-weight: 850 !important;
+  line-height: 1.55 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.app-header .project-title-area {
+  flex: 0 1 420px !important;
+  align-self: center !important;
+  min-width: 260px !important;
+}
+
+.app-header .topbar-actions {
+  flex: 1 1 460px !important;
+  align-self: center !important;
+  justify-content: flex-end !important;
+  flex-wrap: wrap !important;
+  row-gap: 6px !important;
+}
+
+.topbar-sample-select {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  min-height: 38px !important;
+  padding: 0 10px !important;
+  border: 1px solid rgba(17, 151, 255, 0.16) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.86) !important;
+  color: #55708d !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  white-space: nowrap !important;
+}
+
+.topbar-sample-select label {
+  color: #6f89ab !important;
+  font-size: 9px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.1em !important;
+}
+
+.topbar-sample-select select {
+  width: 132px !important;
+  min-width: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #203654 !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  outline: none !important;
+}
+
+.compact-status-bar {
+  margin-top: 0 !important;
+}
+
+@media (max-width: 1420px) {
+  .app-header.topbar {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .app-header .topbar-left,
+  .app-header .project-title-area,
+  .app-header .topbar-actions {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .app-header .project-name-button {
+    max-width: none !important;
+  }
+
+  .app-header .topbar-actions {
+    justify-content: flex-start !important;
+  }
+}
