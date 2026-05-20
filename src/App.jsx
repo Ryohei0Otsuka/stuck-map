@@ -1709,7 +1709,6 @@ function App() {
                 onChange={(event) =>
                   updateTaskForm("description", event.target.value)
                 }
-                placeholder="必要なら、背景や補足を軽く書く"
                 rows={3}
               />
             </label>
@@ -1810,7 +1809,6 @@ function App() {
             onChange={(event) =>
               updateTaskForm("description", event.target.value)
             }
-            placeholder={currentMeta.descriptionPlaceholder}
             rows={4}
           />
         </label>
