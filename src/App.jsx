@@ -145,6 +145,84 @@ const sampleProjectTemplates = {
     },
     tasks: initialTasks,
   },
+  trip: {
+    label: "旅行の準備",
+    project: {
+      name: "旅行の準備ボード",
+      memo: "持ち物・予約・確認待ちを、出発前にゆるく整理する",
+    },
+    tasks: [
+      {
+        id: "trip-1",
+        title: "宿の予約内容を確認する",
+        ownerId: "m1",
+        needId: "m2",
+        status: "CHECK",
+        category: "FLOW",
+        reason: "軽く確認",
+        description: "日付・人数・チェックイン時間だけ一緒に確認したい。",
+      },
+      {
+        id: "trip-2",
+        title: "買い出しリストを分担する",
+        ownerId: "m4",
+        needId: "m3",
+        status: "HELP",
+        category: "OPS",
+        reason: "少し手を借りたい",
+        description: "飲み物・お菓子・日用品を誰が買うか軽く分ける。",
+      },
+      {
+        id: "trip-3",
+        title: "集合時間の認識を合わせる",
+        ownerId: "m2",
+        needId: "m1",
+        status: "WAIT",
+        category: "FLOW",
+        reason: "認識合わせ",
+        description: "駅集合か現地集合か、時間と場所を合わせる。",
+      },
+    ],
+  },
+  game: {
+    label: "ゲーム会準備",
+    project: {
+      name: "ゲーム会準備ボード",
+      memo: "持ち寄り・時間・ルール確認を、遊ぶ前に軽くそろえる",
+    },
+    tasks: [
+      {
+        id: "game-1",
+        title: "遊ぶゲーム候補を出す",
+        ownerId: "m3",
+        needId: "m1",
+        status: "TODO",
+        category: "OPS",
+        reason: "これから",
+        description: "重め・軽め・初見向けを混ぜて候補を出す。",
+      },
+      {
+        id: "game-2",
+        title: "初参加の人向けにルールを軽く確認する",
+        ownerId: "m2",
+        needId: "m2",
+        status: "REVIEW",
+        category: "DOC",
+        reason: "レビュー待ち",
+        description: "説明が長くなりすぎないよう、最初に伝えることだけ見る。",
+      },
+      {
+        id: "game-3",
+        title: "飲み物と軽食を誰かに拾ってほしい",
+        ownerId: "m4",
+        needId: "m3",
+        status: "HELP",
+        category: "OPS",
+        reason: "少し手を借りたい",
+        description: "買い出しが寄れる人に任せられると助かる。",
+      },
+    ],
+  },
   business: {
     label: "業務システム導入",
     project: {
@@ -861,6 +939,7 @@ function App() {
   const [isプロジェクトEditing, setIsプロジェクトEditing] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isCreateMemoOpen, setIsCreateMemoOpen] = useState(false);
+  const [isBoardMenuOpen, setIsBoardMenuOpen] = useState(false);
   const [taskForm, setTaskForm] = useState(defaultTaskForm);
   const [selectedMemberId, setSelectedMemberId] = useState(null);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
@@ -874,6 +953,24 @@ function App() {
   });
   const hasMountedRef = useRef(false);
   const saveNoticeTimerRef = useRef(null);
+
+  useEffect(() => {
+    async function testSupabaseConnection() {
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .limit(5);
+
+      console.log("[Stuck Map Sync Lab] Supabase projects:", data);
+
+      if (error) {
+        console.error("[Stuck Map Sync Lab] Supabase error:", error);
+      }
+    }
+
+    testSupabaseConnection();
+  }, []);
+
 
   const selectedTask = tasks.find((task) => task.id === selectedTaskId) || null;
   const selectedMember =
@@ -1279,6 +1376,7 @@ function App() {
   const applySampleProject = (sampleId) => {
     const sample = getSampleTemplate(sampleId);
 
+    setIsBoardMenuOpen(false);
     setActiveSampleId(sampleId);
     setプロジェクト(sample.project);
     setメンバー(initialメンバー);
@@ -1313,14 +1411,6 @@ function App() {
   };
 
   const createBlankProject = () => {
-    const ok = window.confirm(
-      "現在のボードを新しいプロジェクトに切り替えます。必要なら先にスクリーンショットやメモを残してください。"
-    );
-
-    if (!ok) {
-      return;
-    }
-
     const blankTask = normalizeTask({
       id: createTaskId(),
       title: "最初のカードをここから編集する",
@@ -1334,6 +1424,7 @@ function App() {
       description: "カードをクリックして、タイトル・担当・内容を編集します。",
     });
 
+    setIsBoardMenuOpen(false);
     setActiveSampleId("custom");
     setプロジェクト({
       name: "新しいプロジェクト",
@@ -1354,6 +1445,7 @@ function App() {
     window.setTimeout(() => {
       setActiveFilter("ALL");
       setActiveBoardTab("progress");
+      scrollToTask(blankTask.id, { boardTab: "progress" });
     }, 120);
   };
 
@@ -2190,6 +2282,74 @@ function App() {
     );
   };
 
+  const renderBoardMenuModal = () => {
+    if (!isBoardMenuOpen) {
+      return null;
+    }
+
+    return (
+      <div className="modal-backdrop" onClick={() => setIsBoardMenuOpen(false)}>
+        <section
+          className="task-modal create-modal"
+          onClick={(event) => event.stopPropagation()}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="board-menu-title"
+        >
+          <div className="modal-top">
+            <div className="modal-title-block">
+              <p className="eyebrow">BOARD MENU</p>
+              <h2 id="board-menu-title">どのボードで始める？</h2>
+            </div>
+
+            <button
+              className="modal-close"
+              type="button"
+              onClick={() => setIsBoardMenuOpen(false)}
+              aria-label="ボードメニューを閉じる"
+            >
+              ×
+            </button>
+          </div>
+
+          <p className="modal-description">
+            空のボード、または軽いサンプルから始められます。
+            業務だけでなく、旅行やゲーム会のような小さな共同作業でも試せます。
+          </p>
+
+          <div className="command-picker">
+            <button
+              type="button"
+              className="command-card active"
+              onClick={createBlankProject}
+            >
+              <span className="command-icon TODO">＋</span>
+              <strong>空のボード</strong>
+              <small>プロジェクト名・メンバー・タスクをゼロから作る</small>
+            </button>
+
+            {Object.entries(sampleProjectTemplates).map(([sampleId, sample]) => (
+              <button
+                type="button"
+                className="command-card"
+                key={`board-menu-${sampleId}`}
+                onClick={() => applySampleProject(sampleId)}
+              >
+                <span className="command-icon CHECK">☕</span>
+                <strong>{sample.label}</strong>
+                <small>{sample.project.memo}</small>
+              </button>
+            ))}
+          </div>
+
+          <p className="next-support-note">
+            サンプルはすべて架空データです。実在の会社名・個人名・案件名・機密情報は入れないでください。
+          </p>
+        </section>
+      </div>
+    );
+  };
+
   const renderIntroModal = () => {
     if (!isIntroModalOpen) {
       return null;
@@ -2827,25 +2987,13 @@ function App() {
           </div>
 
           <div className="topbar-actions">
-            <div className="topbar-sample-select">
-              <label htmlFor="topbar-sample-project-select">サンプル</label>
-              <select
-                id="topbar-sample-project-select"
-                value={sampleProjectTemplates[activeSampleId] ? activeSampleId : ""}
-                onChange={(event) => {
-                  if (event.target.value) {
-                    applySampleProject(event.target.value);
-                  }
-                }}
-              >
-                <option value="" disabled>選ぶ</option>
-                {Object.entries(sampleProjectTemplates).map(([sampleId, sample]) => (
-                  <option key={sampleId} value={sampleId}>
-                    {sample.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <button
+              type="button"
+              className="secondary-action"
+              onClick={() => setIsBoardMenuOpen(true)}
+            >
+              ボードメニュー
+            </button>
 
             <div
               className={`save-indicator ${
