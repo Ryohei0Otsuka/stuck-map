@@ -10871,7 +10871,7 @@ body {
 
 
 /* =========================================================
-   STUCK_MAP_MAIN_UX_CAN_HELP_VISIBILITY
+   STUCK_MAP_SYNC_V0_5_CAN_HELP_VISIBILITY
    SP版のCAN HELPを見分けやすくする。
    OFFは控えめ、ONは「今拾えます」が一目で分かる濃い表示にする。
    ========================================================= */
@@ -10940,20 +10940,8 @@ body {
 }
 
 
-/* Main local prototype: project list modal replaces sample select */
-@media (max-width: 760px) {
-  .topbar-actions .topbar-sample-select {
-    width: 100%;
-  }
-
-  .topbar-actions .topbar-sample-select select {
-    width: 100%;
-  }
-}
-
-
 /* =========================================================
-   STUCK_MAP_MAIN_SP_SAVE_INDICATOR_POSITION
+   STUCK_MAP_SYNC_LAB_SP_SAVE_INDICATOR_POSITION
    SP版では保存表示をステータスバー側に集約する。
    ヘッダー内の保存済みは操作ボタン群を分断するため非表示。
    ========================================================= */
@@ -10965,5 +10953,77 @@ body {
 
   .compact-save-pill {
     justify-self: end;
+  }
+}
+
+
+/* =========================================================
+   STUCK_MAP_ADD_TASK_BUTTON_VISIBILITY
+   フロー / サイン列内の「＋タスク」を主操作として見えやすくする。
+   SP版では押しやすさを優先し、幅いっぱいのボタン感を強める。
+   ========================================================= */
+
+.lane-add-task-button {
+  min-height: 48px;
+  margin-top: 8px;
+  border: 1px solid rgba(17, 151, 255, 0.34);
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(241, 248, 255, 0.88));
+  color: #24405f;
+  font-size: 13px;
+  font-weight: 950;
+  box-shadow:
+    0 10px 22px rgba(69, 99, 145, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.lane-add-task-button span {
+  width: 25px;
+  height: 25px;
+  background:
+    linear-gradient(135deg, #ffffff, #eaf5ff);
+  color: #1e6fb2;
+  font-size: 16px;
+  box-shadow:
+    0 7px 16px rgba(69, 99, 145, 0.10),
+    0 0 0 1px rgba(17, 151, 255, 0.10);
+}
+
+.lane-add-task-button:hover {
+  transform: translateY(-2px);
+  border-color: rgba(17, 151, 255, 0.52);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(232, 245, 255, 0.94));
+  box-shadow:
+    0 16px 32px rgba(69, 99, 145, 0.14),
+    0 0 0 4px rgba(17, 151, 255, 0.08);
+}
+
+.lane-add-task-button.DOING {
+  border-color: rgba(47, 109, 255, 0.34);
+}
+
+.lane-add-task-button.DONE {
+  border-color: rgba(45, 187, 115, 0.34);
+}
+
+@media (max-width: 760px) {
+  .lane-add-task-button {
+    min-height: 54px;
+    margin-top: 10px;
+    border-radius: 18px;
+    font-size: 14px;
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(238, 247, 255, 0.96));
+    box-shadow:
+      0 10px 24px rgba(69, 99, 145, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.80);
+  }
+
+  .lane-add-task-button span {
+    width: 28px;
+    height: 28px;
+    font-size: 17px;
   }
 }
