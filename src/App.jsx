@@ -3235,9 +3235,7 @@ function App() {
                     className="board-add-task-button"
                     onClick={() => openCreateModal("TODO")}
                   >
-                    <span>＋</span>
-                    タスク
-                  </button>
+                    <span>＋</span> この列に追加</button>
                 )}
               </div>
             </div>
