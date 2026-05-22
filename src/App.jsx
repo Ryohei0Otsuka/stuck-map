@@ -581,9 +581,12 @@ const defaultTaskForm = {
   needType: "anyone",
   needId: "m1",
   status: "TODO",
+  flowStatus: "TODO",
+  signalStatus: "",
   category: "",
   reason: "",
   description: "",
+  pickedById: "",
 };
 
 const recipientTypes = [
@@ -776,12 +779,15 @@ function normalizeTask(task) {
   const flowStatus = getTaskFlowStatus(task);
   const signalStatus = getTaskSignalStatus(task);
   const needType = getTaskNeedType(task);
+  const pickedById = flowStatus !== "DONE" && signalStatus ? task.pickedById || "" : "";
 
   return {
     ...task,
     flowStatus,
     signalStatus,
     needType,
+    pickedById,
+    pickedAt: pickedById ? task.pickedAt || "" : "",
     status: flowStatus,
   };
 }
@@ -801,21 +807,33 @@ function getTaskDisplayStatus(task, mode = "flow") {
 }
 
 function createStatusPatch(currentTask, nextStatus, mode = "flow") {
+  const currentSignalStatus = getTaskSignalStatus(currentTask);
+
   if (flowClusters.includes(nextStatus)) {
+    const nextSignalStatus = nextStatus === "DONE" ? null : currentSignalStatus;
+    const pickedById = nextSignalStatus ? currentTask?.pickedById || "" : "";
+
     return {
       flowStatus: nextStatus,
-      signalStatus: nextStatus === "DONE" ? null : getTaskSignalStatus(currentTask),
+      signalStatus: nextSignalStatus,
+      pickedById,
+      pickedAt: pickedById ? currentTask?.pickedAt || "" : "",
       status: nextStatus,
     };
   }
 
   if (signalStatuses.includes(nextStatus)) {
     const currentFlowStatus = currentTask ? getTaskFlowStatus(currentTask) : "DOING";
+    const nextFlowStatus = currentFlowStatus === "DONE" ? "DOING" : currentFlowStatus;
+    const keepPicked = currentSignalStatus === nextStatus;
+    const pickedById = keepPicked ? currentTask?.pickedById || "" : "";
 
     return {
-      flowStatus: currentFlowStatus === "DONE" ? "DOING" : currentFlowStatus,
+      flowStatus: nextFlowStatus,
       signalStatus: nextStatus,
-      status: currentFlowStatus === "DONE" ? "DOING" : currentFlowStatus,
+      pickedById,
+      pickedAt: pickedById ? currentTask?.pickedAt || "" : "",
+      status: nextFlowStatus,
     };
   }
 
@@ -913,15 +931,21 @@ function App() {
       return;
     }
 
+    const flowStatus = getTaskFlowStatus(selectedTask);
+    const signalStatus = getTaskSignalStatus(selectedTask) || "";
+
     setTaskForm({
       title: selectedTask.title,
       ownerId: selectedTask.ownerId,
       needType: getTaskNeedType(selectedTask),
       needId: selectedTask.needId,
-      status: getTaskSignalStatus(selectedTask) || getTaskFlowStatus(selectedTask),
+      status: signalStatus || flowStatus,
+      flowStatus,
+      signalStatus,
       category: selectedTask.category || "",
       reason: selectedTask.reason,
       description: selectedTask.description,
+      pickedById: selectedTask.pickedById || "",
     });
   }, [selectedTask]);
 
@@ -1043,6 +1067,15 @@ function App() {
     return recipientTypeLabels[needType] || "受け先未設定";
   };
 
+
+  const getPickedMember = (task) => {
+    if (!task?.pickedById) {
+      return null;
+    }
+
+    return getMember(task.pickedById);
+  };
+
   const getTasksByStatus = (status, mode = "flow") => {
     if (mode === "signal") {
       return tasks.filter((task) => getTaskSignalStatus(task) === status);
@@ -1113,6 +1146,8 @@ function App() {
           ...currentTask,
           flowStatus: currentFlowStatus,
           signalStatus: null,
+          pickedById: "",
+          pickedAt: "",
           status: currentFlowStatus,
         };
       })
@@ -1149,10 +1184,12 @@ function App() {
       ownerId: taskForm.ownerId || fallbackMemberId,
       needType: "anyone",
       needId: taskForm.ownerId || fallbackMemberId,
-      ...createStatusPatch(null, taskForm.status, "flow"),
+      ...createStatusPatch(null, taskForm.flowStatus || taskForm.status, "flow"),
       category: categoryMeta[taskForm.category] ? taskForm.category : "",
       reason: "",
       description: taskForm.description.trim(),
+      pickedById: "",
+      pickedAt: "",
     };
 
     setTasks((currentTasks) => [nextTask, ...currentTasks]);
@@ -1184,12 +1221,32 @@ function App() {
       return;
     }
 
+    const nextFlowStatus = flowClusters.includes(taskForm.flowStatus)
+      ? taskForm.flowStatus
+      : getTaskFlowStatus(selectedTask);
+    const nextSignalStatus =
+      nextFlowStatus !== "DONE" && signalStatuses.includes(taskForm.signalStatus)
+        ? taskForm.signalStatus
+        : null;
+    const pickedById =
+      nextSignalStatus && members.some((member) => member.id === taskForm.pickedById)
+        ? taskForm.pickedById
+        : "";
+
     updateTask(selectedTask.id, {
       title: trimmedTitle,
       ownerId: taskForm.ownerId || fallbackMemberId,
       needType: recipientTypeLabels[taskForm.needType] ? taskForm.needType : "anyone",
       needId: taskForm.needType === "member" ? taskForm.needId || fallbackMemberId : fallbackMemberId,
-      ...createStatusPatch(selectedTask, taskForm.status, signalStatuses.includes(taskForm.status) ? "signal" : "flow"),
+      flowStatus: nextFlowStatus,
+      signalStatus: nextSignalStatus,
+      status: nextFlowStatus,
+      pickedById,
+      pickedAt: pickedById
+        ? selectedTask.pickedById === pickedById
+          ? selectedTask.pickedAt || new Date().toISOString()
+          : new Date().toISOString()
+        : "",
       category: categoryMeta[taskForm.category] ? taskForm.category : "",
       reason: selectedTask.reason || "",
       description: taskForm.description.trim(),
@@ -1392,6 +1449,8 @@ function App() {
       ...defaultTaskForm,
       title: "",
       status: initialStatus,
+      flowStatus: initialStatus,
+      signalStatus: "",
       reason: "",
       description: "",
       ownerId: fallbackMemberId,
@@ -1426,6 +1485,28 @@ function App() {
     setTaskForm((current) => ({
       ...current,
       status,
+      flowStatus: flowClusters.includes(status) ? status : current.flowStatus,
+      signalStatus: signalStatuses.includes(status) ? status : current.signalStatus,
+      pickedById: flowClusters.includes(status) && status === "DONE" ? "" : current.pickedById,
+    }));
+  };
+
+  const chooseTaskFlowStatus = (status) => {
+    setTaskForm((current) => ({
+      ...current,
+      flowStatus: status,
+      status: status === "DONE" ? "DONE" : current.signalStatus || status,
+      signalStatus: status === "DONE" ? "" : current.signalStatus,
+      pickedById: status === "DONE" ? "" : current.pickedById,
+    }));
+  };
+
+  const chooseTaskSignalStatus = (status) => {
+    setTaskForm((current) => ({
+      ...current,
+      signalStatus: status || "",
+      status: status || current.flowStatus || "TODO",
+      pickedById: status ? current.pickedById : "",
     }));
   };
 
@@ -1518,6 +1599,8 @@ function App() {
           task.ownerId === selectedMemberId ? replacementMember.id : task.ownerId,
         needId:
           task.needId === selectedMemberId ? replacementMember.id : task.needId,
+        pickedById: task.pickedById === selectedMemberId ? "" : task.pickedById || "",
+        pickedAt: task.pickedById === selectedMemberId ? "" : task.pickedAt || "",
       }))
     );
 
@@ -1661,8 +1744,7 @@ function App() {
 
   const renderTaskFields = (mode = "edit") => {
     const isCreateMode = mode === "create";
-    const currentMeta = statusMeta[taskForm.status] || statusMeta.TODO;
-    const statusOptions = isCreateMode ? flowClusters : allStatuses;
+    const currentMeta = statusMeta[taskForm.signalStatus || taskForm.flowStatus || taskForm.status] || statusMeta.TODO;
 
     if (isCreateMode) {
       return (
@@ -1693,7 +1775,7 @@ function App() {
           <label className="form-field">
             <span>フロー</span>
             <select
-              value={taskForm.status}
+              value={taskForm.flowStatus || taskForm.status}
               onChange={(event) => chooseCreateStatus(event.target.value)}
             >
               {flowClusters.map((status) => (
@@ -1799,13 +1881,13 @@ function App() {
         )}
 
         <label className="form-field">
-          <span>状態</span>
+          <span>進行</span>
           <select
-            value={taskForm.status}
-            onChange={(event) => chooseCreateStatus(event.target.value)}
+            value={taskForm.flowStatus || "TODO"}
+            onChange={(event) => chooseTaskFlowStatus(event.target.value)}
           >
-            {statusOptions.map((status) => (
-              <option value={status} key={`status-${status}`}>
+            {flowClusters.map((status) => (
+              <option value={status} key={`flow-${status}`}>
                 {getStatusLabel(status)}
               </option>
             ))}
@@ -1848,6 +1930,7 @@ function App() {
     const category = task.category ? categoryMeta[task.category] : null;
     const flowStatus = getTaskFlowStatus(task);
     const signalStatus = getTaskSignalStatus(task);
+    const pickedMember = getPickedMember(task);
     const displayStatus = getTaskDisplayStatus(task, mode);
     const cardReasonStatus = signalStatus || flowStatus;
 
@@ -1920,6 +2003,9 @@ function App() {
 
           <div className="task-info-row">
             <span className="need-chip">受け先: {recipientLabel}</span>
+            {signalStatus && pickedMember && (
+              <span className="picked-chip">拾った人: {pickedMember.name}</span>
+            )}
           </div>
 
           <p className="compact-hint">クリックで編集・作戦を見る</p>
@@ -2244,6 +2330,8 @@ function App() {
     const recipientLabel = getRecipientLabel(selectedTask);
     const category = selectedTask.category ? categoryMeta[selectedTask.category] : null;
     const selectedFlowStatus = getTaskFlowStatus(selectedTask);
+    const selectedSignalStatus = getTaskSignalStatus(selectedTask);
+    const pickedMember = getPickedMember(selectedTask);
     const isSelectedTaskDone = selectedFlowStatus === "DONE";
 
     return (
@@ -2272,9 +2360,15 @@ function App() {
           </div>
 
           <div className="modal-status-row">
-            <span className={`task-status-pill ${getTaskSignalStatus(selectedTask) || getTaskFlowStatus(selectedTask)}`}>
-              {renderStatusLabel(getTaskSignalStatus(selectedTask) || getTaskFlowStatus(selectedTask))}
+            <span className={`task-status-pill ${selectedFlowStatus}`}>
+              {renderStatusLabel(selectedFlowStatus)}
             </span>
+
+            {selectedSignalStatus && (
+              <span className={`task-signal-mini-badge ${selectedSignalStatus}`}>
+                {statusMeta[selectedSignalStatus].signal || getStatusLabel(selectedSignalStatus)}
+              </span>
+            )}
 
             {category && (
               <span className="category-pill">
@@ -2295,8 +2389,8 @@ function App() {
 
           <div className="modal-info-grid">
             <div>
-              <span>今の状態</span>
-              <strong>{statusMeta[getTaskSignalStatus(selectedTask) || getTaskFlowStatus(selectedTask)].softLabel}</strong>
+              <span>進行</span>
+              <strong>{getStatusLabel(selectedFlowStatus)}</strong>
             </div>
 
             <div>
@@ -2309,6 +2403,13 @@ function App() {
               <strong>{recipientLabel}</strong>
             </div>
 
+            {selectedSignalStatus && (
+              <div>
+                <span>拾った人</span>
+                <strong>{pickedMember?.name || "未設定"}</strong>
+              </div>
+            )}
+
           </div>
 
           <div className="modal-message">
@@ -2318,19 +2419,52 @@ function App() {
             </p>
           </div>
 
-          {!isSelectedTaskDone ? (
+          {taskForm.signalStatus && taskForm.flowStatus !== "DONE" && (
+            <div className="pickup-edit-box">
+              <div>
+                <strong>誰が拾った？</strong>
+                <p>誰でもOKのサインでも、拾った人を残せます。</p>
+              </div>
+              <select
+                value={taskForm.pickedById || ""}
+                onChange={(event) => updateTaskForm("pickedById", event.target.value)}
+              >
+                <option value="">まだ未設定</option>
+                {members.map((member) => (
+                  <option key={`picked-${member.id}`} value={member.id}>
+                    {member.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {taskForm.flowStatus !== "DONE" ? (
             <div className="modal-actions">
               <p className="modal-section-title">サインを選ぶ</p>
 
-              <div className="modal-action-grid">
+              <div className="modal-action-grid signal-choice-grid">
+                <button
+                  key={`modal-${selectedTask.id}-none`}
+                  type="button"
+                  className={`modal-action signal-none ${
+                    !taskForm.signalStatus ? "active" : ""
+                  }`}
+                  onClick={() => chooseTaskSignalStatus("")}
+                >
+                  <span>—</span>
+                  <strong>サインなし</strong>
+                  <small>フローだけで進めます</small>
+                </button>
+
                 {quickSignalList.map((status) => (
                   <button
                     key={`modal-${selectedTask.id}-${status}`}
                     type="button"
                     className={`modal-action ${status} ${
-                      taskForm.status === status ? "active" : ""
+                      taskForm.signalStatus === status ? "active" : ""
                     }`}
-                    onClick={() => updateTaskForm("status", status)}
+                    onClick={() => chooseTaskSignalStatus(status)}
                   >
                     <span>{statusMeta[status].icon}</span>
                     <strong>{statusMeta[status].label}</strong>
@@ -3049,6 +3183,7 @@ function App() {
 
                 <small>
                   発信: {getMember(nextSupportTask.ownerId)?.name} / 受け先: {getRecipientLabel(nextSupportTask)}
+                  {getPickedMember(nextSupportTask) ? ` / 拾った人: ${getPickedMember(nextSupportTask).name}` : ""}
                 </small>
 
                 <div className="next-support-actions">
@@ -3126,6 +3261,9 @@ function App() {
 
                         <strong>{task.title}</strong>
                         <p>{statusMeta[getTaskSignalStatus(task)].summary}</p>
+                        {getPickedMember(task) && (
+                          <small className="signal-card-picked">拾った人: {getPickedMember(task).name}</small>
+                        )}
                       </button>
                     ))
                   ) : (
