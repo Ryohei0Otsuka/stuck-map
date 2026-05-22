@@ -565,11 +565,11 @@ const statusMeta = {
     icon: "!",
     signal: "HELP!",
     laneTitle: "お助け",
-    laneHelp: "一人で抱える前に",
+    laneHelp: "少し手を借りたい",
     softLabel: "少し手を借りたい",
-    summary: "一人で抱える前に",
+    summary: "少し手を借りたい",
     bubble: "HELP!",
-    commandTitle: "お助けを出す",
+    commandTitle: "手伝ってほしいを出す",
     promptTitle: "何に手を借りたい？",
     promptDescription: "一人で抱え込む前に、少しだけ助けてほしい場所を置きます。",
     titlePlaceholder: "例：この表示崩れを一緒に見たい",
@@ -581,13 +581,13 @@ const statusMeta = {
     icon: "⇄",
     signal: "ALIGN",
     laneTitle: "認識合わせ",
-    laneHelp: "進め方をそろえる",
-    softLabel: "認識を合わせたい",
-    summary: "進め方をそろえる",
+    laneHelp: "前提をそろえる",
+    softLabel: "前提を合わせたい",
+    summary: "前提や進め方をそろえる",
     bubble: "ALIGN",
     commandTitle: "認識を合わせる",
-    promptTitle: "何の認識を合わせたい？",
-    promptDescription: "進め方・方針・判断の向きを合わせたい場所を置きます。",
+    promptTitle: "何の前提を合わせたい？",
+    promptDescription: "前提・進め方・判断の向きを合わせたい場所を置きます。"
     titlePlaceholder: "例：この仕様の進め方を合わせたい",
     reasonPlaceholder: "例：認識合わせ / 方針確認",
     descriptionPlaceholder: "どの前提や進め方を合わせたいかを書く",
@@ -597,13 +597,13 @@ const statusMeta = {
     icon: "?",
     signal: "CHECK",
     laneTitle: "確認依頼",
-    laneHelp: "軽く見てほしい",
+    laneHelp: "軽く確認してほしい",
     softLabel: "軽く確認してほしい",
-    summary: "認識ズレを早めに見る",
+    summary: "軽く確認してほしい",
     bubble: "CHECK",
     commandTitle: "確認依頼を出す",
     promptTitle: "どこを軽く確認してほしい？",
-    promptDescription: "小さな認識ズレを早めにほどくためのサインです。",
+    promptDescription: "文言・表示・内容などを軽く確認してほしい時のサインです。"
     titlePlaceholder: "例：文言の見え方だけ確認したい",
     reasonPlaceholder: "例：表示確認",
     descriptionPlaceholder: "見てほしい箇所、確認したい観点を軽く書く",
@@ -613,13 +613,13 @@ const statusMeta = {
     icon: "◎",
     signal: "REVIEW",
     laneTitle: "レビュー依頼",
-    laneHelp: "一度見てほしい",
+    laneHelp: "レビューしてほしい",
     softLabel: "レビューしてほしい",
-    summary: "一度見てほしい",
+    summary: "レビューしてほしい",
     bubble: "REVIEW",
     commandTitle: "レビュー依頼を出す",
     promptTitle: "何をレビューしてほしい？",
-    promptDescription: "完成前に見直したいもの、レビューしてほしいものを置きます。",
+    promptDescription: "完成前に、観点を持ってレビューしてほしいものを置きます。"
     titlePlaceholder: "例：テスト観点を一度見てほしい",
     reasonPlaceholder: "例：品質確認",
     descriptionPlaceholder: "どんな観点で見てほしいかを書く",
@@ -2563,7 +2563,7 @@ function App() {
                   >
                     <span>{statusMeta[status].icon}</span>
                     <strong>{statusMeta[status].label}</strong>
-                    <small>{statusCodeLabels[status]}：{statusMeta[status].summary}</small>
+                    <small>{statusMeta[status].summary}</small>
                   </button>
                 ))}
               </div>
@@ -2671,19 +2671,6 @@ function App() {
                 <small>名前から自動生成</small>
               </div>
             </div>
-
-            <label className="form-field can-help-toggle-field">
-              <span>CAN HELP</span>
-              <button
-                type="button"
-                className={`can-help-toggle ${memberForm.canHelp ? "active" : ""}`}
-                aria-pressed={memberForm.canHelp}
-                onClick={() => updateMemberForm("canHelp", !memberForm.canHelp)}
-              >
-                <b>CAN HELP</b>
-                <small>今なら手伝える時だけ表示</small>
-              </button>
-            </label>
 
             <label className="form-field wide">
               <span>メモ（任意）</span>
