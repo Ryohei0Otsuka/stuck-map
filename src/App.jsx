@@ -3228,7 +3228,8 @@ function App() {
               <div className={`next-support-card status-${getTaskSignalStatus(nextSupportTask)}`}>
                 <div className="next-support-top">
                   <span className={`task-status-pill ${getTaskSignalStatus(nextSupportTask)}`}>
-                    {renderStatusLabel(getTaskSignalStatus(nextSupportTask))}
+                    {statusMeta[getTaskSignalStatus(nextSupportTask)].signal ||
+                      statusCodeLabels[getTaskSignalStatus(nextSupportTask)]}
                   </span>
                   <span className={`next-support-bubble detect-${getTaskSignalStatus(nextSupportTask)}`}>
                     {statusMeta[getTaskSignalStatus(nextSupportTask)].signal || statusCodeLabels[getTaskSignalStatus(nextSupportTask)]}
@@ -3311,7 +3312,8 @@ function App() {
                       >
                         <div className="signal-card-top">
                           <span className={`task-status-pill ${getTaskSignalStatus(task)}`}>
-                            {renderStatusLabel(getTaskSignalStatus(task))}
+                            {statusMeta[getTaskSignalStatus(task)].signal ||
+                              statusCodeLabels[getTaskSignalStatus(task)]}
                           </span>
                           <small>{getMember(task.ownerId)?.name}</small>
                         </div>
