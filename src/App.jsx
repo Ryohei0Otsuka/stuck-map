@@ -1445,7 +1445,6 @@ function App() {
     window.setTimeout(() => {
       setActiveFilter("ALL");
       setActiveBoardTab("progress");
-      scrollToTask(blankTask.id, { boardTab: "progress" });
     }, 120);
   };
 
