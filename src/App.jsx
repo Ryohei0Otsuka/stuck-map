@@ -954,6 +954,24 @@ function App() {
   const hasMountedRef = useRef(false);
   const saveNoticeTimerRef = useRef(null);
 
+  useEffect(() => {
+    async function testSupabaseConnection() {
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .limit(5);
+
+      console.log("[Stuck Map Sync Lab] Supabase projects:", data);
+
+      if (error) {
+        console.error("[Stuck Map Sync Lab] Supabase error:", error);
+      }
+    }
+
+    testSupabaseConnection();
+  }, []);
+
+
   const selectedTask = tasks.find((task) => task.id === selectedTaskId) || null;
   const selectedMember =
     members.find((member) => member.id === selectedMemberId) || null;
@@ -1378,11 +1396,7 @@ function App() {
   };
 
   const resetBoard = () => {
-    const defaultSampleId = "personal";
-    const sample = getSampleTemplate(defaultSampleId);
-
-    setIsBoardMenuOpen(false);
-    setActiveSampleId(defaultSampleId);
+    const sample = getSampleTemplate(activeSampleId);
     setプロジェクト(sample.project);
     setメンバー(initialメンバー);
     setCategories(initialCategories);
@@ -1393,10 +1407,6 @@ function App() {
     setSelectedTaskId(null);
     setFocusedTaskId(null);
     setSelectedMemberId(null);
-    setIsCreateModalOpen(false);
-    setIsMemberModalOpen(false);
-    setIsCategoryModalOpen(false);
-    setIsプロジェクトEditing(false);
     localStorage.removeItem(STORAGE_KEY);
   };
 
@@ -2216,12 +2226,6 @@ function App() {
                     : "待機"}
                 </small>
 
-                {member.canHelp && (
-                  <span className="member-can-help-line" title="今なら手伝えます">
-                    CAN HELP
-                  </span>
-                )}
-
                 {hasDemand && (
                   <span className="member-demand-line" title={`${demand.label || "見てほしいサインあり"}：${demand.total}件${demand.sharePercent > 0 ? ` / 全体の${demand.sharePercent}%` : ""}`}>
                     <b>{demand.label || "見てほしいサインあり"}</b>
@@ -2954,7 +2958,7 @@ function App() {
             </button>
 
             <button type="button" className="secondary-action" onClick={resetBoard}>
-              デモに戻す
+              リセット
             </button>
           </div>
         </header>
