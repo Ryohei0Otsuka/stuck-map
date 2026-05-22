@@ -16,6 +16,7 @@ const initialメンバー = [
     role: "方向を見る人",
     avatar: "リー",
     memo: "判断や方向合わせでチームを支える人",
+    canHelp: false,
   },
   {
     id: "m2",
@@ -23,6 +24,7 @@ const initialメンバー = [
     role: "レビュー / 確認担当",
     avatar: "レビ",
     memo: "レビューと確認で流れを整える人",
+    canHelp: true,
   },
   {
     id: "m3",
@@ -30,6 +32,7 @@ const initialメンバー = [
     role: "実装担当",
     avatar: "実装",
     memo: "実装を進めながら小さな確認を出す人",
+    canHelp: false,
   },
   {
     id: "m4",
@@ -37,6 +40,7 @@ const initialメンバー = [
     role: "PMO補佐 / 整理担当",
     avatar: "R",
     memo: "状況を整理して、次に見る場所を見つける人",
+    canHelp: true,
   },
 ];
 
@@ -603,6 +607,7 @@ const recipientTypeLabels = recipientTypes.reduce((acc, type) => {
 const defaultMemberForm = {
   name: "",
   memo: "",
+  canHelp: false,
 };
 
 const defaultCategoryForm = {
@@ -643,8 +648,24 @@ function createAvatarFromName(name) {
   return chars.slice(0, 2).join("");
 }
 
+function normalizeMember(member) {
+  const name = member?.name || "メンバー";
+
+  return {
+    ...member,
+    id: member?.id || createMemberId(),
+    name,
+    role: member?.role || "",
+    avatar: member?.avatar || createAvatarFromName(name),
+    memo: member?.memo || "",
+    canHelp: Boolean(member?.canHelp),
+  };
+}
+
 function getSafeメンバー(members) {
-  return Array.isArray(members) && members.length > 0 ? members : initialメンバー;
+  const safeMembers = Array.isArray(members) && members.length > 0 ? members : initialメンバー;
+
+  return safeMembers.map(normalizeMember);
 }
 
 function getSafeCategories(categories) {
@@ -1410,7 +1431,7 @@ function App() {
 
   const openMemberCreateModal = () => {
     setSelectedMemberId(null);
-    setMemberForm(defaultMemberForm);
+    setMemberForm({ ...defaultMemberForm });
     setIsMemberModalOpen(true);
   };
 
@@ -1426,13 +1447,14 @@ function App() {
     setMemberForm({
       name: member.name,
       memo: member.memo || "",
+      canHelp: Boolean(member.canHelp),
     });
     setIsMemberModalOpen(true);
   };
 
   const closeMemberModal = () => {
     setSelectedMemberId(null);
-    setMemberForm(defaultMemberForm);
+    setMemberForm({ ...defaultMemberForm });
     setIsMemberModalOpen(false);
   };
 
@@ -1456,6 +1478,7 @@ function App() {
       role: selectedMember?.role || "",
       avatar: createAvatarFromName(trimmedName),
       memo: memberForm.memo.trim(),
+      canHelp: Boolean(memberForm.canHelp),
     };
 
     if (selectedMemberId) {
@@ -2023,7 +2046,7 @@ function App() {
               role={currentTask ? "button" : undefined}
               tabIndex={currentTask ? 0 : -1}
               aria-disabled={!currentTask}
-              className={`member-status-chip status-${mainStatus} ${hasSignal ? "has-signal" : ""} ${hasDemand ? "has-demand" : ""} ${hasDemand ? `demand-${demandLevel}` : ""} ${!currentTask ? "disabled" : ""}`}
+              className={`member-status-chip status-${mainStatus} ${hasSignal ? "has-signal" : ""} ${hasDemand ? "has-demand" : ""} ${member.canHelp ? "can-help" : ""} ${hasDemand ? `demand-${demandLevel}` : ""} ${!currentTask ? "disabled" : ""}`}
               onClick={() => handleMemberClick(member.id)}
               onKeyDown={(event) => {
                 if (!currentTask) {
@@ -2047,6 +2070,12 @@ function App() {
                       : getStatusLabel(mainStatus)
                     : "待機"}
                 </small>
+
+                {member.canHelp && (
+                  <span className="member-can-help-line" title="今なら少し拾えます">
+                    少し拾えます
+                  </span>
+                )}
 
                 {hasDemand && (
                   <span className="member-demand-line" title={`${demand.label || "見てほしいサインあり"}：${demand.total}件${demand.sharePercent > 0 ? ` / 全体の${demand.sharePercent}%` : ""}`}>
@@ -2414,6 +2443,18 @@ function App() {
               </div>
             </div>
 
+            <label className="form-field can-help-toggle-field">
+              <span>助けに入れる状態</span>
+              <button
+                type="button"
+                className={`can-help-toggle ${memberForm.canHelp ? "active" : ""}`}
+                aria-pressed={memberForm.canHelp}
+                onClick={() => updateMemberForm("canHelp", !memberForm.canHelp)}
+              >
+                <b>少し拾えます</b>
+                <small>今なら少し手伝える時だけ表示</small>
+              </button>
+            </label>
 
             <label className="form-field wide">
               <span>メモ（任意）</span>
@@ -2858,6 +2899,10 @@ function App() {
                       </div>
 
                       {member.memo && <small>{member.memo}</small>}
+
+                      {member.canHelp && (
+                        <span className="member-can-help-pill">少し拾えます</span>
+                      )}
 
                       <div className="member-task-chip">
                         <span
