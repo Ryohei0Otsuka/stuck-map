@@ -2293,12 +2293,12 @@ function App() {
           onClick={(event) => event.stopPropagation()}
           role="dialog"
           aria-modal="true"
-          aria-labelledby="board-menu-title"
+          aria-labelledby="project-list-title"
         >
           <div className="modal-top">
             <div className="modal-title-block">
               <p className="eyebrow">PROJECT LIST</p>
-              <h2 id="board-menu-title">プロジェクトを選ぶ</h2>
+              <h2 id="project-list-title">プロジェクトを選ぶ</h2>
             </div>
 
             <button
@@ -2331,7 +2331,7 @@ function App() {
               <button
                 type="button"
                 className="command-card"
-                key={`board-menu-${sampleId}`}
+                key={`project-list-${sampleId}`}
                 onClick={() => applySampleProject(sampleId)}
               >
                 <span className="command-icon CHECK">☕</span>
@@ -2991,7 +2991,7 @@ function App() {
               className="secondary-action"
               onClick={() => setIsBoardMenuOpen(true)}
             >
-              ボードメニュー
+              プロジェクト一覧
             </button>
 
             <div
