@@ -10316,3 +10316,555 @@ body {
 .category-pill {
   display: none !important;
 }
+
+/* =========================================================
+   STUCK_MAP_V10_46_SP_LAYOUT
+   SP版はPCの3カラムを縦に積むのではなく、
+   「次に拾う」→「メンバー状況」→「フロー/サイン」の順に見る。
+   ========================================================= */
+
+@media (max-width: 760px) {
+  html,
+  body,
+  #root {
+    width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  body {
+    min-width: 0 !important;
+  }
+
+  .app-shell {
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+  }
+
+  .app-shell::before,
+  .bg-grid,
+  .bg-water,
+  .ripple {
+    display: none !important;
+  }
+
+  .app-frame {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 10px 10px 24px !important;
+  }
+
+  .topbar {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    margin-bottom: 10px !important;
+    padding: 10px !important;
+    border-radius: 18px !important;
+  }
+
+  .topbar-left {
+    min-width: 0 !important;
+  }
+
+  .logo-mark {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 13px !important;
+  }
+
+  .project-title-area {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .project-name-button {
+    max-width: none !important;
+    padding: 10px 12px !important;
+    border-radius: 16px !important;
+  }
+
+  .project-name-button strong {
+    font-size: 14px !important;
+  }
+
+  .project-name-button small {
+    white-space: normal !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+  }
+
+  .topbar-actions {
+    width: 100% !important;
+    overflow-x: auto !important;
+    padding-bottom: 2px !important;
+  }
+
+  .topbar-actions .secondary-action,
+  .topbar-actions .danger-action,
+  .topbar-actions .primary-action {
+    flex: 0 0 auto !important;
+    min-height: 36px !important;
+    padding: 0 11px !important;
+    font-size: 11px !important;
+  }
+
+  .compact-status-bar {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    margin-bottom: 10px !important;
+    padding: 9px 10px !important;
+    border-radius: 16px !important;
+  }
+
+  .compact-status-main {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  .compact-status-main span {
+    min-width: 0 !important;
+    justify-content: center !important;
+    padding: 7px 5px !important;
+    font-size: 9px !important;
+  }
+
+  .compact-status-main strong {
+    font-size: 13px !important;
+  }
+
+  .compact-save-pill {
+    justify-self: start !important;
+    min-height: 28px !important;
+    font-size: 10px !important;
+  }
+
+  .member-overview-section {
+    margin-bottom: 10px !important;
+  }
+
+  .member-status-strip {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    margin: 0 !important;
+    padding: 9px !important;
+    border-radius: 18px !important;
+    overflow: visible !important;
+  }
+
+  .member-status-label {
+    display: flex !important;
+    justify-content: space-between !important;
+    min-height: 38px !important;
+    padding: 0 8px !important;
+    border-radius: 14px !important;
+  }
+
+  .member-status-label span {
+    font-size: 11px !important;
+  }
+
+  .member-status-add {
+    min-height: 28px !important;
+    padding: 0 9px !important;
+    font-size: 10px !important;
+  }
+
+  .member-status-list {
+    display: flex !important;
+    gap: 8px !important;
+    overflow-x: auto !important;
+    padding: 0 2px 6px !important;
+    scroll-snap-type: x proximity !important;
+  }
+
+  .member-status-chip {
+    position: relative !important;
+    flex: 0 0 218px !important;
+    grid-template-columns: 34px minmax(0, 1fr) 42px !important;
+    grid-template-areas:
+      "avatar body edit"
+      "avatar body edit"
+      "canhelp canhelp canhelp" !important;
+    gap: 7px !important;
+    min-height: 86px !important;
+    padding: 8px !important;
+    border-radius: 16px !important;
+    scroll-snap-align: start !important;
+  }
+
+  .member-status-avatar {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 12px !important;
+    font-size: 12px !important;
+  }
+
+  .member-status-body {
+    gap: 2px !important;
+  }
+
+  .member-status-body strong {
+    font-size: 12px !important;
+  }
+
+  .member-status-body small {
+    font-size: 9px !important;
+  }
+
+  .member-demand-line,
+  .member-demand-dots,
+  .member-can-help-line,
+  .member-status-mark {
+    display: none !important;
+  }
+
+  .member-status-edit {
+    grid-area: edit !important;
+    align-self: start !important;
+    min-width: 38px !important;
+    min-height: 26px !important;
+    padding: 0 7px !important;
+    font-size: 9px !important;
+  }
+
+  .member-status-can-help-toggle {
+    grid-area: canhelp !important;
+    position: static !important;
+    display: inline-flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-height: 30px !important;
+    margin-top: 2px !important;
+    padding: 0 8px !important;
+    opacity: 1 !important;
+    font-size: 10px !important;
+    letter-spacing: 0.08em !important;
+  }
+
+  .board-layout.flow-focus-layout,
+  .board-layout.signal-focus-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+    grid-template-columns: none !important;
+  }
+
+  .signals-panel {
+    order: -1 !important;
+    position: static !important;
+    min-height: 0 !important;
+    padding: 12px !important;
+    border-radius: 18px !important;
+  }
+
+  .signals-panel .panel-heading {
+    margin-bottom: 8px !important;
+  }
+
+  .signals-panel .panel-heading h2 {
+    font-size: 19px !important;
+  }
+
+  .signals-panel .panel-subtext {
+    display: none !important;
+  }
+
+  .next-support-card {
+    padding: 12px !important;
+    border-radius: 17px !important;
+  }
+
+  .next-support-top {
+    margin-bottom: 8px !important;
+  }
+
+  .next-support-card strong {
+    font-size: 14px !important;
+    line-height: 1.45 !important;
+  }
+
+  .next-support-card p {
+    display: none !important;
+  }
+
+  .next-support-card small {
+    display: block !important;
+    margin-top: 6px !important;
+    font-size: 10px !important;
+    line-height: 1.5 !important;
+  }
+
+  .next-support-actions {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    margin-top: 10px !important;
+  }
+
+  .next-support-actions .secondary-action,
+  .next-support-actions .primary-action {
+    min-height: 36px !important;
+    padding: 0 8px !important;
+    font-size: 11px !important;
+  }
+
+  .signal-summary {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+    margin-top: 10px !important;
+  }
+
+  .signal-summary-chip {
+    min-height: 34px !important;
+    padding: 6px 4px !important;
+    border-radius: 12px !important;
+    font-size: 9px !important;
+  }
+
+  .signal-summary-chip strong {
+    font-size: 12px !important;
+  }
+
+  .support-queue {
+    display: none !important;
+  }
+
+  .tasks-panel {
+    order: 0 !important;
+    min-height: 0 !important;
+    padding: 12px !important;
+    border-radius: 18px !important;
+  }
+
+  .board-heading {
+    display: grid !important;
+    gap: 10px !important;
+  }
+
+  .panel-heading h2 {
+    font-size: 20px !important;
+  }
+
+  .panel-subtext {
+    font-size: 11px !important;
+    line-height: 1.55 !important;
+  }
+
+  .board-control-row {
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+    gap: 8px !important;
+    align-items: stretch !important;
+  }
+
+  .board-mode-tabs {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    width: 100% !important;
+    max-width: none !important;
+    gap: 7px !important;
+  }
+
+  .board-mode-tabs button {
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 42px !important;
+    padding: 0 10px !important;
+    border-radius: 14px !important;
+    font-size: 11px !important;
+  }
+
+  .board-mode-tabs button strong {
+    font-size: 12px !important;
+  }
+
+  .board-add-task-button {
+    min-width: 78px !important;
+    min-height: 42px !important;
+    padding: 0 10px !important;
+    border-radius: 14px !important;
+    font-size: 11px !important;
+  }
+
+  .cluster-section-heading {
+    align-items: center !important;
+    margin-bottom: 4px !important;
+  }
+
+  .cluster-section-heading h3 {
+    font-size: 16px !important;
+  }
+
+  .cluster-section-heading span {
+    display: none !important;
+  }
+
+  .progress-tab-grid,
+  .signal-tab-grid,
+  .flow-focus-layout .progress-tab-grid,
+  .signal-focus-layout .signal-tab-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    grid-template-columns: none !important;
+    overflow: visible !important;
+  }
+
+  .progress-tab-grid .cluster-DOING { order: 1 !important; }
+  .progress-tab-grid .cluster-TODO { order: 2 !important; }
+  .progress-tab-grid .cluster-DONE { order: 3 !important; }
+
+  .status-cluster,
+  .flow-focus-layout .status-cluster,
+  .signal-focus-layout .status-cluster {
+    min-height: 0 !important;
+    padding: 11px !important;
+    border-radius: 18px !important;
+  }
+
+  .cluster-header {
+    margin-bottom: 6px !important;
+  }
+
+  .cluster-icon {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 12px !important;
+  }
+
+  .cluster-title-row h3 {
+    font-size: 15px !important;
+  }
+
+  .cluster-helper {
+    margin-bottom: 7px !important;
+    padding: 5px 8px !important;
+    font-size: 9px !important;
+  }
+
+  .cluster-drop-zone,
+  .flow-focus-layout .cluster-drop-zone {
+    min-height: 0 !important;
+    gap: 8px !important;
+    padding-top: 5px !important;
+  }
+
+  .cluster-empty {
+    min-height: 74px !important;
+    padding: 10px !important;
+    border-radius: 15px !important;
+  }
+
+  .cluster-empty span {
+    width: 28px !important;
+    height: 28px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .cluster-empty p {
+    font-size: 10px !important;
+  }
+
+  .lane-add-task-button {
+    min-height: 38px !important;
+    border-radius: 14px !important;
+    font-size: 11px !important;
+  }
+
+  .task-card-wrap,
+  .flow-focus-layout .task-card-wrap,
+  .signal-focus-layout .ui-organized-board .task-card-wrap {
+    padding-top: 0 !important;
+  }
+
+  .signal-board .task-card-wrap.status-HELP,
+  .signal-board .task-card-wrap.status-WAIT,
+  .signal-board .task-card-wrap.status-CHECK,
+  .signal-board .task-card-wrap.status-REVIEW {
+    padding-top: 40px !important;
+  }
+
+  .task-speech-bubble,
+  .signal-focus-layout .ui-organized-board .task-speech-bubble {
+    top: 5px !important;
+    left: 13px !important;
+    min-height: 28px !important;
+    padding: 7px 12px !important;
+    font-size: 10px !important;
+  }
+
+  .task-speech-bubble::after {
+    left: 18px !important;
+    bottom: -7px !important;
+    width: 12px !important;
+    height: 8px !important;
+  }
+
+  .task-card {
+    min-height: 0 !important;
+    padding: 14px 10px 10px 12px !important;
+    border-radius: 16px !important;
+  }
+
+  .task-card h3 {
+    font-size: 13px !important;
+    line-height: 1.45 !important;
+  }
+
+  .task-card-top {
+    gap: 8px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .task-status-pill,
+  .task-signal-mini-badge,
+  .picked-chip,
+  .task-owner {
+    min-height: 22px !important;
+    padding: 0 7px !important;
+    font-size: 9px !important;
+  }
+
+  .task-info-row,
+  .task-card p {
+    font-size: 10px !important;
+    line-height: 1.45 !important;
+  }
+
+  .task-card p {
+    display: -webkit-box !important;
+    overflow: hidden !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+  }
+
+  .drag-handle {
+    display: none !important;
+  }
+
+  .task-modal {
+    width: calc(100vw - 18px) !important;
+    max-height: calc(100vh - 22px) !important;
+    padding: 14px !important;
+    border-radius: 20px !important;
+    overflow-y: auto !important;
+  }
+
+  .modal-grid,
+  .modal-action-grid,
+  .signal-choice-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pickup-edit-box {
+    grid-template-columns: 1fr !important;
+    margin: 10px 0 !important;
+    padding: 10px !important;
+  }
+}
