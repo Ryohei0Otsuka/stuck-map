@@ -11655,3 +11655,159 @@ body {
     height: 20px !important;
   }
 }
+
+
+/* =========================================================
+   STUCK_MAP_CAN_HELP_SINGLE_BUTTON_ACTIVE
+   CAN HELPはボタンそのものだけを点灯させる。
+   クリック後に別のCAN HELP表示を増やさない。
+   本体 / Lab 共通。
+   ========================================================= */
+
+.member-can-help-line,
+.member-can-help-pill {
+  display: none !important;
+}
+
+.member-status-can-help-toggle::before,
+.member-status-can-help-toggle::after {
+  display: none !important;
+  content: none !important;
+}
+
+.member-status-can-help-toggle {
+  opacity: 1 !important;
+  border-color: rgba(99, 123, 154, 0.2) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #6d8198 !important;
+  box-shadow: none !important;
+}
+
+.member-status-can-help-toggle.active {
+  opacity: 1 !important;
+  border-color: rgba(24, 183, 159, 0.64) !important;
+  background: linear-gradient(135deg, rgba(216, 250, 242, 0.98), rgba(238, 255, 250, 0.96)) !important;
+  color: #0f6f60 !important;
+  box-shadow:
+    0 0 0 3px rgba(24, 183, 159, 0.12),
+    0 10px 20px rgba(24, 183, 159, 0.12) !important;
+}
+
+.member-status-can-help-toggle.active:hover,
+.member-status-can-help-toggle.active:focus-visible {
+  border-color: rgba(24, 183, 159, 0.78) !important;
+  background: linear-gradient(135deg, rgba(202, 247, 236, 1), rgba(232, 255, 249, 0.98)) !important;
+}
+
+
+/* =========================================================
+   STUCK_MAP_SIGNAL_COLOR_CONSISTENCY_V2_9
+   プロジェクトボードのポップとNEXT SIGNのポップ色を揃える。
+   メンバーカードには「現在のタスクについているサイン」を常時表示する。
+   本体 / Lab 共通。
+   ========================================================= */
+
+:root {
+  --stuck-help: #ff8a3d;
+  --stuck-help-dark: #ff6f35;
+  --stuck-align: #8c5bff;
+  --stuck-align-dark: #7041e8;
+  --stuck-check: #1197ff;
+  --stuck-check-dark: #2f6dff;
+  --stuck-review: #18b79f;
+  --stuck-review-dark: #0f9f8d;
+}
+
+.task-speech-bubble.HELP,
+.next-support-bubble.detect-HELP,
+.next-support-card.status-HELP .next-support-bubble {
+  background: linear-gradient(135deg, var(--stuck-help), var(--stuck-help-dark)) !important;
+  border-color: rgba(255, 255, 255, 0.96) !important;
+  color: #fff !important;
+}
+
+.task-speech-bubble.WAIT,
+.next-support-bubble.detect-WAIT,
+.next-support-card.status-WAIT .next-support-bubble {
+  background: linear-gradient(135deg, var(--stuck-align), var(--stuck-align-dark)) !important;
+  border-color: rgba(255, 255, 255, 0.96) !important;
+  color: #fff !important;
+}
+
+.task-speech-bubble.CHECK,
+.next-support-bubble.detect-CHECK,
+.next-support-card.status-CHECK .next-support-bubble {
+  background: linear-gradient(135deg, var(--stuck-check), var(--stuck-check-dark)) !important;
+  border-color: rgba(255, 255, 255, 0.96) !important;
+  color: #fff !important;
+}
+
+.task-speech-bubble.REVIEW,
+.next-support-bubble.detect-REVIEW,
+.next-support-card.status-REVIEW .next-support-bubble {
+  background: linear-gradient(135deg, var(--stuck-review), var(--stuck-review-dark)) !important;
+  border-color: rgba(255, 255, 255, 0.96) !important;
+  color: #fff !important;
+}
+
+.member-current-signal-line {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+  min-height: 20px !important;
+  margin-top: 4px !important;
+  padding: 3px 8px !important;
+  border-radius: 999px !important;
+  color: #fff !important;
+  font-size: 9px !important;
+  font-weight: 950 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  box-shadow: 0 8px 16px rgba(69, 99, 145, 0.08) !important;
+}
+
+.member-current-signal-line b {
+  flex: 0 0 auto !important;
+  font-size: 9px !important;
+  font-weight: 1000 !important;
+  letter-spacing: 0.05em !important;
+}
+
+.member-current-signal-line span {
+  overflow: hidden !important;
+  min-width: 0 !important;
+  max-width: 138px !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  opacity: 0.92 !important;
+}
+
+.member-current-signal-line.HELP {
+  background: linear-gradient(135deg, var(--stuck-help), var(--stuck-help-dark)) !important;
+}
+
+.member-current-signal-line.WAIT {
+  background: linear-gradient(135deg, var(--stuck-align), var(--stuck-align-dark)) !important;
+}
+
+.member-current-signal-line.CHECK {
+  background: linear-gradient(135deg, var(--stuck-check), var(--stuck-check-dark)) !important;
+}
+
+.member-current-signal-line.REVIEW {
+  background: linear-gradient(135deg, var(--stuck-review), var(--stuck-review-dark)) !important;
+}
+
+/* 受け先集中の表示は別物なので控えめに残す */
+.member-demand-line {
+  margin-top: 4px !important;
+}
+
+@media (min-width: 761px) {
+  .member-status-chip {
+    flex-basis: 350px !important;
+    grid-template-columns: 42px minmax(150px, 1fr) 30px 62px 38px !important;
+  }
+}

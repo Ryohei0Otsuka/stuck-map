@@ -2226,6 +2226,13 @@ function App() {
                     : "待機"}
                 </small>
 
+                {hasSignal && (
+                  <span className={`member-current-signal-line ${signalStatus}`}>
+                    <b>{statusMeta[signalStatus].signal || getStatusLabel(signalStatus)}</b>
+                    <span>{statusMeta[signalStatus].summary}</span>
+                  </span>
+                )}
+
                 {hasDemand && (
                   <span className="member-demand-line" title={`${demand.label || "見てほしいサインあり"}：${demand.total}件${demand.sharePercent > 0 ? ` / 全体の${demand.sharePercent}%` : ""}`}>
                     <b>{demand.label || "見てほしいサインあり"}</b>
