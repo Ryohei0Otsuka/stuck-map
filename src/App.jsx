@@ -2987,6 +2987,26 @@ function App() {
           </div>
 
           <div className="topbar-actions">
+            <div className="topbar-sample-select">
+              <label htmlFor="topbar-sample-project-select">サンプル</label>
+              <select
+                id="topbar-sample-project-select"
+                value={sampleProjectTemplates[activeSampleId] ? activeSampleId : ""}
+                onChange={(event) => {
+                  if (event.target.value) {
+                    applySampleProject(event.target.value);
+                  }
+                }}
+              >
+                <option value="" disabled>選ぶ</option>
+                {Object.entries(sampleProjectTemplates).map(([sampleId, sample]) => (
+                  <option key={sampleId} value={sampleId}>
+                    {sample.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <button
               type="button"
               className="secondary-action"

@@ -10938,3 +10938,15 @@ body {
       inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
   }
 }
+
+
+/* Main local prototype: keep sample select visible alongside board menu */
+@media (max-width: 760px) {
+  .topbar-actions .topbar-sample-select {
+    width: 100%;
+  }
+
+  .topbar-actions .topbar-sample-select select {
+    width: 100%;
+  }
+}
