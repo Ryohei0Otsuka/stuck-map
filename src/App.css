@@ -11532,3 +11532,126 @@ body {
 .member-status-can-help-toggle:not(.active) {
   box-shadow: none !important;
 }
+
+
+/* =========================================================
+   STUCK_MAP_SIGNAL_PRIORITY_OVER_CAN_HELP
+   CAN HELPは補助状態。メインのサイン/確認集中の見え方を優先する。
+   本体 / Lab 共通。
+   ========================================================= */
+
+.member-status-can-help-toggle {
+  border-color: rgba(99, 123, 154, 0.18) !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+  color: #70869e !important;
+  box-shadow: none !important;
+}
+
+.member-status-can-help-toggle.active {
+  border-color: rgba(24, 183, 159, 0.36) !important;
+  background: rgba(236, 255, 249, 0.88) !important;
+  color: #167967 !important;
+  box-shadow: 0 0 0 2px rgba(24, 183, 159, 0.07) !important;
+}
+
+.member-status-chip.has-signal,
+.member-status-chip.has-demand {
+  border-width: 1.5px !important;
+}
+
+.member-demand-line {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+  margin-top: 4px !important;
+  padding: 4px 8px !important;
+  border: 1px solid rgba(255, 138, 61, 0.24) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 246, 237, 0.92) !important;
+  color: #9b4d18 !important;
+  font-size: 10px !important;
+  font-weight: 950 !important;
+  line-height: 1.1 !important;
+}
+
+.member-demand-line b {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.member-demand-line span {
+  flex: 0 0 auto !important;
+}
+
+.member-demand-dots {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 4px !important;
+  margin-top: 5px !important;
+}
+
+.member-demand-dots .demand-dot {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 3px !important;
+  min-width: 24px !important;
+  height: 20px !important;
+  padding: 0 5px !important;
+  border-radius: 999px !important;
+  font-size: 10px !important;
+  font-weight: 950 !important;
+  background: rgba(255, 255, 255, 0.86) !important;
+  border: 1px solid rgba(105, 132, 178, 0.18) !important;
+}
+
+.member-demand-dots .demand-dot em {
+  font-style: normal !important;
+  font-size: 10px !important;
+  font-weight: 950 !important;
+}
+
+.member-status-chip.has-demand .member-status-mark {
+  transform: scale(1.08) !important;
+  box-shadow: 0 0 0 3px rgba(255, 138, 61, 0.08) !important;
+}
+
+.task-signal-mini-badge,
+.task-status-pill.HELP,
+.task-status-pill.WAIT,
+.task-status-pill.CHECK,
+.task-status-pill.REVIEW {
+  font-weight: 950 !important;
+}
+
+@media (min-width: 761px) {
+  .member-status-chip {
+    flex-basis: 336px !important;
+    grid-template-columns: 42px minmax(142px, 1fr) 30px 62px 38px !important;
+  }
+
+  .member-status-body {
+    padding-right: 2px !important;
+  }
+
+  .member-status-can-help-toggle {
+    min-width: 62px !important;
+    max-width: 62px !important;
+    font-size: 7.5px !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .member-demand-line {
+    font-size: 10px !important;
+    padding: 4px 8px !important;
+  }
+
+  .member-demand-dots .demand-dot {
+    min-width: 24px !important;
+    height: 20px !important;
+  }
+}
