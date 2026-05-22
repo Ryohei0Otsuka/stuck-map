@@ -11498,3 +11498,37 @@ body {
     justify-self: end !important;
   }
 }
+
+
+/* =========================================================
+   STUCK_MAP_CAN_HELP_NO_DOT
+   CAN HELPの点灯表現を色だけにする。
+   「・」や疑似要素は出さない。
+   本体 / Lab 共通。
+   ========================================================= */
+
+.member-status-can-help-toggle::before,
+.member-status-can-help-toggle::after,
+.member-can-help-line::before,
+.member-can-help-line::after,
+.member-can-help-pill::before,
+.member-can-help-pill::after,
+.can-help-toggle::before,
+.can-help-toggle::after {
+  display: none !important;
+  content: none !important;
+}
+
+.member-status-can-help-toggle.active {
+  opacity: 1 !important;
+  border-color: rgba(24, 183, 159, 0.5) !important;
+  background: linear-gradient(135deg, rgba(232, 251, 247, 0.98), rgba(255, 255, 255, 0.94)) !important;
+  color: #147766 !important;
+  box-shadow:
+    0 10px 20px rgba(24, 183, 159, 0.11),
+    0 0 0 3px rgba(24, 183, 159, 0.08) !important;
+}
+
+.member-status-can-help-toggle:not(.active) {
+  box-shadow: none !important;
+}
