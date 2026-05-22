@@ -2545,34 +2545,7 @@ function App() {
               <strong>{recipientLabel}</strong>
             </div>
 
-            {selectedSignalStatus && (
-              <div>
-                <span>拾った人</span>
-                <strong>{pickedMember?.name || "未設定"}</strong>
-              </div>
-            )}
-
           </div>
-
-          {taskForm.signalStatus && taskForm.flowStatus !== "DONE" && (
-            <div className="pickup-edit-box">
-              <div>
-                <strong>誰が拾った？</strong>
-                <p>誰でもOKのサインでも、拾った人を残せます。</p>
-              </div>
-              <select
-                value={taskForm.pickedById || ""}
-                onChange={(event) => updateTaskForm("pickedById", event.target.value)}
-              >
-                <option value="">まだ未設定</option>
-                {members.map((member) => (
-                  <option key={`picked-${member.id}`} value={member.id}>
-                    {member.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
 
           {taskForm.flowStatus !== "DONE" ? (
             <div className="modal-actions">
