@@ -10950,3 +10950,20 @@ body {
     width: 100%;
   }
 }
+
+
+/* =========================================================
+   STUCK_MAP_MAIN_SP_SAVE_INDICATOR_POSITION
+   SP版では保存表示をステータスバー側に集約する。
+   ヘッダー内の保存済みは操作ボタン群を分断するため非表示。
+   ========================================================= */
+
+@media (max-width: 760px) {
+  .topbar-actions > .save-indicator {
+    display: none !important;
+  }
+
+  .compact-save-pill {
+    justify-self: end;
+  }
+}
