@@ -954,24 +954,6 @@ function App() {
   const hasMountedRef = useRef(false);
   const saveNoticeTimerRef = useRef(null);
 
-  useEffect(() => {
-    async function testSupabaseConnection() {
-      const { data, error } = await supabase
-        .from("projects")
-        .select("*")
-        .limit(5);
-
-      console.log("[Stuck Map Sync Lab] Supabase projects:", data);
-
-      if (error) {
-        console.error("[Stuck Map Sync Lab] Supabase error:", error);
-      }
-    }
-
-    testSupabaseConnection();
-  }, []);
-
-
   const selectedTask = tasks.find((task) => task.id === selectedTaskId) || null;
   const selectedMember =
     members.find((member) => member.id === selectedMemberId) || null;
@@ -1396,7 +1378,11 @@ function App() {
   };
 
   const resetBoard = () => {
-    const sample = getSampleTemplate(activeSampleId);
+    const defaultSampleId = "personal";
+    const sample = getSampleTemplate(defaultSampleId);
+
+    setIsBoardMenuOpen(false);
+    setActiveSampleId(defaultSampleId);
     setプロジェクト(sample.project);
     setメンバー(initialメンバー);
     setCategories(initialCategories);
@@ -1407,6 +1393,10 @@ function App() {
     setSelectedTaskId(null);
     setFocusedTaskId(null);
     setSelectedMemberId(null);
+    setIsCreateModalOpen(false);
+    setIsMemberModalOpen(false);
+    setIsCategoryModalOpen(false);
+    setIsプロジェクトEditing(false);
     localStorage.removeItem(STORAGE_KEY);
   };
 
@@ -2964,7 +2954,7 @@ function App() {
             </button>
 
             <button type="button" className="secondary-action" onClick={resetBoard}>
-              リセット
+              デモに戻す
             </button>
           </div>
         </header>
