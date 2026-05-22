@@ -10871,7 +10871,7 @@ body {
 
 
 /* =========================================================
-   STUCK_MAP_SYNC_V0_5_CAN_HELP_VISIBILITY
+   STUCK_MAP_MAIN_UX_CAN_HELP_VISIBILITY
    SP版のCAN HELPを見分けやすくする。
    OFFは控えめ、ONは「今拾えます」が一目で分かる濃い表示にする。
    ========================================================= */
@@ -10940,8 +10940,20 @@ body {
 }
 
 
+/* Main local prototype: project list modal replaces sample select */
+@media (max-width: 760px) {
+  .topbar-actions .topbar-sample-select {
+    width: 100%;
+  }
+
+  .topbar-actions .topbar-sample-select select {
+    width: 100%;
+  }
+}
+
+
 /* =========================================================
-   STUCK_MAP_SYNC_LAB_SP_SAVE_INDICATOR_POSITION
+   STUCK_MAP_MAIN_SP_SAVE_INDICATOR_POSITION
    SP版では保存表示をステータスバー側に集約する。
    ヘッダー内の保存済みは操作ボタン群を分断するため非表示。
    ========================================================= */
