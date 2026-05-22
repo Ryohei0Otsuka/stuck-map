@@ -1106,7 +1106,7 @@ function App() {
         demand.label = "確認・相談が集まりやすい";
       } else if (demand.total > 0) {
         demand.level = "soft";
-        demand.label = "見てほしいサインあり";
+        demand.label = "向いているサインあり";
       }
     });
 
@@ -2168,6 +2168,15 @@ function App() {
       };
       const hasDemand = demand.total > 0;
       const demandLevel = demand.level || "none";
+      const dominantDemandStatus = signalStatuses
+        .filter((status) => demand[status] > 0)
+        .sort((a, b) => {
+          if (demand[b] !== demand[a]) {
+            return demand[b] - demand[a];
+          }
+
+          return supportPriority[a] - supportPriority[b];
+        })[0] || "";
 
       return {
         member,
@@ -2178,6 +2187,7 @@ function App() {
         demand,
         hasDemand,
         demandLevel,
+        dominantDemandStatus,
       };
     });
 
@@ -2195,13 +2205,13 @@ function App() {
         </div>
 
         <div className="member-status-list">
-          {memberSummaries.map(({ member, currentTask, mainStatus, signalStatus, hasSignal, demand, hasDemand, demandLevel }) => (
+          {memberSummaries.map(({ member, currentTask, mainStatus, signalStatus, hasSignal, demand, hasDemand, demandLevel, dominantDemandStatus }) => (
             <article
               key={`member-status-${member.id}`}
               role={currentTask ? "button" : undefined}
               tabIndex={currentTask ? 0 : -1}
               aria-disabled={!currentTask}
-              className={`member-status-chip status-${mainStatus} ${hasSignal ? "has-signal" : ""} ${hasDemand ? "has-demand" : ""} ${member.canHelp ? "can-help" : ""} ${hasDemand ? `demand-${demandLevel}` : ""} ${!currentTask ? "disabled" : ""}`}
+              className={`member-status-chip status-${mainStatus} ${hasSignal ? "has-signal" : ""} ${hasDemand ? "has-demand" : ""} ${hasDemand && dominantDemandStatus ? `demand-status-${dominantDemandStatus}` : ""} ${member.canHelp ? "can-help" : ""} ${hasDemand ? `demand-${demandLevel}` : ""} ${!currentTask ? "disabled" : ""}`}
               onClick={() => handleMemberClick(member.id)}
               onKeyDown={(event) => {
                 if (!currentTask) {
@@ -2234,8 +2244,8 @@ function App() {
                 )}
 
                 {hasDemand && (
-                  <span className="member-demand-line" title={`${demand.label || "見てほしいサインあり"}：${demand.total}件${demand.sharePercent > 0 ? ` / 全体の${demand.sharePercent}%` : ""}`}>
-                    <b>{demand.label || "見てほしいサインあり"}</b>
+                  <span className="member-demand-line" title={`${demand.label || "向いているサインあり"}：${demand.total}件${demand.sharePercent > 0 ? ` / 全体の${demand.sharePercent}%` : ""}`}>
+                    <b>{demand.label || "向いているサインあり"}</b>
                     <span>{demand.total}件</span>
                   </span>
                 )}
