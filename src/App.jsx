@@ -2140,8 +2140,7 @@ function App() {
               onClick={() => openCreateModal(status)}
             >
               <span>＋</span>
-              {getStatusLabel(status)}にタスクを追加
-            </button>
+              タスク</button>
           )}
         </div>
       </section>
@@ -3235,7 +3234,7 @@ function App() {
                     className="board-add-task-button"
                     onClick={() => openCreateModal("TODO")}
                   >
-                    <span>＋</span> この列に追加</button>
+                    <span>＋</span> タスク</button>
                 )}
               </div>
             </div>

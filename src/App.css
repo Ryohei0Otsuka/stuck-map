@@ -11119,3 +11119,50 @@ button.lane-add-task-button:hover,
     font-size: 20px !important;
   }
 }
+
+
+/* =========================================================
+   STUCK_MAP_ADD_TASK_BUTTON_SIZE_FIX
+   「＋ タスク」の文言はそのままに、横幅・高さ・文字サイズだけを整える。
+   既存定義より後に置く最終上書き。
+   ========================================================= */
+
+button.lane-add-task-button,
+.lane-add-task-button {
+  width: 100% !important;
+  min-height: 50px !important;
+  margin-top: 10px !important;
+  padding: 0 14px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 9px !important;
+  border-radius: 18px !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+
+button.lane-add-task-button span,
+.lane-add-task-button span {
+  width: 26px !important;
+  height: 26px !important;
+  font-size: 17px !important;
+}
+
+@media (max-width: 760px) {
+  button.lane-add-task-button,
+  .lane-add-task-button {
+    min-height: 54px !important;
+    margin-top: 12px !important;
+    font-size: 15px !important;
+    border-radius: 18px !important;
+  }
+
+  button.lane-add-task-button span,
+  .lane-add-task-button span {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 18px !important;
+  }
+}
