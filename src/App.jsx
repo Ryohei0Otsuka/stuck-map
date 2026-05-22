@@ -2140,7 +2140,8 @@ function App() {
               onClick={() => openCreateModal(status)}
             >
               <span>＋</span>
-              タスク</button>
+              {getStatusLabel(status)}にタスクを追加
+            </button>
           )}
         </div>
       </section>
@@ -2553,13 +2554,6 @@ function App() {
 
           </div>
 
-          <div className="modal-message">
-            <strong>ここではまだ仮編集です。</strong>
-            <p>
-              サインや内容を選んだら、最後に「保存して閉じる」で反映します。やめる場合はキャンセルします。
-            </p>
-          </div>
-
           {taskForm.signalStatus && taskForm.flowStatus !== "DONE" && (
             <div className="pickup-edit-box">
               <div>
@@ -2585,19 +2579,6 @@ function App() {
               <p className="modal-section-title">サインを選ぶ</p>
 
               <div className="modal-action-grid signal-choice-grid">
-                <button
-                  key={`modal-${selectedTask.id}-none`}
-                  type="button"
-                  className={`modal-action signal-none ${
-                    !taskForm.signalStatus ? "active" : ""
-                  }`}
-                  onClick={() => chooseTaskSignalStatus("")}
-                >
-                  <span>—</span>
-                  <strong>サインなし</strong>
-                  <small>フローだけで進めます</small>
-                </button>
-
                 {quickSignalList.map((status) => (
                   <button
                     key={`modal-${selectedTask.id}-${status}`}
@@ -3234,7 +3215,9 @@ function App() {
                     className="board-add-task-button"
                     onClick={() => openCreateModal("TODO")}
                   >
-                    <span>＋</span> タスク</button>
+                    <span>＋</span>
+                    タスク
+                  </button>
                 )}
               </div>
             </div>
