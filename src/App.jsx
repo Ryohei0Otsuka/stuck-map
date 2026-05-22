@@ -584,6 +584,7 @@ const defaultTaskForm = {
   category: "",
   reason: "",
   description: "",
+  pickedById: "",
 };
 
 const recipientTypes = [
@@ -776,12 +777,15 @@ function normalizeTask(task) {
   const flowStatus = getTaskFlowStatus(task);
   const signalStatus = getTaskSignalStatus(task);
   const needType = getTaskNeedType(task);
+  const pickedById = flowStatus !== "DONE" && signalStatus ? task.pickedById || "" : "";
 
   return {
     ...task,
     flowStatus,
     signalStatus,
     needType,
+    pickedById,
+    pickedAt: pickedById ? task.pickedAt || "" : "",
     status: flowStatus,
   };
 }
@@ -801,21 +805,33 @@ function getTaskDisplayStatus(task, mode = "flow") {
 }
 
 function createStatusPatch(currentTask, nextStatus, mode = "flow") {
+  const currentSignalStatus = getTaskSignalStatus(currentTask);
+
   if (flowClusters.includes(nextStatus)) {
+    const nextSignalStatus = nextStatus === "DONE" ? null : currentSignalStatus;
+    const pickedById = nextSignalStatus ? currentTask?.pickedById || "" : "";
+
     return {
       flowStatus: nextStatus,
-      signalStatus: nextStatus === "DONE" ? null : getTaskSignalStatus(currentTask),
+      signalStatus: nextSignalStatus,
+      pickedById,
+      pickedAt: pickedById ? currentTask?.pickedAt || "" : "",
       status: nextStatus,
     };
   }
 
   if (signalStatuses.includes(nextStatus)) {
     const currentFlowStatus = currentTask ? getTaskFlowStatus(currentTask) : "DOING";
+    const nextFlowStatus = currentFlowStatus === "DONE" ? "DOING" : currentFlowStatus;
+    const keepPicked = currentSignalStatus === nextStatus;
+    const pickedById = keepPicked ? currentTask?.pickedById || "" : "";
 
     return {
-      flowStatus: currentFlowStatus === "DONE" ? "DOING" : currentFlowStatus,
+      flowStatus: nextFlowStatus,
       signalStatus: nextStatus,
-      status: currentFlowStatus === "DONE" ? "DOING" : currentFlowStatus,
+      pickedById,
+      pickedAt: pickedById ? currentTask?.pickedAt || "" : "",
+      status: nextFlowStatus,
     };
   }
 
@@ -922,6 +938,7 @@ function App() {
       category: selectedTask.category || "",
       reason: selectedTask.reason,
       description: selectedTask.description,
+      pickedById: selectedTask.pickedById || "",
     });
   }, [selectedTask]);
 
@@ -1043,6 +1060,15 @@ function App() {
     return recipientTypeLabels[needType] || "受け先未設定";
   };
 
+
+  const getPickedMember = (task) => {
+    if (!task?.pickedById) {
+      return null;
+    }
+
+    return getMember(task.pickedById);
+  };
+
   const getTasksByStatus = (status, mode = "flow") => {
     if (mode === "signal") {
       return tasks.filter((task) => getTaskSignalStatus(task) === status);
@@ -1113,6 +1139,8 @@ function App() {
           ...currentTask,
           flowStatus: currentFlowStatus,
           signalStatus: null,
+          pickedById: "",
+          pickedAt: "",
           status: currentFlowStatus,
         };
       })
@@ -1153,6 +1181,8 @@ function App() {
       category: categoryMeta[taskForm.category] ? taskForm.category : "",
       reason: "",
       description: taskForm.description.trim(),
+      pickedById: "",
+      pickedAt: "",
     };
 
     setTasks((currentTasks) => [nextTask, ...currentTasks]);
@@ -1184,12 +1214,29 @@ function App() {
       return;
     }
 
+    const statusPatch = createStatusPatch(
+      selectedTask,
+      taskForm.status,
+      signalStatuses.includes(taskForm.status) ? "signal" : "flow"
+    );
+    const nextSignalStatus = statusPatch.signalStatus;
+    const pickedById =
+      nextSignalStatus && members.some((member) => member.id === taskForm.pickedById)
+        ? taskForm.pickedById
+        : "";
+
     updateTask(selectedTask.id, {
       title: trimmedTitle,
       ownerId: taskForm.ownerId || fallbackMemberId,
       needType: recipientTypeLabels[taskForm.needType] ? taskForm.needType : "anyone",
       needId: taskForm.needType === "member" ? taskForm.needId || fallbackMemberId : fallbackMemberId,
-      ...createStatusPatch(selectedTask, taskForm.status, signalStatuses.includes(taskForm.status) ? "signal" : "flow"),
+      ...statusPatch,
+      pickedById,
+      pickedAt: pickedById
+        ? selectedTask.pickedById === pickedById
+          ? selectedTask.pickedAt || new Date().toISOString()
+          : new Date().toISOString()
+        : "",
       category: categoryMeta[taskForm.category] ? taskForm.category : "",
       reason: selectedTask.reason || "",
       description: taskForm.description.trim(),
@@ -1518,6 +1565,8 @@ function App() {
           task.ownerId === selectedMemberId ? replacementMember.id : task.ownerId,
         needId:
           task.needId === selectedMemberId ? replacementMember.id : task.needId,
+        pickedById: task.pickedById === selectedMemberId ? "" : task.pickedById || "",
+        pickedAt: task.pickedById === selectedMemberId ? "" : task.pickedAt || "",
       }))
     );
 
@@ -1848,6 +1897,7 @@ function App() {
     const category = task.category ? categoryMeta[task.category] : null;
     const flowStatus = getTaskFlowStatus(task);
     const signalStatus = getTaskSignalStatus(task);
+    const pickedMember = getPickedMember(task);
     const displayStatus = getTaskDisplayStatus(task, mode);
     const cardReasonStatus = signalStatus || flowStatus;
 
@@ -1920,6 +1970,9 @@ function App() {
 
           <div className="task-info-row">
             <span className="need-chip">受け先: {recipientLabel}</span>
+            {signalStatus && pickedMember && (
+              <span className="picked-chip">拾った人: {pickedMember.name}</span>
+            )}
           </div>
 
           <p className="compact-hint">クリックで編集・作戦を見る</p>
@@ -2244,6 +2297,8 @@ function App() {
     const recipientLabel = getRecipientLabel(selectedTask);
     const category = selectedTask.category ? categoryMeta[selectedTask.category] : null;
     const selectedFlowStatus = getTaskFlowStatus(selectedTask);
+    const selectedSignalStatus = getTaskSignalStatus(selectedTask);
+    const pickedMember = getPickedMember(selectedTask);
     const isSelectedTaskDone = selectedFlowStatus === "DONE";
 
     return (
@@ -2309,6 +2364,13 @@ function App() {
               <strong>{recipientLabel}</strong>
             </div>
 
+            {selectedSignalStatus && (
+              <div>
+                <span>拾った人</span>
+                <strong>{pickedMember?.name || "未設定"}</strong>
+              </div>
+            )}
+
           </div>
 
           <div className="modal-message">
@@ -2317,6 +2379,26 @@ function App() {
               サインや内容を選んだら、最後に「保存して閉じる」で反映します。やめる場合はキャンセルします。
             </p>
           </div>
+
+          {selectedSignalStatus && !isSelectedTaskDone && (
+            <div className="pickup-edit-box">
+              <div>
+                <strong>誰が拾った？</strong>
+                <p>誰でもOKのサインでも、拾った人を残せます。</p>
+              </div>
+              <select
+                value={taskForm.pickedById || ""}
+                onChange={(event) => updateTaskForm("pickedById", event.target.value)}
+              >
+                <option value="">まだ未設定</option>
+                {members.map((member) => (
+                  <option key={`picked-${member.id}`} value={member.id}>
+                    {member.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {!isSelectedTaskDone ? (
             <div className="modal-actions">
@@ -3049,6 +3131,7 @@ function App() {
 
                 <small>
                   発信: {getMember(nextSupportTask.ownerId)?.name} / 受け先: {getRecipientLabel(nextSupportTask)}
+                  {getPickedMember(nextSupportTask) ? ` / 拾った人: ${getPickedMember(nextSupportTask).name}` : ""}
                 </small>
 
                 <div className="next-support-actions">
@@ -3126,6 +3209,9 @@ function App() {
 
                         <strong>{task.title}</strong>
                         <p>{statusMeta[getTaskSignalStatus(task)].summary}</p>
+                        {getPickedMember(task) && (
+                          <small className="signal-card-picked">拾った人: {getPickedMember(task).name}</small>
+                        )}
                       </button>
                     ))
                   ) : (
