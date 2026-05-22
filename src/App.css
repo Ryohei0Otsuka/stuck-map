@@ -10868,3 +10868,73 @@ body {
     padding: 10px !important;
   }
 }
+
+
+/* =========================================================
+   STUCK_MAP_SYNC_V0_5_CAN_HELP_VISIBILITY
+   SP版のCAN HELPを見分けやすくする。
+   OFFは控えめ、ONは「今拾えます」が一目で分かる濃い表示にする。
+   ========================================================= */
+
+.member-status-chip.can-help {
+  border-color: rgba(18, 126, 98, 0.42) !important;
+  background:
+    linear-gradient(135deg, rgba(232, 255, 246, 0.98), rgba(255, 255, 255, 0.92)) !important;
+  box-shadow:
+    0 12px 28px rgba(24, 183, 159, 0.10),
+    0 0 0 3px rgba(24, 183, 159, 0.08) !important;
+}
+
+.member-status-can-help-toggle {
+  border-color: rgba(96, 120, 153, 0.22) !important;
+  background: rgba(255, 255, 255, 0.90) !important;
+  color: #607899 !important;
+}
+
+.member-status-can-help-toggle.active {
+  border-color: rgba(13, 118, 91, 0.72) !important;
+  background:
+    linear-gradient(135deg, #0f8f73, #18b79f) !important;
+  color: #ffffff !important;
+  box-shadow:
+    0 12px 24px rgba(24, 183, 159, 0.24),
+    0 0 0 4px rgba(24, 183, 159, 0.14) !important;
+}
+
+.member-status-can-help-toggle.active::before {
+  content: "●";
+  margin-right: 6px;
+  font-size: 9px;
+  line-height: 1;
+}
+
+@media (max-width: 760px) {
+  .member-status-chip.can-help {
+    border-color: rgba(13, 118, 91, 0.58) !important;
+    background:
+      linear-gradient(135deg, rgba(218, 255, 240, 1), rgba(244, 255, 251, 0.98)) !important;
+    box-shadow:
+      0 10px 22px rgba(24, 183, 159, 0.18),
+      0 0 0 3px rgba(24, 183, 159, 0.12) !important;
+  }
+
+  .member-status-can-help-toggle {
+    min-height: 34px !important;
+    border-width: 1px !important;
+    border-color: rgba(96, 120, 153, 0.26) !important;
+    background: rgba(255, 255, 255, 0.92) !important;
+    color: #5f7596 !important;
+    font-size: 10px !important;
+  }
+
+  .member-status-can-help-toggle.active {
+    border-color: rgba(13, 118, 91, 0.78) !important;
+    background:
+      linear-gradient(135deg, #0c7f66, #16ad95) !important;
+    color: #ffffff !important;
+    font-weight: 950 !important;
+    box-shadow:
+      0 10px 22px rgba(24, 183, 159, 0.30),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+  }
+}
