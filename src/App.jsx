@@ -587,7 +587,7 @@ const statusMeta = {
     bubble: "ALIGN",
     commandTitle: "認識を合わせる",
     promptTitle: "何の前提を合わせたい？",
-    promptDescription: "前提・進め方・判断の向きを合わせたい場所を置きます。"
+    promptDescription: "前提・進め方・判断の向きを合わせたい場所を置きます。",
     titlePlaceholder: "例：この仕様の進め方を合わせたい",
     reasonPlaceholder: "例：認識合わせ / 方針確認",
     descriptionPlaceholder: "どの前提や進め方を合わせたいかを書く",
@@ -603,7 +603,7 @@ const statusMeta = {
     bubble: "CHECK",
     commandTitle: "確認依頼を出す",
     promptTitle: "どこを軽く確認してほしい？",
-    promptDescription: "文言・表示・内容などを軽く確認してほしい時のサインです。"
+    promptDescription: "文言・表示・内容などを軽く確認してほしい時のサインです。",
     titlePlaceholder: "例：文言の見え方だけ確認したい",
     reasonPlaceholder: "例：表示確認",
     descriptionPlaceholder: "見てほしい箇所、確認したい観点を軽く書く",
@@ -619,7 +619,7 @@ const statusMeta = {
     bubble: "REVIEW",
     commandTitle: "レビュー依頼を出す",
     promptTitle: "何をレビューしてほしい？",
-    promptDescription: "完成前に、観点を持ってレビューしてほしいものを置きます。"
+    promptDescription: "完成前に、観点を持ってレビューしてほしいものを置きます。",
     titlePlaceholder: "例：テスト観点を一度見てほしい",
     reasonPlaceholder: "例：品質確認",
     descriptionPlaceholder: "どんな観点で見てほしいかを書く",
