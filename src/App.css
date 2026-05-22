@@ -10243,3 +10243,76 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* =========================================================
+   STUCK_MAP_V10_45_CAN_HELP_REDUCE_CATEGORY
+   CAN HELPをメンバー編集の奥に置かず、メンバー帯から直接切り替える。
+   カテゴリは現段階ではUI上の主役にしないため、表示導線を外す。
+   ========================================================= */
+
+.member-status-can-help-toggle {
+  position: absolute !important;
+  right: 56px !important;
+  bottom: 9px !important;
+  z-index: 3 !important;
+  min-height: 24px !important;
+  padding: 0 8px !important;
+  border: 1px solid rgba(24, 183, 159, 0.18) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.84) !important;
+  color: #7190a6 !important;
+  font-size: 8px !important;
+  font-weight: 950 !important;
+  letter-spacing: 0.08em !important;
+  line-height: 1 !important;
+  opacity: 0.72 !important;
+  transition:
+    transform 160ms ease,
+    opacity 160ms ease,
+    color 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease !important;
+}
+
+.member-status-chip:hover .member-status-can-help-toggle,
+.member-status-can-help-toggle:focus-visible {
+  opacity: 1 !important;
+}
+
+.member-status-can-help-toggle:hover {
+  transform: translateY(-1px) !important;
+  border-color: rgba(24, 183, 159, 0.34) !important;
+  background: rgba(236, 255, 249, 0.94) !important;
+  color: #167967 !important;
+  box-shadow: 0 10px 20px rgba(24, 183, 159, 0.10) !important;
+}
+
+.member-status-can-help-toggle.active {
+  opacity: 1 !important;
+  border-color: rgba(24, 183, 159, 0.42) !important;
+  background: linear-gradient(135deg, rgba(236, 255, 249, 0.98), rgba(255, 255, 255, 0.9)) !important;
+  color: #167967 !important;
+  box-shadow:
+    0 10px 20px rgba(24, 183, 159, 0.10),
+    0 0 0 3px rgba(24, 183, 159, 0.08) !important;
+}
+
+.member-can-help-line,
+.member-can-help-pill {
+  letter-spacing: 0.08em !important;
+}
+
+.member-can-help-line::before,
+.member-can-help-pill::before {
+  content: "" !important;
+  margin-right: 0 !important;
+}
+
+.can-help-toggle b {
+  letter-spacing: 0.08em !important;
+}
+
+.category-pill {
+  display: none !important;
+}

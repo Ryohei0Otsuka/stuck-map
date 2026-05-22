@@ -1546,6 +1546,18 @@ function App() {
     }));
   };
 
+  const toggleMemberCanHelp = (event, memberId) => {
+    event.stopPropagation();
+
+    setメンバー((currentメンバー) =>
+      currentメンバー.map((member) =>
+        member.id === memberId
+          ? { ...member, canHelp: !Boolean(member.canHelp) }
+          : member
+      )
+    );
+  };
+
   const saveMember = () => {
     const trimmedName = memberForm.name.trim();
 
@@ -1786,20 +1798,6 @@ function App() {
             </select>
           </label>
 
-          <label className="form-field wide">
-            <span>カテゴリ（任意）</span>
-            <select
-              value={taskForm.category}
-              onChange={(event) => updateTaskForm("category", event.target.value)}
-            >
-              <option value="">指定なし</option>
-              {categories.map((category) => (
-                <option value={category.id} key={`category-${category.id}`}>
-                  {category.id}：{category.label}
-                </option>
-              ))}
-            </select>
-          </label>
 
           {!isCreateMemoOpen ? (
             <button
@@ -1894,20 +1892,6 @@ function App() {
           </select>
         </label>
 
-        <label className="form-field">
-          <span>カテゴリ（任意）</span>
-          <select
-            value={taskForm.category}
-            onChange={(event) => updateTaskForm("category", event.target.value)}
-          >
-            <option value="">指定なし</option>
-            {categories.map((category) => (
-              <option value={category.id} key={`category-${category.id}`}>
-                {category.id}：{category.label}
-              </option>
-            ))}
-          </select>
-        </label>
 
 
         <label className="form-field wide">
@@ -1985,12 +1969,6 @@ function App() {
                 </span>
               )}
 
-              {category && (
-                <span className="category-pill">
-                  <span>{category.icon}</span>
-                  {category.label}
-                </span>
-              )}
             </div>
 
             <span className="task-owner game-owner-badge" title={`担当: ${owner?.name}`}>
@@ -2158,8 +2136,8 @@ function App() {
                 </small>
 
                 {member.canHelp && (
-                  <span className="member-can-help-line" title="今なら少し拾えます">
-                    少し拾えます
+                  <span className="member-can-help-line" title="今なら手伝えます">
+                    CAN HELP
                   </span>
                 )}
 
@@ -2186,6 +2164,17 @@ function App() {
               <span className={`member-status-mark ${mainStatus}`}>
                 {statusMeta[mainStatus]?.icon || "✓"}
               </span>
+              <button
+                type="button"
+                className={`member-status-can-help-toggle ${member.canHelp ? "active" : ""}`}
+                onClick={(event) => toggleMemberCanHelp(event, member.id)}
+                aria-pressed={member.canHelp}
+                aria-label={`${member.name}のCAN HELPを切り替え`}
+                title="今なら手伝える状態を切り替え"
+              >
+                CAN HELP
+              </button>
+
               <button
                 type="button"
                 className="member-status-edit"
@@ -2370,12 +2359,6 @@ function App() {
               </span>
             )}
 
-            {category && (
-              <span className="category-pill">
-                <span>{category.icon}</span>
-                {category.label}
-              </span>
-            )}
 
             <span className="task-owner game-owner-badge" title={`担当: ${owner?.name}`}>
               <span className="game-owner-avatar">{owner?.avatar || createAvatarFromName(owner?.name || "?")}</span>
@@ -2578,15 +2561,15 @@ function App() {
             </div>
 
             <label className="form-field can-help-toggle-field">
-              <span>助けに入れる状態</span>
+              <span>CAN HELP</span>
               <button
                 type="button"
                 className={`can-help-toggle ${memberForm.canHelp ? "active" : ""}`}
                 aria-pressed={memberForm.canHelp}
                 onClick={() => updateMemberForm("canHelp", !memberForm.canHelp)}
               >
-                <b>少し拾えます</b>
-                <small>今なら少し手伝える時だけ表示</small>
+                <b>CAN HELP</b>
+                <small>今なら手伝える時だけ表示</small>
               </button>
             </label>
 
@@ -2884,13 +2867,6 @@ function App() {
               新規プロジェクト
             </button>
 
-            <button
-              type="button"
-              className="secondary-action"
-              onClick={openCategoryCreateModal}
-            >
-              カテゴリ設定
-            </button>
 
             <button
               type="button"
@@ -3035,7 +3011,7 @@ function App() {
                       {member.memo && <small>{member.memo}</small>}
 
                       {member.canHelp && (
-                        <span className="member-can-help-pill">少し拾えます</span>
+                        <span className="member-can-help-pill">CAN HELP</span>
                       )}
 
                       <div className="member-task-chip">
