@@ -11427,3 +11427,20 @@ body {
     justify-self: end !important;
   }
 }
+
+
+/* =========================================================
+   STUCK_MAP_SAVE_INDICATOR_SINGLE_SOURCE
+   保存表示の重複対策。
+   ヘッダー側の保存済みは非表示にし、ステータスバー側だけを正とする。
+   本体 / Lab 共通。
+   ========================================================= */
+
+.topbar-actions > .save-indicator {
+  display: none !important;
+}
+
+.compact-save-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+}
