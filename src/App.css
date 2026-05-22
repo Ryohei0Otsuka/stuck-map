@@ -11908,3 +11908,46 @@ body {
 .member-current-signal-line {
   box-shadow: none !important;
 }
+
+
+/* =========================================================
+   STUCK_MAP_CAN_HELP_STRONG_ACTIVE_V3_1
+   メンバーカードの向き先色に負けないよう、
+   CAN HELPのON状態だけを少し濃く点灯させる。
+   OFFは控えめ、ONははっきり。
+   本体 / Lab 共通。
+   ========================================================= */
+
+.member-status-can-help-toggle {
+  border-color: rgba(99, 123, 154, 0.22) !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  color: #6d8198 !important;
+  box-shadow: none !important;
+}
+
+.member-status-can-help-toggle.active {
+  border-color: rgba(10, 157, 132, 0.82) !important;
+  background:
+    linear-gradient(135deg, rgba(25, 190, 160, 0.98), rgba(18, 156, 137, 0.96)) !important;
+  color: #ffffff !important;
+  box-shadow:
+    0 0 0 3px rgba(24, 183, 159, 0.18),
+    0 12px 24px rgba(24, 183, 159, 0.18) !important;
+}
+
+.member-status-can-help-toggle.active:hover,
+.member-status-can-help-toggle.active:focus-visible {
+  border-color: rgba(7, 137, 118, 0.9) !important;
+  background:
+    linear-gradient(135deg, rgba(20, 178, 150, 1), rgba(12, 137, 121, 0.98)) !important;
+  color: #ffffff !important;
+  box-shadow:
+    0 0 0 4px rgba(24, 183, 159, 0.2),
+    0 14px 28px rgba(24, 183, 159, 0.22) !important;
+}
+
+.member-status-chip.has-demand .member-status-can-help-toggle.active {
+  box-shadow:
+    0 0 0 3px rgba(24, 183, 159, 0.2),
+    0 12px 24px rgba(24, 183, 159, 0.2) !important;
+}
