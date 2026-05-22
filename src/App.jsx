@@ -2297,22 +2297,22 @@ function App() {
         >
           <div className="modal-top">
             <div className="modal-title-block">
-              <p className="eyebrow">BOARD MENU</p>
-              <h2 id="board-menu-title">どのボードで始める？</h2>
+              <p className="eyebrow">PROJECT LIST</p>
+              <h2 id="board-menu-title">プロジェクトを選ぶ</h2>
             </div>
 
             <button
               className="modal-close"
               type="button"
               onClick={() => setIsBoardMenuOpen(false)}
-              aria-label="ボードメニューを閉じる"
+              aria-label="プロジェクト一覧を閉じる"
             >
               ×
             </button>
           </div>
 
           <p className="modal-description">
-            空のボード、または軽いサンプルから始められます。
+            空のプロジェクト、またはサンプルから始められます。
             業務だけでなく、旅行やゲーム会のような小さな共同作業でも試せます。
           </p>
 
@@ -2323,7 +2323,7 @@ function App() {
               onClick={createBlankProject}
             >
               <span className="command-icon TODO">＋</span>
-              <strong>空のボード</strong>
+              <strong>空のプロジェクト</strong>
               <small>プロジェクト名・メンバー・タスクをゼロから作る</small>
             </button>
 
@@ -2986,26 +2986,6 @@ function App() {
           </div>
 
           <div className="topbar-actions">
-            <div className="topbar-sample-select">
-              <label htmlFor="topbar-sample-project-select">サンプル</label>
-              <select
-                id="topbar-sample-project-select"
-                value={sampleProjectTemplates[activeSampleId] ? activeSampleId : ""}
-                onChange={(event) => {
-                  if (event.target.value) {
-                    applySampleProject(event.target.value);
-                  }
-                }}
-              >
-                <option value="" disabled>選ぶ</option>
-                {Object.entries(sampleProjectTemplates).map(([sampleId, sample]) => (
-                  <option key={sampleId} value={sampleId}>
-                    {sample.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             <button
               type="button"
               className="secondary-action"
@@ -3430,7 +3410,8 @@ function App() {
         </section>
       </div>
 
-      {renderIntroModal()}
+      {renderBoardMenuModal()}
+        {renderIntroModal()}
       {renderCreateModal()}
       {renderTaskModal()}
       {renderMemberModal()}

@@ -10940,7 +10940,7 @@ body {
 }
 
 
-/* Main local prototype: keep sample select visible alongside board menu */
+/* Main local prototype: project list modal replaces sample select */
 @media (max-width: 760px) {
   .topbar-actions .topbar-sample-select {
     width: 100%;
