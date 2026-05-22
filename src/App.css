@@ -11951,3 +11951,91 @@ body {
     0 0 0 3px rgba(24, 183, 159, 0.2),
     0 12px 24px rgba(24, 183, 159, 0.2) !important;
 }
+
+
+/* =========================================================
+   STUCK_MAP_MEMBER_CARD_DECLUTTER_V3_2
+   メンバーカードの情報量を削る。
+   カード色 = 向けられているサイン
+   本文 = 名前 / 状態 / 向いている件数 / CAN HELP
+   現在タスクのサインラベル・件数ドットは一旦隠す。
+   本体 / Lab 共通。
+   ========================================================= */
+
+.member-current-signal-line,
+.member-demand-dots {
+  display: none !important;
+}
+
+.member-status-chip {
+  min-height: 74px !important;
+  align-items: center !important;
+}
+
+.member-status-body {
+  gap: 3px !important;
+}
+
+.member-status-body strong {
+  font-size: 14px !important;
+  line-height: 1.12 !important;
+}
+
+.member-status-body small {
+  margin-top: 1px !important;
+  font-size: 10px !important;
+  line-height: 1.15 !important;
+}
+
+.member-demand-line {
+  width: fit-content !important;
+  max-width: 100% !important;
+  min-height: 20px !important;
+  margin-top: 5px !important;
+  padding: 3px 8px !important;
+  font-size: 9px !important;
+  line-height: 1 !important;
+}
+
+.member-demand-line b {
+  max-width: 92px !important;
+  font-size: 9px !important;
+}
+
+.member-demand-line span {
+  font-size: 9px !important;
+}
+
+.member-status-mark {
+  width: 28px !important;
+  height: 28px !important;
+}
+
+.member-status-edit {
+  opacity: 0.82 !important;
+}
+
+.member-status-edit:hover,
+.member-status-edit:focus-visible {
+  opacity: 1 !important;
+}
+
+@media (min-width: 761px) {
+  .member-status-chip {
+    flex-basis: 318px !important;
+    grid-template-columns: 42px minmax(132px, 1fr) 28px 62px 38px !important;
+    gap: 7px !important;
+  }
+
+  .member-status-can-help-toggle {
+    min-width: 62px !important;
+    max-width: 62px !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .member-current-signal-line,
+  .member-demand-dots {
+    display: none !important;
+  }
+}
