@@ -11444,3 +11444,57 @@ body {
   display: inline-flex !important;
   align-items: center !important;
 }
+
+
+/* =========================================================
+   STUCK_MAP_PC_MEMBER_NAME_PRIORITY
+   PC版メンバーカードでCAN HELPに押されて名前が見えない問題を修正。
+   名前を優先し、CAN HELP / 編集は右側の小さな操作列に収める。
+   本体 / Lab 共通。
+   ========================================================= */
+
+@media (min-width: 761px) {
+  .member-status-chip {
+    flex: 0 0 320px !important;
+    grid-template-columns: 42px minmax(128px, 1fr) 28px 66px 38px !important;
+    gap: 7px !important;
+  }
+
+  .member-status-body {
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .member-status-body strong {
+    display: block !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .member-status-body small {
+    display: block !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .member-status-can-help-toggle {
+    min-width: 66px !important;
+    max-width: 66px !important;
+    min-height: 26px !important;
+    padding: 0 6px !important;
+    font-size: 8px !important;
+    letter-spacing: 0.04em !important;
+    justify-self: end !important;
+  }
+
+  .member-status-edit {
+    min-width: 38px !important;
+    max-width: 38px !important;
+    padding: 0 6px !important;
+    justify-self: end !important;
+  }
+}
