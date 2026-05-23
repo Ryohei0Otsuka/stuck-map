@@ -2950,7 +2950,7 @@ function App() {
                   className="project-name-button"
                   onClick={startProjectEdit}
                 >
-                  <span>プロジェクトボード</span>
+                  <span>Stuck Map</span>
                   <strong>{project.name || "Untitled プロジェクト"}</strong>
                   <small>{project.memo}</small>
                 </button>
