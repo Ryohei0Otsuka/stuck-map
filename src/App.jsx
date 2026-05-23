@@ -1030,12 +1030,21 @@ function App() {
 
     const flowStatus = getTaskFlowStatus(selectedTask);
     const signalStatus = getTaskSignalStatus(selectedTask) || "";
+    const requestMemberId = getSafeRequestMemberId(
+      selectedTask.ownerId || fallbackMemberId,
+      selectedTask.needId
+    );
+    const selectedNeedType = signalStatus
+      ? requestMemberId
+        ? "member"
+        : "anyone"
+      : "anyone";
 
     setTaskForm({
       title: selectedTask.title,
       ownerId: selectedTask.ownerId,
-      needType: getTaskNeedType(selectedTask),
-      needId: selectedTask.needId,
+      needType: selectedNeedType,
+      needId: signalStatus ? requestMemberId || fallbackMemberId : fallbackMemberId,
       status: signalStatus || flowStatus,
       flowStatus,
       signalStatus,
@@ -1997,8 +2006,22 @@ function App() {
             <label className="form-field">
               <span>サインの依頼先</span>
               <select
-                value={taskForm.needType || "anyone"}
-                onChange={(event) => updateTaskForm("needType", event.target.value)}
+                value={
+                  taskForm.signalStatus && getSafeRequestMemberId(taskForm.ownerId, taskForm.needId)
+                    ? taskForm.needType || "member"
+                    : taskForm.needType || "anyone"
+                }
+                onChange={(event) => {
+                  const nextNeedType = event.target.value;
+                  setTaskForm((current) => ({
+                    ...current,
+                    needType: nextNeedType,
+                    needId:
+                      nextNeedType === "member"
+                        ? getSafeRequestMemberId(current.ownerId, current.needId) || fallbackMemberId
+                        : fallbackMemberId,
+                  }));
+                }}
               >
                 {recipientTypes.map((type) => (
                   <option key={`recipient-${type.id}`} value={type.id}>
