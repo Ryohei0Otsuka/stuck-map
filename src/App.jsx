@@ -2004,7 +2004,7 @@ function App() {
         {taskForm.signalStatus && (
           <>
             <label className="form-field">
-              <span>サインの依頼先</span>
+              <span>依頼先</span>
               <select
                 value={
                   taskForm.signalStatus && getSafeRequestMemberId(taskForm.ownerId, taskForm.needId)
@@ -2033,7 +2033,7 @@ function App() {
 
             {taskForm.needType === "member" && (
               <label className="form-field">
-                <span>依頼する相手</span>
+                <span>依頼先メンバー</span>
                 <select
                   value={getSafeRequestMemberId(taskForm.ownerId, taskForm.needId)}
                   onChange={(event) => updateTaskForm("needId", event.target.value)}
