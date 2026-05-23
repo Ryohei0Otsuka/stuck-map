@@ -484,20 +484,20 @@ const supportPriority = {
 
 const supportActionMeta = {
   HELP: {
-    label: "助かった！",
-    message: "サインだけを外します。タスクはフロー上に残ります。",
+    label: "元の状態に戻す",
+    message: "HELPサインだけを外します。タスクは完了せず、元の状態に戻ります。",
   },
   WAIT: {
-    label: "認識OK",
-    message: "認識合わせのサインだけを外します。タスクはフロー上に残ります。",
+    label: "元の状態に戻す",
+    message: "認識合わせサインだけを外します。タスクは完了せず、元の状態に戻ります。",
   },
   CHECK: {
-    label: "確認OK",
-    message: "確認サインだけを外します。タスクはフロー上に残ります。",
+    label: "元の状態に戻す",
+    message: "確認依頼サインだけを外します。タスクは完了せず、元の状態に戻ります。",
   },
   REVIEW: {
-    label: "レビューOK",
-    message: "レビューサインだけを外します。タスク完了はフロー側で行います。",
+    label: "元の状態に戻す",
+    message: "レビュー依頼サインだけを外します。タスクは完了せず、元の状態に戻ります。",
   },
 };
 
@@ -1912,7 +1912,7 @@ function App() {
           </label>
 
           <label className="form-field">
-            <span>フロー</span>
+            <span>状態</span>
             <select
               value={taskForm.flowStatus || taskForm.status}
               onChange={(event) => chooseCreateStatus(event.target.value)}
@@ -2029,7 +2029,7 @@ function App() {
         )}
 
         <label className="form-field">
-          <span>進行</span>
+          <span>状態</span>
           <select
             value={taskForm.flowStatus || "TODO"}
             onChange={(event) => chooseTaskFlowStatus(event.target.value)}
@@ -2473,7 +2473,7 @@ function App() {
             <div>
               <span>3</span>
               <strong>流れに戻す</strong>
-              <p>助かったらサインだけ外します。タスクはフロー上に残ります。</p>
+              <p>助かったらサインだけ外します。タスクは状態上に残ります。</p>
             </div>
           </div>
 
@@ -2603,7 +2603,7 @@ function App() {
 
           <div className="modal-info-grid">
             <div>
-              <span>進行</span>
+              <span>状態</span>
               <strong>{getStatusLabel(selectedFlowStatus)}</strong>
             </div>
 
