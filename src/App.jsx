@@ -1333,8 +1333,11 @@ function App() {
     updateTask(selectedTask.id, {
       title: trimmedTitle,
       ownerId: taskForm.ownerId || fallbackMemberId,
-      needType: recipientTypeLabels[taskForm.needType] ? taskForm.needType : "anyone",
-      needId: taskForm.needType === "member" ? taskForm.needId || fallbackMemberId : fallbackMemberId,
+      needType: nextSignalStatus && recipientTypeLabels[taskForm.needType] ? taskForm.needType : "anyone",
+      needId:
+        nextSignalStatus && taskForm.needType === "member"
+          ? taskForm.needId || fallbackMemberId
+          : fallbackMemberId,
       flowStatus: nextFlowStatus,
       signalStatus: nextSignalStatus,
       status: nextFlowStatus,
@@ -1597,6 +1600,8 @@ function App() {
       ...current,
       signalStatus: status || "",
       status: status || current.flowStatus || "TODO",
+      needType: status ? current.needType || "anyone" : "anyone",
+      needId: status ? current.needId || fallbackMemberId : fallbackMemberId,
       pickedById: status ? current.pickedById : "",
     }));
   };
@@ -1939,34 +1944,38 @@ function App() {
           </select>
         </label>
 
-        <label className="form-field">
-          <span>受け先</span>
-          <select
-            value={taskForm.needType || "member"}
-            onChange={(event) => updateTaskForm("needType", event.target.value)}
-          >
-            {recipientTypes.map((type) => (
-              <option key={`recipient-${type.id}`} value={type.id}>
-                {type.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        {taskForm.signalStatus && (
+          <>
+            <label className="form-field">
+              <span>サインの受け先</span>
+              <select
+                value={taskForm.needType || "anyone"}
+                onChange={(event) => updateTaskForm("needType", event.target.value)}
+              >
+                {recipientTypes.map((type) => (
+                  <option key={`recipient-${type.id}`} value={type.id}>
+                    {type.label}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-        {taskForm.needType === "member" && (
-          <label className="form-field">
-            <span>見てほしい相手</span>
-            <select
-              value={taskForm.needId}
-              onChange={(event) => updateTaskForm("needId", event.target.value)}
-            >
-              {members.map((member) => (
-                <option key={`need-${member.id}`} value={member.id}>
-                  {member.name}
-                </option>
-              ))}
-            </select>
-          </label>
+            {taskForm.needType === "member" && (
+              <label className="form-field">
+                <span>見てほしい相手</span>
+                <select
+                  value={taskForm.needId}
+                  onChange={(event) => updateTaskForm("needId", event.target.value)}
+                >
+                  {members.map((member) => (
+                    <option key={`need-${member.id}`} value={member.id}>
+                      {member.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+          </>
         )}
 
         <label className="form-field">
@@ -2070,12 +2079,14 @@ function App() {
 
           <h3>{task.title}</h3>
 
-          <div className="task-info-row">
-            <span className="need-chip">受け先: {recipientLabel}</span>
-            {signalStatus && pickedMember && (
-              <span className="picked-chip">拾った人: {pickedMember.name}</span>
-            )}
-          </div>
+          {signalStatus && (
+            <div className="task-info-row">
+              <span className="need-chip">受け先: {recipientLabel}</span>
+              {pickedMember && (
+                <span className="picked-chip">拾った人: {pickedMember.name}</span>
+              )}
+            </div>
+          )}
 
           <p className="compact-hint">クリックで編集・作戦を見る</p>
         </article>
@@ -2551,16 +2562,18 @@ function App() {
               <strong>{owner?.name}</strong>
             </div>
 
-            <div>
-              <span>受け先</span>
-              <strong>{recipientLabel}</strong>
-            </div>
+            {selectedSignalStatus && (
+              <div>
+                <span>受け先</span>
+                <strong>{recipientLabel}</strong>
+              </div>
+            )}
 
           </div>
 
           {taskForm.flowStatus !== "DONE" ? (
             <div className="modal-actions">
-              <p className="modal-section-title">サインを選ぶ</p>
+              <p className="modal-section-title">サインを付ける</p>
 
               <div className="modal-action-grid signal-choice-grid">
                 {quickSignalList.map((status) => (
