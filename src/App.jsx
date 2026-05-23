@@ -669,14 +669,14 @@ const defaultTaskForm = {
 
 const recipientTypes = [
   {
-    id: "anyone",
-    label: "誰でもOK",
-    description: "拾える人が見つけてくれればよいサイン",
-  },
-  {
     id: "member",
     label: "特定メンバー",
     description: "特定の相手に見てほしいサイン",
+  },
+  {
+    id: "anyone",
+    label: "誰でもOK",
+    description: "拾える人が見つけてくれればよいサイン",
   },
 ];
 
@@ -1158,6 +1158,10 @@ function App() {
     const needType = getTaskNeedType(taskOrForm);
 
     if (needType === "member") {
+      if (taskOrForm?.ownerId && taskOrForm.ownerId === taskOrForm.needId) {
+        return "誰でもOK";
+      }
+
       return getMember(taskOrForm.needId)?.name || "特定メンバー";
     }
 
@@ -1348,16 +1352,14 @@ function App() {
       title: trimmedTitle,
       ownerId: taskForm.ownerId || fallbackMemberId,
       needType:
-        nextSignalStatus && taskForm.needType === "member"
-          ? getSafeRequestMemberId(taskForm.ownerId || fallbackMemberId, taskForm.needId)
-            ? "member"
-            : "anyone"
+        nextSignalStatus && getSafeRequestMemberId(taskForm.ownerId || fallbackMemberId, taskForm.needId)
+          ? "member"
           : nextSignalStatus && recipientTypeLabels[taskForm.needType]
             ? taskForm.needType
             : "anyone",
       needId:
-        nextSignalStatus && taskForm.needType === "member"
-          ? getSafeRequestMemberId(taskForm.ownerId || fallbackMemberId, taskForm.needId) || fallbackMemberId
+        nextSignalStatus && getSafeRequestMemberId(taskForm.ownerId || fallbackMemberId, taskForm.needId)
+          ? getSafeRequestMemberId(taskForm.ownerId || fallbackMemberId, taskForm.needId)
           : fallbackMemberId,
       flowStatus: nextFlowStatus,
       signalStatus: nextSignalStatus,
@@ -1617,24 +1619,21 @@ function App() {
   };
 
   const chooseTaskSignalStatus = (status) => {
-    setTaskForm((current) => ({
-      ...current,
-      signalStatus: status || "",
-      status: status || current.flowStatus || "TODO",
-      needType:
-        status && current.needType === "member"
-          ? getSafeRequestMemberId(current.ownerId || fallbackMemberId, current.needId)
-            ? "member"
-            : "anyone"
-          : status
-            ? current.needType || "anyone"
-            : "anyone",
-      needId:
-        status && current.needType === "member"
-          ? getSafeRequestMemberId(current.ownerId || fallbackMemberId, current.needId) || fallbackMemberId
-          : fallbackMemberId,
-      pickedById: status ? current.pickedById : "",
-    }));
+    setTaskForm((current) => {
+      const requestMemberId = getSafeRequestMemberId(
+        current.ownerId || fallbackMemberId,
+        current.needId
+      );
+
+      return {
+        ...current,
+        signalStatus: status || "",
+        status: status || current.flowStatus || "TODO",
+        needType: status ? (requestMemberId ? "member" : "anyone") : "anyone",
+        needId: status ? requestMemberId || fallbackMemberId : fallbackMemberId,
+        pickedById: status ? current.pickedById : "",
+      };
+    });
   };
 
   const openMemberCreateModal = () => {
