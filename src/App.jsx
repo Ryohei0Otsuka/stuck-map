@@ -1086,7 +1086,7 @@ function App() {
       const targetId = task.needId || fallbackMemberId;
       const signalStatus = getTaskSignalStatus(task);
 
-      if (!signalStatus || !initialCounts[targetId]) {
+      if (!signalStatus || task.ownerId === targetId || !initialCounts[targetId]) {
         return;
       }
 
@@ -1161,7 +1161,21 @@ function App() {
       return getMember(taskOrForm.needId)?.name || "特定メンバー";
     }
 
-    return recipientTypeLabels[needType] || "受け先未設定";
+    return recipientTypeLabels[needType] || "依頼先未設定";
+  };
+
+  const getRequestableMembers = (ownerId) => {
+    return members.filter((member) => member.id !== ownerId);
+  };
+
+  const getSafeRequestMemberId = (ownerId, currentNeedId = "") => {
+    const requestableMembers = getRequestableMembers(ownerId);
+
+    if (requestableMembers.some((member) => member.id === currentNeedId)) {
+      return currentNeedId;
+    }
+
+    return requestableMembers[0]?.id || "";
   };
 
 
@@ -1333,10 +1347,17 @@ function App() {
     updateTask(selectedTask.id, {
       title: trimmedTitle,
       ownerId: taskForm.ownerId || fallbackMemberId,
-      needType: nextSignalStatus && recipientTypeLabels[taskForm.needType] ? taskForm.needType : "anyone",
+      needType:
+        nextSignalStatus && taskForm.needType === "member"
+          ? getSafeRequestMemberId(taskForm.ownerId || fallbackMemberId, taskForm.needId)
+            ? "member"
+            : "anyone"
+          : nextSignalStatus && recipientTypeLabels[taskForm.needType]
+            ? taskForm.needType
+            : "anyone",
       needId:
         nextSignalStatus && taskForm.needType === "member"
-          ? taskForm.needId || fallbackMemberId
+          ? getSafeRequestMemberId(taskForm.ownerId || fallbackMemberId, taskForm.needId) || fallbackMemberId
           : fallbackMemberId,
       flowStatus: nextFlowStatus,
       signalStatus: nextSignalStatus,
@@ -1600,8 +1621,18 @@ function App() {
       ...current,
       signalStatus: status || "",
       status: status || current.flowStatus || "TODO",
-      needType: status ? current.needType || "anyone" : "anyone",
-      needId: status ? current.needId || fallbackMemberId : fallbackMemberId,
+      needType:
+        status && current.needType === "member"
+          ? getSafeRequestMemberId(current.ownerId || fallbackMemberId, current.needId)
+            ? "member"
+            : "anyone"
+          : status
+            ? current.needType || "anyone"
+            : "anyone",
+      needId:
+        status && current.needType === "member"
+          ? getSafeRequestMemberId(current.ownerId || fallbackMemberId, current.needId) || fallbackMemberId
+          : fallbackMemberId,
       pickedById: status ? current.pickedById : "",
     }));
   };
@@ -1934,7 +1965,25 @@ function App() {
           <span>担当者</span>
           <select
             value={taskForm.ownerId}
-            onChange={(event) => updateTaskForm("ownerId", event.target.value)}
+            onChange={(event) => {
+              const nextOwnerId = event.target.value;
+              setTaskForm((current) => {
+                const nextNeedId =
+                  current.needType === "member" && current.needId === nextOwnerId
+                    ? getSafeRequestMemberId(nextOwnerId, "")
+                    : current.needId;
+
+                return {
+                  ...current,
+                  ownerId: nextOwnerId,
+                  needId: nextNeedId,
+                  needType:
+                    current.needType === "member" && !nextNeedId
+                      ? "anyone"
+                      : current.needType,
+                };
+              });
+            }}
           >
             {members.map((member) => (
               <option key={`owner-${member.id}`} value={member.id}>
@@ -1947,7 +1996,7 @@ function App() {
         {taskForm.signalStatus && (
           <>
             <label className="form-field">
-              <span>サインの受け先</span>
+              <span>サインの依頼先</span>
               <select
                 value={taskForm.needType || "anyone"}
                 onChange={(event) => updateTaskForm("needType", event.target.value)}
@@ -1962,12 +2011,13 @@ function App() {
 
             {taskForm.needType === "member" && (
               <label className="form-field">
-                <span>見てほしい相手</span>
+                <span>依頼する相手</span>
                 <select
-                  value={taskForm.needId}
+                  value={getSafeRequestMemberId(taskForm.ownerId, taskForm.needId)}
                   onChange={(event) => updateTaskForm("needId", event.target.value)}
+                  disabled={getRequestableMembers(taskForm.ownerId).length === 0}
                 >
-                  {members.map((member) => (
+                  {getRequestableMembers(taskForm.ownerId).map((member) => (
                     <option key={`need-${member.id}`} value={member.id}>
                       {member.name}
                     </option>
@@ -2081,7 +2131,7 @@ function App() {
 
           {signalStatus && (
             <div className="task-info-row">
-              <span className="need-chip">受け先: {recipientLabel}</span>
+              <span className="need-chip">依頼先: {recipientLabel}</span>
               {pickedMember && (
                 <span className="picked-chip">拾った人: {pickedMember.name}</span>
               )}
@@ -2564,7 +2614,7 @@ function App() {
 
             {selectedSignalStatus && (
               <div>
-                <span>受け先</span>
+                <span>依頼先</span>
                 <strong>{recipientLabel}</strong>
               </div>
             )}
@@ -2950,7 +3000,7 @@ function App() {
                   className="project-name-button"
                   onClick={startProjectEdit}
                 >
-                  <span>Stuck Map</span>
+                  <span>プロジェクトボード</span>
                   <strong>{project.name || "Untitled プロジェクト"}</strong>
                   <small>{project.memo}</small>
                 </button>
@@ -3283,7 +3333,7 @@ function App() {
                 {nextSupportTask.description && <p>{nextSupportTask.description}</p>}
 
                 <small>
-                  発信: {getMember(nextSupportTask.ownerId)?.name} / 受け先: {getRecipientLabel(nextSupportTask)}
+                  発信: {getMember(nextSupportTask.ownerId)?.name} / 依頼先: {getRecipientLabel(nextSupportTask)}
                   {getPickedMember(nextSupportTask) ? ` / 拾った人: ${getPickedMember(nextSupportTask).name}` : ""}
                 </small>
 
