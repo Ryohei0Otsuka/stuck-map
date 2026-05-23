@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 
+const TASK_REQUEST_LABEL_UNIFIED_FORCE_V3_9 = true;
+
 const STORAGE_KEY = "stuck-map-v8";
 const INTRO_STORAGE_KEY = "stuck-map-intro-v8";
 
