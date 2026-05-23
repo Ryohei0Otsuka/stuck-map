@@ -2576,6 +2576,19 @@ function App() {
               <p className="modal-section-title">サインを付ける</p>
 
               <div className="modal-action-grid signal-choice-grid">
+                <button
+                  key={`modal-${selectedTask.id}-none`}
+                  type="button"
+                  className={`modal-action NONE ${
+                    !taskForm.signalStatus ? "active" : ""
+                  }`}
+                  onClick={() => chooseTaskSignalStatus("")}
+                >
+                  <span>−</span>
+                  <strong>サインなし</strong>
+                  <small>確認・相談・支援のサインを外します</small>
+                </button>
+
                 {quickSignalList.map((status) => (
                   <button
                     key={`modal-${selectedTask.id}-${status}`}

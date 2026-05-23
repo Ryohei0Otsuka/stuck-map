@@ -12039,3 +12039,52 @@ body {
     display: none !important;
   }
 }
+
+
+/* =========================================================
+   STUCK_MAP_SIGNAL_NONE_ACTION_V3_3
+   タスクモーダルでサインなしを選べるようにする。
+   NONEは強く主張せず、解除操作として控えめに見せる。
+   本体 / Lab 共通。
+   ========================================================= */
+
+.modal-action.NONE {
+  border-color: rgba(137, 167, 204, 0.22) !important;
+  background: rgba(248, 252, 255, 0.88) !important;
+  color: #607899 !important;
+}
+
+.modal-action.NONE span {
+  background: rgba(238, 243, 250, 0.96) !important;
+  color: #607899 !important;
+}
+
+.modal-action.NONE strong {
+  color: #3f5874 !important;
+}
+
+.modal-action.NONE small {
+  color: #7386a1 !important;
+}
+
+.modal-action.NONE.active {
+  border-color: rgba(137, 167, 204, 0.34) !important;
+  background: rgba(238, 243, 250, 0.96) !important;
+  color: #3f5874 !important;
+  box-shadow: 0 0 0 3px rgba(137, 167, 204, 0.08) !important;
+}
+
+.modal-action.NONE.active span {
+  background: #ffffff !important;
+  color: #607899 !important;
+}
+
+.signal-choice-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+}
+
+@media (max-width: 760px) {
+  .signal-choice-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
