@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 
+const SP_FEEDBACK_UI_V1 = true;
+
 const TASK_REQUEST_LABEL_UNIFIED_FORCE_V3_9 = true;
 
 const STORAGE_KEY = "stuck-map-v8";
@@ -2279,7 +2281,10 @@ function App() {
     return (
       <div className="member-status-strip" aria-label="メンバー状況">
         <div className="member-status-label">
-          <span>メンバー</span>
+          <span className="member-status-title">
+            メンバー
+            <b className="member-count-badge">{members.length}人</b>
+          </span>
           <button
             type="button"
             className="member-status-add"
@@ -2691,26 +2696,8 @@ function App() {
             {renderTaskFields()}
           </div>
 
-          <div className="modal-button-row split">
-            <div className="danger-zone">
-              <button
-                type="button"
-                className="secondary-action"
-                onClick={closeSelectedTask}
-              >
-                完了にする
-              </button>
-
-              <button
-                type="button"
-                className="danger-action"
-                onClick={deleteSelectedTask}
-              >
-                削除
-              </button>
-            </div>
-
-            <div className="save-zone">
+          <div className="modal-button-row split task-modal-action-layout">
+            <div className="save-zone primary-save-zone">
               <button
                 type="button"
                 className="secondary-action"
@@ -2725,6 +2712,28 @@ function App() {
                 onClick={saveSelectedTask}
               >
                 保存して閉じる
+              </button>
+            </div>
+
+            <div className="status-action-zone">
+              <p className="modal-section-title action-zone-title">状態操作</p>
+              <button
+                type="button"
+                className="secondary-action complete-action"
+                onClick={closeSelectedTask}
+              >
+                完了にする
+              </button>
+            </div>
+
+            <div className="danger-zone separated-danger-zone">
+              <p className="modal-section-title action-zone-title">危険操作</p>
+              <button
+                type="button"
+                className="danger-action"
+                onClick={deleteSelectedTask}
+              >
+                削除
               </button>
             </div>
           </div>
@@ -3287,7 +3296,7 @@ function App() {
                     onClick={() => openCreateModal("TODO")}
                   >
                     <span>＋</span>
-                    タスク
+                    タスクを追加
                   </button>
                 )}
               </div>
